@@ -1,0 +1,31 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+
+}
+
+.custom-navbar {
+  background-color: #8A0F0F;
+  padding-left: 25px!important;
+  padding-right: 25px!important;
+
+}
+
+.custom-navbar .nav-link,
+.custom-navbar .navbar-brand,
+.custom-navbar .dropdown-item {
+  color: #FBE6E9 !important;
+}
+
+.custom-navbar .nav-link:hover,
+.custom-navbar .dropdown-item:hover {
+  color: #ffffff !important;
+  background-color: transparent;
+}
+.dropdown-menu{
+  background-color: #8A0F0F!important;
+}
+
+#3c0303
