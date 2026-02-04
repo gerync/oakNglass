@@ -121,7 +121,8 @@ export async function sendwithoutCode(to, subject, type, content) {
     };
     try {
         await transporter.sendMail(mailOptions);
-    } catch (error) {
+    }
+    catch (error) {
         Coloredlog('Email küldési hiba:', '#ffa600');
         Coloredlog(error.message, '#ff0000');
     }

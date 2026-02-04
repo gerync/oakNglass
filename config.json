@@ -3,7 +3,9 @@
     {
         "host": "localhost",
         "port": 8080
+        
     },
+    "isProduction": false,
     "frontend":
     {
         "host": "localhost",
@@ -14,7 +16,7 @@
         "host": "localhost",
         "port": 5070,
         "username": "data",
-        "password": "n0z_cw1tFDl0CEbw",
+        "password": "data1234",
         "dbname": "oakNglass"
     },
     "email":
@@ -39,8 +41,8 @@
     "security":
     {
         "tokenExpiry": {
-            "accessToken": "30m",
-            "refreshToken": "30d"
+            "access": "30m",
+            "refresh": "30d"
         },
         "secrets": {
             "jwt": "oasdi89324231cnzx12szasd1231czx",
