@@ -1,4 +1,4 @@
-import { Navbar, Nav, NavDropdown } from "react-bootstrap";
+import { Navbar, Nav, NavDropdown, Image } from "react-bootstrap";
 import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 
 import Home from "../../Home";
@@ -9,7 +9,7 @@ function NavbarComponent() {
     <>
       <BrowserRouter>
         <Navbar expand="md" fixed="top" className="custom-navbar">
-          <Navbar.Brand className="brand">Oak&Glass</Navbar.Brand>
+          <Navbar.Brand className="brand"><Image src="src/assets/Logo.svg" height='50px'/></Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse>
             <Nav>
@@ -33,8 +33,8 @@ function NavbarComponent() {
         </Navbar>
 
         <Routes>
-          <Route path="/" element={<Home/>}/>
-          <Route path="/shop" element={<Products/>}/>
+          <Route path="/" exact activeClassName="active" element={<Home/>}/>
+          <Route path="/shop" exact activeClassName="active" element={<Products/>}/>
         </Routes>
       </BrowserRouter>
 
