@@ -1,14 +1,15 @@
 {
-  "name": "backend",
+  "name": "oaknglassbackend",
   "version": "1.0.0",
-  "main": "./src/main.js",
+  "description": "",
+  "main": "./src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "gerync, zaln",
   "license": "ISC",
-  "description": "",
+  "type": "module",
   "dependencies": {
     "@gerync/utils2": "^1.1.0",
     "argon2": "^0.44.0",
@@ -16,8 +17,7 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "mysql2": "^3.16.2",
-    "node-cors": "^1.0.0",
-    "nodemailer": "^7.0.13"
+    "nodemailer": "^7.0.13",
+    "pg": "^8.18.0"
   }
 }
