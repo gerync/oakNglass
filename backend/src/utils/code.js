@@ -1,6 +1,8 @@
 // #region Imports
 import postgre from '../db/pool.js';
-import { decrypt, hashPassword,  Coloredlog} from '@gerync/utils2';
+import { decryptData } from './security/encrypt.js';
+import { hashPassword } from './security/hash.js';
+import { Coloredlog } from '@gerync/utils2';
 import config from '../config.js';
 
 import sendEmail from '../email/index.js';
@@ -34,8 +36,8 @@ export default async function handleEmailCode(type, userId) {
     await client.query('COMMIT');
     // #endregion
     // #region Decrypt user data for email content
-    const fullName = decrypt(userRes.rows[0].fullnameenc, config.security.secrets.encryption);
-    const email = decrypt(userRes.rows[0].emailenc, config.security.secrets.encryption);
+    const fullName = decryptData(userRes.rows[0].fullnameenc, config.security.secrets.encryption);
+    const email = decryptData(userRes.rows[0].emailenc, config.security.secrets.encryption);
     // #endregion
     // #region Build action link
     let link = '';

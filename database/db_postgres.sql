@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS Users (
     Role VARCHAR(20) CHECK (Role IN ('admin', 'user', 'journalist')) DEFAULT 'user',
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     BirthDate DATE NOT NULL,
-    Address TEXT,
+    AddressEnc BYTEA,
     EmailSubscribed BOOLEAN DEFAULT false,
     INDEX idx_hashedemail (HashedEmail),
     INDEX idx_hashedmobilenumber (HashedMobileNumber),
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS Reviews (
 CREATE TABLE IF NOT EXISTS RefreshTokens (
     TokenID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     UserID UUID NOT NULL,
-    TokenHash VARCHAR(255) NOT NULL UNIQUE,
+    AccessVersion INT NOT NULL DEFAULT 1,
     ExpiresAt TIMESTAMP NOT NULL,
     Revoked BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (UserID) REFERENCES Users(UUID) ON DELETE CASCADE,

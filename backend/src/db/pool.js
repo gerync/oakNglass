@@ -29,3 +29,5 @@ export default {
     pool,
     config: dbConfig
 };
+
+export { query, execute, pool, dbConfig };
