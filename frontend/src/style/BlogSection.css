@@ -5,15 +5,11 @@
 }
 
 h3 {
-  margin: auto auto;
-  display: flex;
-  place-self: center;
-  justify-self: center;
-
-  
+  margin: 0;
+  text-align: center;
 }
 
-.custom-card{
-  margin-bottom: 5px!important;
+.custom-card {
+  margin-bottom: 5px !important;
   min-width: 250px;
 }
