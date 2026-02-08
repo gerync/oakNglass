@@ -31,7 +31,7 @@ jobs:
           # Fix: Correct ssh-keyscan syntax for custom ports
           ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
           
-          # Use your service token to authenticate the tunnel headless-ly
+          # Use your service token to authenticate the tunnel headlessly
           cat <<EOF > ~/.ssh/config
           Host ${{ secrets.SERVER_HOST }}
             ProxyCommand cloudflared access ssh --hostname %h --service-token-id ${{ secrets.CF_CLIENT_ID }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET }}
