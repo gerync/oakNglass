@@ -23,34 +23,41 @@ jobs:
 
       #region SSHConfig
       - name: Setup Secure SSH Environment
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          CF_CLIENT_ID: ${{ secrets.CF_CLIENT_ID }}
+          CF_CLIENT_SECRET: ${{ secrets.CF_CLIENT_SECRET }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           
           # Write SSH private key
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           
-          # Configure SSH to use Cloudflare tunnel - use direct variable substitution
-          cat > ~/.ssh/config << EOF
-          Host deployment-server
-            HostName ssh.gerync.com
-            User ${{ secrets.SERVER_USER }}
-            IdentityFile ~/.ssh/id_ed25519
-            ProxyCommand cloudflared access ssh --hostname ssh.gerync.com --service-token-id ${{ secrets.CF_CLIENT_ID }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET }}
-            StrictHostKeyChecking accept-new
-            UserKnownHostsFile ~/.ssh/known_hosts
-          EOF
+          # Create SSH config using direct echo to avoid heredoc issues
+          {
+            echo "Host deployment-server"
+            echo "  HostName ssh.gerync.com"
+            echo "  User ${SERVER_USER}"
+            echo "  IdentityFile ~/.ssh/id_ed25519"
+            echo "  ProxyCommand cloudflared access ssh --hostname ssh.gerync.com --service-token-id ${CF_CLIENT_ID} --service-token-secret ${CF_CLIENT_SECRET}"
+            echo "  StrictHostKeyChecking accept-new"
+            echo "  UserKnownHostsFile ~/.ssh/known_hosts"
+          } > ~/.ssh/config
           
           chmod 600 ~/.ssh/config
           
           # Debug: Show config (without secrets)
           echo "SSH Config created:"
-          grep -v "ProxyCommand" ~/.ssh/config || true
+          cat ~/.ssh/config | grep -v "ProxyCommand" || true
       #endregion
 
       #region PrepareDeploymentScript
       - name: Prepare Deployment Script
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USER }}
         run: |
           cat > /tmp/deploy.sh << 'DEPLOYSCRIPT'
           #!/bin/bash
@@ -58,7 +65,7 @@ jobs:
           
           echo "Starting deployment..."
           
-          cd /home/${{ secrets.SERVER_USER }}/Repos/oakNglass
+          cd /home/SERVER_USER_PLACEHOLDER/Repos/oakNglass
           git pull origin auto-deployment
           
           cd backend
@@ -158,6 +165,9 @@ jobs:
           echo "Deployment completed successfully!"
           DEPLOYSCRIPT
           
+          # Replace SERVER_USER placeholder in the script
+          sed -i "s|SERVER_USER_PLACEHOLDER|${SERVER_USER}|g" /tmp/deploy.sh
+          
           chmod +x /tmp/deploy.sh
       #endregion
 
@@ -193,10 +203,10 @@ jobs:
           TOKEN_RESET: ${{ secrets.TOKEN_RESET }}
         run: |
           echo "Transferring deployment script..."
-          scp -v /tmp/deploy.sh deployment-server:/tmp/deploy.sh
+          scp -o StrictHostKeyChecking=accept-new -v /tmp/deploy.sh deployment-server:/tmp/deploy.sh
           
           echo "Executing deployment on remote server..."
-          ssh -v deployment-server "export \
+          ssh -o StrictHostKeyChecking=accept-new -v deployment-server "export \
             DB_HOST='${DB_HOST}' \
             DB_PORT='${DB_PORT}' \
             DB_USER='${DB_USER}' \
