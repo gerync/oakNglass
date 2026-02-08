@@ -28,7 +28,6 @@ jobs:
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           
-          # Use bracket notation for non-standard SSH port
           ssh-keyscan -t rsa,ecdsa,ed25519 ssh.gerync.com >> ~/.ssh/known_hosts 2>/dev/null || true
           
           cat <<EOF > ~/.ssh/config
@@ -43,47 +42,16 @@ jobs:
 
       #region RemoteDeploy
       - name: Execute Remote Deployment
-        uses: appleboy/ssh-action@v1.0.3
         env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
-          ENCRYPTION_SECRET: ${{ secrets.ENCRYPTION_SECRET }}
-          SALT_SECRET: ${{ secrets.SALT_SECRET }}
-          CDN_URL: ${{ secrets.CDN_URL }}
-          CDN_KEY: ${{ secrets.CDN_KEY }}
-          FRONTEND_HOST: ${{ secrets.FRONTEND_HOST }}
-          FRONTEND_PORT: ${{ secrets.FRONTEND_PORT }}
-          BACKEND_HOST: ${{ secrets.BACKEND_HOST }}
-          BACKEND_PORT: ${{ secrets.BACKEND_PORT }}
-          DB_MAX_CONN: ${{ secrets.DB_MAX_CONN }}
-          DB_SSL: ${{ secrets.DB_SSL }}
-          EMAIL_ALIAS_NAME: ${{ secrets.EMAIL_ALIAS_NAME }}
-          EMAIL_ALIAS_ADDRESS: ${{ secrets.EMAIL_ALIAS_ADDRESS }}
-          EMAIL_CODES_EXPIRY: ${{ secrets.EMAIL_CODES_EXPIRY }}
-          TOKEN_ACCESS: ${{ secrets.TOKEN_ACCESS }}
-          TOKEN_REFRESH: ${{ secrets.TOKEN_REFRESH }}
-          TOKEN_RESET: ${{ secrets.TOKEN_RESET }}
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT }}
-          envs: DB_HOST,DB_PORT,DB_USER,DB_PASS,DB_NAME,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,JWT_SECRET,COOKIE_SECRET,ENCRYPTION_SECRET,SALT_SECRET,CDN_URL,CDN_KEY,FRONTEND_HOST,FRONTEND_PORT,BACKEND_HOST,BACKEND_PORT,DB_MAX_CONN,DB_SSL,EMAIL_ALIAS_NAME,EMAIL_ALIAS_ADDRESS,EMAIL_CODES_EXPIRY,TOKEN_ACCESS,TOKEN_REFRESH,TOKEN_RESET
-          script: |
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          ssh -i ~/.ssh/id_ed25519 gery@ssh.gerync.com -p 9700 << 'EOF'
             set -e
-
-            cd /home/${{ secrets.SERVER_USER }}/Repos/oakNglass
+            cd /home/gery/Repos/oakNglass
             git pull origin auto-deployment
-
             cd backend
 
             umask 077
@@ -129,17 +97,7 @@ jobs:
             EOF
 
             docker build --pull -t oaknglass-backend:latest .
-
             docker stop oaknglass || true
             docker rm oaknglass || true
-
-            docker run -d \
-              --name oaknglass \
-              --restart unless-stopped \
-              -p ${BACKEND_PORT:-8080}:${BACKEND_PORT:-8080} \
-              -v $(pwd)/config.json:/app/config.json:ro \
-              oaknglass-backend:latest
-
-            sleep 5
-            curl --fail http://localhost:${BACKEND_PORT:-8080}/ || exit 1
-      #endregion
+            docker run -d --name oaknglass -p 8080:8080 oaknglass-backend:latest
+          EOF
