@@ -29,29 +29,36 @@ jobs:
           CF_CLIENT_SECRET: ${{ secrets.CF_CLIENT_SECRET }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
+          # Debug: Check if variables are set
+          echo "Checking environment variables..."
+          if [ -z "$SERVER_USER" ]; then
+            echo "ERROR: SERVER_USER is not set!"
+            exit 1
+          fi
+          echo "SERVER_USER is set (length: ${#SERVER_USER})"
+          
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           
           # Write SSH private key
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          printf "%s\n" "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           
-          # Create SSH config using direct echo to avoid heredoc issues
-          {
-            echo "Host deployment-server"
-            echo "  HostName ssh.gerync.com"
-            echo "  User ${SERVER_USER}"
-            echo "  IdentityFile ~/.ssh/id_ed25519"
-            echo "  ProxyCommand cloudflared access ssh --hostname ssh.gerync.com --service-token-id ${CF_CLIENT_ID} --service-token-secret ${CF_CLIENT_SECRET}"
-            echo "  StrictHostKeyChecking accept-new"
-            echo "  UserKnownHostsFile ~/.ssh/known_hosts"
-          } > ~/.ssh/config
+          # Create SSH config with proper variable substitution
+          printf "Host deployment-server\n" > ~/.ssh/config
+          printf "  HostName ssh.gerync.com\n" >> ~/.ssh/config
+          printf "  User %s\n" "$SERVER_USER" >> ~/.ssh/config
+          printf "  IdentityFile ~/.ssh/id_ed25519\n" >> ~/.ssh/config
+          printf "  ProxyCommand cloudflared access ssh --hostname ssh.gerync.com --service-token-id %s --service-token-secret %s\n" "$CF_CLIENT_ID" "$CF_CLIENT_SECRET" >> ~/.ssh/config
+          printf "  StrictHostKeyChecking accept-new\n" >> ~/.ssh/config
+          printf "  UserKnownHostsFile ~/.ssh/known_hosts\n" >> ~/.ssh/config
           
           chmod 600 ~/.ssh/config
           
-          # Debug: Show config (without secrets)
-          echo "SSH Config created:"
-          cat ~/.ssh/config | grep -v "ProxyCommand" || true
+          # Debug: Show config (masking secrets)
+          echo "=== SSH Config (secrets masked) ==="
+          sed 's/--service-token-id [^ ]*/--service-token-id ***/' ~/.ssh/config | sed 's/--service-token-secret [^ ]*/--service-token-secret ***/'
+          echo "==================================="
       #endregion
 
       #region PrepareDeploymentScript
@@ -59,6 +66,11 @@ jobs:
         env:
           SERVER_USER: ${{ secrets.SERVER_USER }}
         run: |
+          if [ -z "$SERVER_USER" ]; then
+            echo "ERROR: SERVER_USER is not set in Prepare step!"
+            exit 1
+          fi
+          
           cat > /tmp/deploy.sh << 'DEPLOYSCRIPT'
           #!/bin/bash
           set -e
@@ -169,6 +181,8 @@ jobs:
           sed -i "s|SERVER_USER_PLACEHOLDER|${SERVER_USER}|g" /tmp/deploy.sh
           
           chmod +x /tmp/deploy.sh
+          
+          echo "Deployment script prepared for user: $SERVER_USER"
       #endregion
 
       #region RemoteDeploy
