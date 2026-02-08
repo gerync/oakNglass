@@ -4,7 +4,7 @@ import '../style/Carousel.css'
 function HomeCarousel() {
   return (
     <>
-      <Carousel fade>
+      <Carousel fade className='pt-4 pb-4'>
         <Carousel.Item className='custom-item'>
           <div className='split-container'>
             <div className='overlay'>
