@@ -27,11 +27,21 @@ jobs:
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           
-          # Write SSH private key
-          cat > ~/.ssh/id_ed25519 << EOF
-          ${{ secrets.SSH_PRIVATE_KEY }}
-          EOF
+          # Write SSH private key correctly
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
+          
+          # Use the Service Token in the ProxyCommand
+          cat <<EOF > ~/.ssh/config
+          Host deployment-server
+            HostName ssh.gerync.com
+            User gery
+            Port 9700
+            IdentityFile ~/.ssh/id_ed25519
+            ProxyCommand cloudflared access ssh --hostname %h --service-token-id ${{ secrets.CF_CLIENT_ID }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET }}
+            StrictHostKeyChecking accept-new
+          EOF
+          chmod 600 ~/.ssh/config
           
           # Debug: Check the actual SERVER_USER value
           SERVER_USER="${{ secrets.SERVER_USER }}"
