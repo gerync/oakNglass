@@ -27,11 +27,15 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          ssh-keyscan -p ${{ secrets.SERVER_PORT }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+          
+          # Use your secrets to authenticate the tunnel
           cat <<EOF > ~/.ssh/config
-          Host ssh.gerync.com
-            ProxyCommand cloudflared access ssh --hostname %h
+          Host ${{ secrets.SERVER_HOST }}
+            ProxyCommand cloudflared access ssh --hostname %h --service-token-id ${{ secrets.CF_CLIENT_ID }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET }}
           EOF
+          
+          # Add your server to known_hosts to prevent "Host key verification failed"
+          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
       #endregion
 
       #region RemoteDeploy
