@@ -1,5 +1,5 @@
 import { pool } from "../../db/pool.js";
-import HttpError from "../../utils/HttpError.js";
+import HttpError from "../../models/httpError.js";
 
 export default async function logoutMiddleware(req, res, next) {
     const user = req.user;
