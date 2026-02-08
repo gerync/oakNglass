@@ -1,6 +1,6 @@
 import { Carousel, Image } from 'react-bootstrap'
-
 import '../style/Carousel.css'
+
 function HomeCarousel() {
   return (
     <>

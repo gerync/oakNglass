@@ -5,16 +5,23 @@ import '../style/Navbar.css';
 import Home from "../pages/Home";
 import Products from "../pages/Products";
 import AboutUs from '../pages/AboutUs';
+import LogRegModal from '../components/LogReg';
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/GlobalContext";
 
 
 function NavbarComponent() {
   const { user } = useContext(GlobalContext);
+  const [showLogReg, setShowLogReg] = useState(false);
+  const toggleLogReg = () => {
+    setShowLogReg((prev) => !prev);
+  };
+
 
   return (
     <>
+      <LogRegModal show={showLogReg} setShow={toggleLogReg}/>
       <BrowserRouter expand="md" fixed="top" className="custom-navbar nav-inner">
         <Navbar expand="md" fixed="top" className="custom-navbar">
           <Navbar.Toggle aria-controls="basic-navbar-nav" className="custom-toggle ms-auto" />
@@ -24,11 +31,12 @@ function NavbarComponent() {
               <Nav.Link className="nav-link-custom" as={NavLink} to='/'>Kezdőlap</Nav.Link>
               <Nav.Link className="nav-link-custom" as={NavLink} to='/termekek'>Termékek</Nav.Link>
               <Nav.Link className="nav-link-custom" as={NavLink} to='/rolunk'>Rólunk</Nav.Link>
+              {showLogReg}
             </Nav>
             <Nav className="ms-auto">
               {
                 !user ? (
-                  <Nav.Link className="nav-link-custom">Bejelentkezés</Nav.Link>
+                  <Nav.Link className="nav-link-custom" onClick={() => toggleLogReg()}>Bejelentkezés</Nav.Link>
                 ) : null
               }
 

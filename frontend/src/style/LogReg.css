@@ -1,0 +1,87 @@
+/*Modal*/
+.modal-header {
+  border-bottom: none !important;
+  padding-top: 2rem !important;
+  background-color: #FBE6E9 !important;
+}
+.modal-header .btn-close {
+  margin: 0; 
+  position: absolute;
+  right: 1.5rem;
+  top: 1.5rem;
+}
+.modal-body {
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+  background-color: #FBE6E9 !important;
+}
+
+/*Sliding switch*/
+.switch-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 10px;
+}
+
+.nav-pill-wrapper {
+  position: relative;
+  display: flex;
+  background-color: rgb(255, 243, 243);
+  padding: 4px;
+  border-radius: 50px;
+  width: fit-content;
+}
+
+.nav-pill-btn {
+  position: relative;
+  z-index: 2;
+  border: none!important;
+  background: none!important;
+  padding: 8px 20px;
+  font-weight: 600;
+  transition: color 0.3 ease;
+  color: rgb(138, 15, 15);
+}
+
+.nav-pill-btn.active {
+  color: rgb(255, 243, 243);
+  text-decoration: none!important;
+}
+
+.sliding-pill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: calc(50% - 4px);
+  background-color: rgb(138, 15, 15);
+  border-radius: 60px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+.sliding-pill.left {
+  left: 4px;
+}
+
+.sliding-pill.right {
+  left: 50%;
+}
+
+/* Sliding form*/
+
+.form-slider{
+  display: flex;
+  width: 200%;
+  transition: transform 0.5s ease-in-out;
+}
+.form-pane{
+  width: 50%;
+  padding: 0 20px;
+}
+.showLogin {
+  transform: translateX(0);
+}
+.show-register{
+  transform: translateX(-50%);
+}
