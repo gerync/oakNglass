@@ -28,12 +28,10 @@ jobs:
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           
-          # Fix: Correct ssh-keyscan syntax for custom ports
-          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p 9700 ssh.gerync.com >> ~/.ssh/known_hosts
           
-          # Use your service token to authenticate the tunnel headlessly
           cat <<EOF > ~/.ssh/config
-          Host ${{ secrets.SERVER_HOST }}
+          Host ssh.gerync.com
             ProxyCommand cloudflared access ssh --hostname %h --service-token-id ${{ secrets.CF_CLIENT_ID }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET }}
           EOF
       #endregion
