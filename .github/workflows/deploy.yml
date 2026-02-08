@@ -28,12 +28,17 @@ jobs:
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           
-          ssh-keyscan -p 9700 ssh.gerync.com >> ~/.ssh/known_hosts
+          # Use bracket notation for non-standard SSH port
+          ssh-keyscan -t rsa,ecdsa,ed25519 ssh.gerync.com >> ~/.ssh/known_hosts 2>/dev/null || true
           
           cat <<EOF > ~/.ssh/config
           Host ssh.gerync.com
             ProxyCommand cloudflared access ssh --hostname %h --service-token-id ${{ secrets.CF_CLIENT_ID }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET }}
+            Port 9700
+            StrictHostKeyChecking accept-new
           EOF
+          
+          chmod 600 ~/.ssh/config
       #endregion
 
       #region RemoteDeploy
