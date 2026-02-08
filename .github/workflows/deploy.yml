@@ -23,61 +23,45 @@ jobs:
 
       #region SSHConfig
       - name: Setup Secure SSH Environment
-        env:
-          SERVER_USER: ${{ secrets.SERVER_USER }}
-          CF_CLIENT_ID: ${{ secrets.CF_CLIENT_ID }}
-          CF_CLIENT_SECRET: ${{ secrets.CF_CLIENT_SECRET }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          # Debug: Check if variables are set
-          echo "Checking environment variables..."
-          if [ -z "$SERVER_USER" ]; then
-            echo "ERROR: SERVER_USER is not set!"
-            exit 1
-          fi
-          echo "SERVER_USER is set (length: ${#SERVER_USER})"
-          
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           
           # Write SSH private key
-          printf "%s\n" "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          cat > ~/.ssh/id_ed25519 << 'EOF'
+          ${{ secrets.SSH_PRIVATE_KEY }}
+          EOF
           chmod 600 ~/.ssh/id_ed25519
           
-          # Create SSH config with proper variable substitution
-          printf "Host deployment-server\n" > ~/.ssh/config
-          printf "  HostName ssh.gerync.com\n" >> ~/.ssh/config
-          printf "  User %s\n" "$SERVER_USER" >> ~/.ssh/config
-          printf "  IdentityFile ~/.ssh/id_ed25519\n" >> ~/.ssh/config
-          printf "  ProxyCommand cloudflared access ssh --hostname ssh.gerync.com --service-token-id %s --service-token-secret %s\n" "$CF_CLIENT_ID" "$CF_CLIENT_SECRET" >> ~/.ssh/config
-          printf "  StrictHostKeyChecking accept-new\n" >> ~/.ssh/config
-          printf "  UserKnownHostsFile ~/.ssh/known_hosts\n" >> ~/.ssh/config
+          # Create SSH config directly with GitHub secrets
+          cat > ~/.ssh/config << 'EOF'
+          Host deployment-server
+            HostName ssh.gerync.com
+            User ${{ secrets.SERVER_USER }}
+            IdentityFile ~/.ssh/id_ed25519
+            ProxyCommand cloudflared access ssh --hostname ssh.gerync.com --service-token-id ${{ secrets.CF_CLIENT_ID }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET }}
+            StrictHostKeyChecking accept-new
+            UserKnownHostsFile ~/.ssh/known_hosts
+          EOF
           
           chmod 600 ~/.ssh/config
           
-          # Debug: Show config (masking secrets)
-          echo "=== SSH Config (secrets masked) ==="
-          sed 's/--service-token-id [^ ]*/--service-token-id ***/' ~/.ssh/config | sed 's/--service-token-secret [^ ]*/--service-token-secret ***/'
-          echo "==================================="
+          # Debug: Show config (without ProxyCommand line)
+          echo "=== SSH Config Created ==="
+          grep -v "ProxyCommand" ~/.ssh/config
+          echo "=========================="
       #endregion
 
       #region PrepareDeploymentScript
       - name: Prepare Deployment Script
-        env:
-          SERVER_USER: ${{ secrets.SERVER_USER }}
         run: |
-          if [ -z "$SERVER_USER" ]; then
-            echo "ERROR: SERVER_USER is not set in Prepare step!"
-            exit 1
-          fi
-          
           cat > /tmp/deploy.sh << 'DEPLOYSCRIPT'
           #!/bin/bash
           set -e
           
           echo "Starting deployment..."
           
-          cd /home/SERVER_USER_PLACEHOLDER/Repos/oakNglass
+          cd /home/${{ secrets.SERVER_USER }}/Repos/oakNglass
           git pull origin auto-deployment
           
           cd backend
@@ -177,76 +161,45 @@ jobs:
           echo "Deployment completed successfully!"
           DEPLOYSCRIPT
           
-          # Replace SERVER_USER placeholder in the script
-          sed -i "s|SERVER_USER_PLACEHOLDER|${SERVER_USER}|g" /tmp/deploy.sh
-          
           chmod +x /tmp/deploy.sh
-          
-          echo "Deployment script prepared for user: $SERVER_USER"
       #endregion
 
       #region RemoteDeploy
       - name: Execute Remote Deployment
-        env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
-          ENCRYPTION_SECRET: ${{ secrets.ENCRYPTION_SECRET }}
-          SALT_SECRET: ${{ secrets.SALT_SECRET }}
-          CDN_URL: ${{ secrets.CDN_URL }}
-          CDN_KEY: ${{ secrets.CDN_KEY }}
-          FRONTEND_HOST: ${{ secrets.FRONTEND_HOST }}
-          FRONTEND_PORT: ${{ secrets.FRONTEND_PORT }}
-          BACKEND_HOST: ${{ secrets.BACKEND_HOST }}
-          BACKEND_PORT: ${{ secrets.BACKEND_PORT }}
-          DB_MAX_CONN: ${{ secrets.DB_MAX_CONN }}
-          DB_SSL: ${{ secrets.DB_SSL }}
-          EMAIL_ALIAS_NAME: ${{ secrets.EMAIL_ALIAS_NAME }}
-          EMAIL_ALIAS_ADDRESS: ${{ secrets.EMAIL_ALIAS_ADDRESS }}
-          EMAIL_CODES_EXPIRY: ${{ secrets.EMAIL_CODES_EXPIRY }}
-          TOKEN_ACCESS: ${{ secrets.TOKEN_ACCESS }}
-          TOKEN_REFRESH: ${{ secrets.TOKEN_REFRESH }}
-          TOKEN_RESET: ${{ secrets.TOKEN_RESET }}
         run: |
           echo "Transferring deployment script..."
-          scp -o StrictHostKeyChecking=accept-new -v /tmp/deploy.sh deployment-server:/tmp/deploy.sh
+          scp -o StrictHostKeyChecking=accept-new /tmp/deploy.sh deployment-server:/tmp/deploy.sh
           
           echo "Executing deployment on remote server..."
-          ssh -o StrictHostKeyChecking=accept-new -v deployment-server "export \
-            DB_HOST='${DB_HOST}' \
-            DB_PORT='${DB_PORT}' \
-            DB_USER='${DB_USER}' \
-            DB_PASS='${DB_PASS}' \
-            DB_NAME='${DB_NAME}' \
-            SMTP_HOST='${SMTP_HOST}' \
-            SMTP_PORT='${SMTP_PORT}' \
-            SMTP_USER='${SMTP_USER}' \
-            SMTP_PASS='${SMTP_PASS}' \
-            JWT_SECRET='${JWT_SECRET}' \
-            COOKIE_SECRET='${COOKIE_SECRET}' \
-            ENCRYPTION_SECRET='${ENCRYPTION_SECRET}' \
-            SALT_SECRET='${SALT_SECRET}' \
-            CDN_URL='${CDN_URL}' \
-            CDN_KEY='${CDN_KEY}' \
-            FRONTEND_HOST='${FRONTEND_HOST}' \
-            FRONTEND_PORT='${FRONTEND_PORT}' \
-            BACKEND_HOST='${BACKEND_HOST}' \
-            BACKEND_PORT='${BACKEND_PORT}' \
-            DB_MAX_CONN='${DB_MAX_CONN}' \
-            DB_SSL='${DB_SSL}' \
-            EMAIL_ALIAS_NAME='${EMAIL_ALIAS_NAME}' \
-            EMAIL_ALIAS_ADDRESS='${EMAIL_ALIAS_ADDRESS}' \
-            EMAIL_CODES_EXPIRY='${EMAIL_CODES_EXPIRY}' \
-            TOKEN_ACCESS='${TOKEN_ACCESS}' \
-            TOKEN_REFRESH='${TOKEN_REFRESH}' \
-            TOKEN_RESET='${TOKEN_RESET}' && \
-            bash /tmp/deploy.sh"
+          ssh -o StrictHostKeyChecking=accept-new deployment-server << 'ENDSSH'
+          export DB_HOST='${{ secrets.DB_HOST }}'
+          export DB_PORT='${{ secrets.DB_PORT }}'
+          export DB_USER='${{ secrets.DB_USER }}'
+          export DB_PASS='${{ secrets.DB_PASS }}'
+          export DB_NAME='${{ secrets.DB_NAME }}'
+          export SMTP_HOST='${{ secrets.SMTP_HOST }}'
+          export SMTP_PORT='${{ secrets.SMTP_PORT }}'
+          export SMTP_USER='${{ secrets.SMTP_USER }}'
+          export SMTP_PASS='${{ secrets.SMTP_PASS }}'
+          export JWT_SECRET='${{ secrets.JWT_SECRET }}'
+          export COOKIE_SECRET='${{ secrets.COOKIE_SECRET }}'
+          export ENCRYPTION_SECRET='${{ secrets.ENCRYPTION_SECRET }}'
+          export SALT_SECRET='${{ secrets.SALT_SECRET }}'
+          export CDN_URL='${{ secrets.CDN_URL }}'
+          export CDN_KEY='${{ secrets.CDN_KEY }}'
+          export FRONTEND_HOST='${{ secrets.FRONTEND_HOST }}'
+          export FRONTEND_PORT='${{ secrets.FRONTEND_PORT }}'
+          export BACKEND_HOST='${{ secrets.BACKEND_HOST }}'
+          export BACKEND_PORT='${{ secrets.BACKEND_PORT }}'
+          export DB_MAX_CONN='${{ secrets.DB_MAX_CONN }}'
+          export DB_SSL='${{ secrets.DB_SSL }}'
+          export EMAIL_ALIAS_NAME='${{ secrets.EMAIL_ALIAS_NAME }}'
+          export EMAIL_ALIAS_ADDRESS='${{ secrets.EMAIL_ALIAS_ADDRESS }}'
+          export EMAIL_CODES_EXPIRY='${{ secrets.EMAIL_CODES_EXPIRY }}'
+          export TOKEN_ACCESS='${{ secrets.TOKEN_ACCESS }}'
+          export TOKEN_REFRESH='${{ secrets.TOKEN_REFRESH }}'
+          export TOKEN_RESET='${{ secrets.TOKEN_RESET }}'
+          
+          bash /tmp/deploy.sh
+          ENDSSH
       #endregion
