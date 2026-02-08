@@ -27,10 +27,12 @@ jobs:
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           
+          # Write SSH private key
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           
-          cat <<'SSHCONFIG' > ~/.ssh/config
+          # Configure SSH to use Cloudflare tunnel - use direct variable substitution
+          cat > ~/.ssh/config << EOF
           Host deployment-server
             HostName ssh.gerync.com
             User ${{ secrets.SERVER_USER }}
@@ -38,17 +40,23 @@ jobs:
             ProxyCommand cloudflared access ssh --hostname ssh.gerync.com --service-token-id ${{ secrets.CF_CLIENT_ID }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET }}
             StrictHostKeyChecking accept-new
             UserKnownHostsFile ~/.ssh/known_hosts
-          SSHCONFIG
+          EOF
           
           chmod 600 ~/.ssh/config
+          
+          # Debug: Show config (without secrets)
+          echo "SSH Config created:"
+          grep -v "ProxyCommand" ~/.ssh/config || true
       #endregion
 
       #region PrepareDeploymentScript
       - name: Prepare Deployment Script
         run: |
-          cat <<'DEPLOYSCRIPT' > /tmp/deploy.sh
+          cat > /tmp/deploy.sh << 'DEPLOYSCRIPT'
           #!/bin/bash
           set -e
+          
+          echo "Starting deployment..."
           
           cd /home/${{ secrets.SERVER_USER }}/Repos/oakNglass
           git pull origin auto-deployment
@@ -56,7 +64,7 @@ jobs:
           cd backend
           
           umask 077
-          cat > config.json <<'CONFIGEOF'
+          cat > config.json << 'CONFIGEOF'
           {
             "backend": { "host": "BACKEND_HOST_PLACEHOLDER", "port": BACKEND_PORT_PLACEHOLDER },
             "isProduction": true,
@@ -96,39 +104,44 @@ jobs:
             }
           }
           CONFIGEOF
-          sed -i 's|BACKEND_HOST_PLACEHOLDER|'"${BACKEND_HOST:-0.0.0.0}"'|g' config.json
-          sed -i 's|BACKEND_PORT_PLACEHOLDER|'"${BACKEND_PORT:-8080}"'|g' config.json
-          sed -i 's|FRONTEND_HOST_PLACEHOLDER|'"${FRONTEND_HOST:-localhost}"'|g' config.json
-          sed -i 's|FRONTEND_PORT_PLACEHOLDER|'"${FRONTEND_PORT:-3000}"'|g' config.json
-          sed -i 's|DB_HOST_PLACEHOLDER|'"${DB_HOST}"'|g' config.json
-          sed -i 's|DB_PORT_PLACEHOLDER|'"${DB_PORT:-5432}"'|g' config.json
-          sed -i 's|DB_USER_PLACEHOLDER|'"${DB_USER}"'|g' config.json
-          sed -i 's|DB_PASS_PLACEHOLDER|'"${DB_PASS}"'|g' config.json
-          sed -i 's|DB_NAME_PLACEHOLDER|'"${DB_NAME}"'|g' config.json
-          sed -i 's|DB_MAX_CONN_PLACEHOLDER|'"${DB_MAX_CONN:-20}"'|g' config.json
-          sed -i 's|DB_SSL_PLACEHOLDER|'"${DB_SSL:-false}"'|g' config.json
-          sed -i 's|SMTP_HOST_PLACEHOLDER|'"${SMTP_HOST}"'|g' config.json
-          sed -i 's|SMTP_PORT_PLACEHOLDER|'"${SMTP_PORT:-587}"'|g' config.json
-          sed -i 's|SMTP_USER_PLACEHOLDER|'"${SMTP_USER}"'|g' config.json
-          sed -i 's|SMTP_PASS_PLACEHOLDER|'"${SMTP_PASS}"'|g' config.json
-          sed -i 's|EMAIL_ALIAS_NAME_PLACEHOLDER|'"${EMAIL_ALIAS_NAME:-Oak N Glass}"'|g' config.json
-          sed -i 's|EMAIL_ALIAS_ADDRESS_PLACEHOLDER|'"${EMAIL_ALIAS_ADDRESS:-no-reply@oak.example.com}"'|g' config.json
-          sed -i 's|EMAIL_CODES_EXPIRY_PLACEHOLDER|'"${EMAIL_CODES_EXPIRY:-360000000}"'|g' config.json
-          sed -i 's|TOKEN_ACCESS_PLACEHOLDER|'"${TOKEN_ACCESS:-30m}"'|g' config.json
-          sed -i 's|TOKEN_REFRESH_PLACEHOLDER|'"${TOKEN_REFRESH:-30d}"'|g' config.json
-          sed -i 's|TOKEN_RESET_PLACEHOLDER|'"${TOKEN_RESET:-30m}"'|g' config.json
-          sed -i 's|JWT_SECRET_PLACEHOLDER|'"${JWT_SECRET}"'|g' config.json
-          sed -i 's|COOKIE_SECRET_PLACEHOLDER|'"${COOKIE_SECRET}"'|g' config.json
-          sed -i 's|ENCRYPTION_SECRET_PLACEHOLDER|'"${ENCRYPTION_SECRET}"'|g' config.json
-          sed -i 's|SALT_SECRET_PLACEHOLDER|'"${SALT_SECRET}"'|g' config.json
-          sed -i 's|CDN_URL_PLACEHOLDER|'"${CDN_URL}"'|g' config.json
-          sed -i 's|CDN_KEY_PLACEHOLDER|'"${CDN_KEY}"'|g' config.json
           
+          # Replace placeholders with environment variables
+          sed -i "s|BACKEND_HOST_PLACEHOLDER|${BACKEND_HOST:-0.0.0.0}|g" config.json
+          sed -i "s|BACKEND_PORT_PLACEHOLDER|${BACKEND_PORT:-8080}|g" config.json
+          sed -i "s|FRONTEND_HOST_PLACEHOLDER|${FRONTEND_HOST:-localhost}|g" config.json
+          sed -i "s|FRONTEND_PORT_PLACEHOLDER|${FRONTEND_PORT:-3000}|g" config.json
+          sed -i "s|DB_HOST_PLACEHOLDER|${DB_HOST}|g" config.json
+          sed -i "s|DB_PORT_PLACEHOLDER|${DB_PORT:-5432}|g" config.json
+          sed -i "s|DB_USER_PLACEHOLDER|${DB_USER}|g" config.json
+          sed -i "s|DB_PASS_PLACEHOLDER|${DB_PASS}|g" config.json
+          sed -i "s|DB_NAME_PLACEHOLDER|${DB_NAME}|g" config.json
+          sed -i "s|DB_MAX_CONN_PLACEHOLDER|${DB_MAX_CONN:-20}|g" config.json
+          sed -i "s|DB_SSL_PLACEHOLDER|${DB_SSL:-false}|g" config.json
+          sed -i "s|SMTP_HOST_PLACEHOLDER|${SMTP_HOST}|g" config.json
+          sed -i "s|SMTP_PORT_PLACEHOLDER|${SMTP_PORT:-587}|g" config.json
+          sed -i "s|SMTP_USER_PLACEHOLDER|${SMTP_USER}|g" config.json
+          sed -i "s|SMTP_PASS_PLACEHOLDER|${SMTP_PASS}|g" config.json
+          sed -i "s|EMAIL_ALIAS_NAME_PLACEHOLDER|${EMAIL_ALIAS_NAME:-Oak N Glass}|g" config.json
+          sed -i "s|EMAIL_ALIAS_ADDRESS_PLACEHOLDER|${EMAIL_ALIAS_ADDRESS:-no-reply@oak.example.com}|g" config.json
+          sed -i "s|EMAIL_CODES_EXPIRY_PLACEHOLDER|${EMAIL_CODES_EXPIRY:-360000000}|g" config.json
+          sed -i "s|TOKEN_ACCESS_PLACEHOLDER|${TOKEN_ACCESS:-30m}|g" config.json
+          sed -i "s|TOKEN_REFRESH_PLACEHOLDER|${TOKEN_REFRESH:-30d}|g" config.json
+          sed -i "s|TOKEN_RESET_PLACEHOLDER|${TOKEN_RESET:-30m}|g" config.json
+          sed -i "s|JWT_SECRET_PLACEHOLDER|${JWT_SECRET}|g" config.json
+          sed -i "s|COOKIE_SECRET_PLACEHOLDER|${COOKIE_SECRET}|g" config.json
+          sed -i "s|ENCRYPTION_SECRET_PLACEHOLDER|${ENCRYPTION_SECRET}|g" config.json
+          sed -i "s|SALT_SECRET_PLACEHOLDER|${SALT_SECRET}|g" config.json
+          sed -i "s|CDN_URL_PLACEHOLDER|${CDN_URL}|g" config.json
+          sed -i "s|CDN_KEY_PLACEHOLDER|${CDN_KEY}|g" config.json
+          
+          echo "Building Docker image..."
           docker build --pull -t oaknglass-backend:latest .
           
+          echo "Stopping existing container..."
           docker stop oaknglass 2>/dev/null || true
           docker rm oaknglass 2>/dev/null || true
           
+          echo "Starting new container..."
           docker run -d \
             --name oaknglass \
             --restart unless-stopped \
@@ -136,8 +149,13 @@ jobs:
             -v $(pwd)/config.json:/app/config.json:ro \
             oaknglass-backend:latest
           
+          echo "Waiting for container to start..."
           sleep 5
+          
+          echo "Health check..."
           curl --fail http://localhost:${BACKEND_PORT:-8080}/ || exit 1
+          
+          echo "Deployment completed successfully!"
           DEPLOYSCRIPT
           
           chmod +x /tmp/deploy.sh
@@ -174,9 +192,12 @@ jobs:
           TOKEN_REFRESH: ${{ secrets.TOKEN_REFRESH }}
           TOKEN_RESET: ${{ secrets.TOKEN_RESET }}
         run: |
-          scp /tmp/deploy.sh deployment-server:/tmp/deploy.sh
+          echo "Transferring deployment script..."
+          scp -v /tmp/deploy.sh deployment-server:/tmp/deploy.sh
           
-          ssh deployment-server "export DB_HOST='${DB_HOST}' \
+          echo "Executing deployment on remote server..."
+          ssh -v deployment-server "export \
+            DB_HOST='${DB_HOST}' \
             DB_PORT='${DB_PORT}' \
             DB_USER='${DB_USER}' \
             DB_PASS='${DB_PASS}' \
