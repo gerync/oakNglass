@@ -27,17 +27,31 @@ jobs:
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           
-          # Write SSH private key (without quotes to allow substitution)
+          # Write SSH private key
           cat > ~/.ssh/id_ed25519 << EOF
           ${{ secrets.SSH_PRIVATE_KEY }}
           EOF
           chmod 600 ~/.ssh/id_ed25519
           
-          # Create SSH config (without quotes to allow substitution)
+          # Debug: Check the actual SERVER_USER value
+          SERVER_USER="${{ secrets.SERVER_USER }}"
+          echo "SERVER_USER length: ${#SERVER_USER}"
+          echo "SERVER_USER (with quotes): '${SERVER_USER}'"
+          
+          # Trim any whitespace
+          SERVER_USER=$(echo "$SERVER_USER" | xargs)
+          echo "SERVER_USER after trim: '${SERVER_USER}'"
+          
+          if [ -z "$SERVER_USER" ]; then
+            echo "ERROR: SERVER_USER is empty after trim!"
+            exit 1
+          fi
+          
+          # Create SSH config using the trimmed variable
           cat > ~/.ssh/config << EOF
           Host deployment-server
             HostName ssh.gerync.com
-            User ${{ secrets.SERVER_USER }}
+            User ${SERVER_USER}
             IdentityFile ~/.ssh/id_ed25519
             ProxyCommand cloudflared access ssh --hostname ssh.gerync.com --service-token-id ${{ secrets.CF_CLIENT_ID }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET }}
             StrictHostKeyChecking accept-new
@@ -46,23 +60,31 @@ jobs:
           
           chmod 600 ~/.ssh/config
           
-          # Debug: Show config (without ProxyCommand line)
-          echo "=== SSH Config Created ==="
-          grep -v "ProxyCommand" ~/.ssh/config
-          echo "=========================="
+          # Debug: Show full config
+          echo "=== Full SSH Config ==="
+          cat ~/.ssh/config
+          echo "======================="
+          
+          # Test SSH config parsing
+          echo "Testing SSH config..."
+          ssh -G deployment-server | grep "^user " || echo "WARNING: User not found in parsed config"
       #endregion
 
       #region PrepareDeploymentScript
       - name: Prepare Deployment Script
         run: |
-          # Create deployment script (without quotes to allow substitution)
+          # Get and trim SERVER_USER
+          SERVER_USER="${{ secrets.SERVER_USER }}"
+          SERVER_USER=$(echo "$SERVER_USER" | xargs)
+          
+          # Create deployment script
           cat > /tmp/deploy.sh << EOF
           #!/bin/bash
           set -e
           
           echo "Starting deployment..."
           
-          cd /home/${{ secrets.SERVER_USER }}/Repos/oakNglass
+          cd /home/${SERVER_USER}/Repos/oakNglass
           git pull origin auto-deployment
           
           cd backend
@@ -134,16 +156,17 @@ jobs:
           EOF
           
           chmod +x /tmp/deploy.sh
+          echo "Deployment script created for user: ${SERVER_USER}"
       #endregion
 
       #region RemoteDeploy
       - name: Execute Remote Deployment
         run: |
           echo "Transferring deployment script..."
-          scp -o StrictHostKeyChecking=accept-new /tmp/deploy.sh deployment-server:/tmp/deploy.sh
+          scp -v -o StrictHostKeyChecking=accept-new /tmp/deploy.sh deployment-server:/tmp/deploy.sh
           
           echo "Executing deployment on remote server..."
-          ssh -o StrictHostKeyChecking=accept-new deployment-server << EOF
+          ssh -v -o StrictHostKeyChecking=accept-new deployment-server << EOF
           export DB_HOST='${{ secrets.DB_HOST }}'
           export DB_PORT='${{ secrets.DB_PORT }}'
           export DB_USER='${{ secrets.DB_USER }}'
