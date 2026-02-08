@@ -1,0 +1,16 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  font-family: 'Texturina', serif !important;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: 16pt!important;
+
+}
+
+@font-face{
+  font-family: 'Texturina';
+  src: local('Texturina'), url('../assets/Texturina.ttf') format('truetype');
+}
