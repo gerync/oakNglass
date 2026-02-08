@@ -28,14 +28,14 @@ jobs:
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           
-          # Use your secrets to authenticate the tunnel
+          # Fix: Correct ssh-keyscan syntax for custom ports
+          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+          
+          # Use your service token to authenticate the tunnel headless-ly
           cat <<EOF > ~/.ssh/config
           Host ${{ secrets.SERVER_HOST }}
             ProxyCommand cloudflared access ssh --hostname %h --service-token-id ${{ secrets.CF_CLIENT_ID }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET }}
           EOF
-          
-          # Add your server to known_hosts to prevent "Host key verification failed"
-          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
       #endregion
 
       #region RemoteDeploy
