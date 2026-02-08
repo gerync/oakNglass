@@ -1,0 +1,100 @@
+#region Metadata
+name: "Deploy OakNGlass Backend"
+
+on:
+#endregion
+  push:
+    branches: [ auto-deployment ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      #region Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      #endregion
+
+      #region Cloudflared
+      - name: Install Cloudflared
+        run: |
+          curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+          sudo dpkg -i cloudflared.deb
+      #endregion
+
+      #region SSHConfig
+      - name: Setup Secure SSH Environment
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -p 9700 -H ssh.gerync.com >> ~/.ssh/known_hosts
+          cat <<EOF > ~/.ssh/config
+          Host ssh.gerync.com
+            ProxyCommand cloudflared access ssh --hostname %h
+          EOF
+      #endregion
+
+      #region RemoteDeploy
+      - name: Execute Remote Deployment
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        with:
+          host: ssh.gerync.com
+          username: gery
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 9700
+          envs: DB_HOST,DB_PORT,DB_USER,DB_PASS,DB_NAME,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,JWT_SECRET
+          script: |
+            set -e
+
+            cd /home/gery/Repos/oakNglass
+            git pull origin auto-deployment
+
+            cd backend
+
+            umask 077
+            cat > config.json <<EOF
+            {
+              "backend": { "host": "0.0.0.0", "port": 8080 },
+              "isProduction": true,
+              "database": {
+                  "host": "$DB_HOST",
+                  "port": $DB_PORT,
+                  "username": "$DB_USER",
+                  "password": "$DB_PASS",
+                  "dbname": "$DB_NAME"
+              },
+              "email": {
+                  "smtpHost": "$SMTP_HOST",
+                  "smtpPort": $SMTP_PORT,
+                  "auth": { "user": "$SMTP_USER", "pass": "$SMTP_PASS" }
+              },
+              "security": { "secrets": { "jwt": "$JWT_SECRET" } }
+            }
+            EOF
+
+            docker build --pull -t oaknglass-backend:latest .
+
+            docker stop oaknglass || true
+            docker rm oaknglass || true
+
+            docker run -d \
+              --name oaknglass \
+              --restart unless-stopped \
+              -p 8080:8080 \
+              -v $(pwd)/config.json:/app/config.json:ro \
+              oaknglass-backend:latest
+
+            sleep 5
+            curl --fail http://localhost:8080/ || exit 1
+      #endregion
