@@ -10,6 +10,9 @@ import protect from '../middlewares/general/protect.js';
 import verifyMiddleware from '../middlewares/auth/verify.js';
 import verifyController from '../controllers/auth/verify.js';
 
+import ResetPassReqController from '../controllers/auth/forgot.js';
+import ResetPassReqMiddleware from '../middlewares/auth/forgot.js';
+
 import express from 'express';
 
 
@@ -19,6 +22,7 @@ router.post('/register', registerMiddleware, registerController);
 router.post('/login', loginMiddleware, loginController);
 router.post('/logout',  protect, logoutController);
 router.post('/verify', verifyMiddleware, verifyController);
+router.post('/reset-password', ResetPassReqMiddleware, ResetPassReqController);
 
 
 export default router;

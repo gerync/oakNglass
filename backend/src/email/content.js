@@ -9,7 +9,7 @@ const PALE_PINK = '#F7E6E6';
 const CARD_BG = '#ffffff';
 // #endregion
 
-// #region Helpers: HTML builders
+// #region Build HTML
 // Creates the full email HTML layout and inserts greeting/title/body pieces
 function wrapHtml(title, codeHtml, actionHtml, fullName) {
     const greeting = fullName
