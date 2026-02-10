@@ -24,6 +24,7 @@ app.use(cookieParser());
 
 app.use('/api/auth', routes.auth);
 app.use('/api/promote', routes.promote);
+app.use('/api/products', routes.products);
 
 // #endregion
 
