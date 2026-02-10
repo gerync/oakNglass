@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import configs from '../../config.json' assert { type: 'json' };
+import configs from '../config.js';
 
 const dbConfig = {
     host: configs.database.host,

@@ -1,5 +1,26 @@
-import config from '../../config.json' assert { type: 'json' };
+import fs from 'fs';
 import crypto from 'crypto';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename); 
+const configPath = path.join(__dirname, '../../config.json');
+
+let config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+
+fs.watchFile(configPath, (curr, prev) => {
+    if (curr.mtime !== prev.mtime) {
+        try {
+            const newConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+            config = newConfig;
+            console.log('Config fájl újratöltve');
+        }
+        catch (err) {
+            console.error('Hiba a config fájl újratöltésekor:', err);
+        }
+    }
+});
 
 export default {
     backend: {

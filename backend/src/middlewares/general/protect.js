@@ -64,7 +64,7 @@ export default async function ProtectMiddleware(req, res, next) {
     const newAccessToken = jwt.sign(accessPayload, config.security.secrets.jwt, { expiresIn: Math.floor(accessMs / 1000) });
 
     res.cookie('accessToken', newAccessToken, {
-        httpOnly: false,
+        httpOnly: true,
         secure: config.backend.host.includes('localhost') ? false : true,
         sameSite: 'strict',
         maxAge: accessMs
@@ -87,10 +87,21 @@ export default async function ProtectMiddleware(req, res, next) {
 function invalid(message, status) {
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
-    res.cookie('loggedIn', 'false', {
-        httpOnly: false,
-        secure: config.backend.host.includes('localhost') ? false : true,
-        sameSite: 'strict',        maxAge: config.security.tokenExpiry.refresh * 1.5
-    });
+    res.clearCookie('loggedIn');
     throw new HttpError(message || 'Érvénytelen munkamenet', status || 401);
+}
+
+
+export function isAdmin(req, res, next) {
+    if (req.user && req.user.role === 'admin') {
+        return next();
+    }
+    throw new HttpError('Nincs jogosultságod a művelet végrehajtásához', 403);
+}
+
+export function isJournalist(req, res, next) {
+    if (req.user && (req.user.role === 'admin' || req.user.role === 'journalist')) {
+        return next();
+    }
+    throw new HttpError('Nincs jogosultságod a művelet végrehajtásához', 403);
 }

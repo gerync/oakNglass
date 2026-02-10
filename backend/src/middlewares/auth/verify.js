@@ -4,14 +4,14 @@ export default function VerifyAccountMiddleware(req, res, next) {
     const urlUriEncodedEmail = req.query.email;
 
     const typedCode = req.body.code;
-    if ( (!urlCode || !urlUriEncodedEmail) && !typedCode) {
+    if ((!urlCode || !urlUriEncodedEmail) && !typedCode) {
         throw new HttpError('Hibás kérés', 400);
     }
 
-    const email = decodeURIComponent(urlUriEncodedEmail);
     if (typedCode) {
         req.verification = { code: typedCode };
     } else {
+        const email = decodeURIComponent(urlUriEncodedEmail);
         req.verification = { code: urlCode, email };
     }
     next();
