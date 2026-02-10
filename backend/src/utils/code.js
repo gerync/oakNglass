@@ -30,6 +30,10 @@ export default async function handleEmailCode(type, userId) {
     // #endregion
     // #region Persist code
     await client.query(
+      'DELETE FROM emailcodes WHERE userid = $1 AND type = $2',
+      [userId, type]
+    );
+    await client.query(
       'INSERT INTO emailcodes (userid, hashedcode, type, expiresat) VALUES ($1, $2, $3, $4)',
       [userId, await hashPassword(code), type, expiry]
     );
@@ -60,7 +64,7 @@ export default async function handleEmailCode(type, userId) {
         link = `${config.frontend.domain()}/journalist-invite?code=${code}&email=${encodeURIComponent(email)}`;
     }
     else {
-        throw new Error('Unknown email code type');
+        throw new Error('Ismeretlen email típus');
     }
     // #endregion
     // #region Send email
@@ -70,7 +74,8 @@ export default async function handleEmailCode(type, userId) {
   } catch (err) {
     // #region Error handling & rollback
     try { await client.query('ROLLBACK'); } catch (e) {
-         Coloredlog(['Error rolling back transaction:', e ], ['#fff', '#f00'] );
+         Coloredlog('Hiba a tranzakció visszagörgetésekor:', '#fff');
+          Coloredlog(e, 'rgb(255, 147, 147)');
      }
     throw err;
     // #endregion

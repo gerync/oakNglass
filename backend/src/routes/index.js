@@ -1,7 +1,9 @@
-import authroutes from './routes/auth.js';
+import authroutes from './auth.js';
 import promoteRoutes from './promote.js';
+import products from './products.js';
 
 export default {
     auth: authroutes,
-    promote: promoteRoutes
+    promote: promoteRoutes,
+    products: products
 }

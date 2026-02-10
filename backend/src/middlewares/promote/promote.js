@@ -1,4 +1,4 @@
-import HttpError from '../../utils/HttpError.js';
+import HttpError from '../../models/httpError.js';
 export default function PromotetMiddleware(req, res, next) {
     const urlCode = req.query.code;
     const urlUriEncodedEmail = req.query.email;

@@ -90,3 +90,18 @@ function invalid(message, status) {
     res.clearCookie('loggedIn');
     throw new HttpError(message || 'Érvénytelen munkamenet', status || 401);
 }
+
+
+export function isAdmin(req, res, next) {
+    if (req.user && req.user.role === 'admin') {
+        return next();
+    }
+    throw new HttpError('Nincs jogosultságod a művelet végrehajtásához', 403);
+}
+
+export function isJournalist(req, res, next) {
+    if (req.user && (req.user.role === 'admin' || req.user.role === 'journalist')) {
+        return next();
+    }
+    throw new HttpError('Nincs jogosultságod a művelet végrehajtásához', 403);
+}
