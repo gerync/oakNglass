@@ -1,6 +1,19 @@
 import HttpError from '../../models/httpError.js';
 export default async function listProductsMiddleware(req, res, next) {
     let { page, limit, sortby, sortorder, minprice, maxprice, minstock, maxstock, minalcohol, maxalcohol, mincontent, maxcontent, search } = req.query;
+    const parseNum = v => {
+        if (v === undefined || v === null || v === '') return undefined;
+        const n = Number(v);
+        return Number.isFinite(n) ? n : undefined;
+    };
+    minprice = parseNum(minprice);
+    maxprice = parseNum(maxprice);
+    minstock = parseNum(minstock);
+    maxstock = parseNum(maxstock);
+    minalcohol = parseNum(minalcohol);
+    maxalcohol = parseNum(maxalcohol);
+    mincontent = parseNum(mincontent);
+    maxcontent = parseNum(maxcontent);
     if (sortby) {
         const validsortby = ['alphabetical', 'price', 'newest', 'alcoholperc', 'contentml', 'stock'];
         if (!validsortby.includes(sortby.toLowerCase())) {
@@ -49,13 +62,13 @@ export default async function listProductsMiddleware(req, res, next) {
             if (isNaN(limit) || limit < 1) {
                 return next(new HttpError('Érvénytelen limit érték', 400));
             }
-            if (limit > 30) {
-                return next(new HttpError('A limit értéke nem lehet nagyobb 30-nál', 400));
-            }
-            offset = (page - 1) * limit;
         } else {
-            offset = (page - 1) * 10;
+            limit = 10;
         }
+        if (limit > 30) {
+            return next(new HttpError('A limit értéke nem lehet nagyobb 30-nál', 400));
+        }
+        offset = (page - 1) * limit;
     } else if (limit) {
         limit = Number(limit);
         if (isNaN(limit) || limit < 1) {
@@ -65,13 +78,14 @@ export default async function listProductsMiddleware(req, res, next) {
             return next(new HttpError('A limit értéke nem lehet nagyobb 30-nál', 400));
         }
         page = 1;
+        offset = 0;
     } else {
         limit = 12;
         page = 1;
+        offset = 0;
     }
-    req.pagination = { page, limit, offset};
+    req.pagination = { page, limit, offset };
     req.sorting = { sortby, sortorder };
-    req.filters = { minprice, maxprice, minstock, maxstock, minalcohol, maxalcohol, mincontent, maxcontent };
-    req.search = search;
+    req.filters = { minprice, maxprice, minstock, maxstock, minalcohol, maxalcohol, mincontent, maxcontent, search };
     next();
 }

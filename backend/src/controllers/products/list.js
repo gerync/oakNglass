@@ -8,6 +8,11 @@ export default async function listProductsController(req, res, next) {
     let { sortby, sortorder } = req.sorting || {};
     let { minprice, maxprice, minstock, maxstock, minalcohol, maxalcohol, mincontent, maxcontent, search } = req.filters || {};
 
+    // Ensure numeric pagination
+    limit = Number(limit) || 12;
+    offset = Number(offset) || 0;
+    page = Number(page) || 1;
+
     try {
         const whereClauses = [];
         const values = [];
@@ -29,96 +34,96 @@ export default async function listProductsController(req, res, next) {
             values.push(maxstock);
         }
         if (minalcohol !== undefined) {
-            whereClauses.push(`alcohol_perc >= $${paramIndex++}`);
+            whereClauses.push(`alcoholpercent >= $${paramIndex++}`);
             values.push(minalcohol);
         }
         if (maxalcohol !== undefined) {
-            whereClauses.push(`alcohol_perc <= $${paramIndex++}`);
+            whereClauses.push(`alcoholpercent <= $${paramIndex++}`);
             values.push(maxalcohol);
         }
         if (mincontent !== undefined) {
-            whereClauses.push(`content_ml >= $${paramIndex++}`);
+            whereClauses.push(`contentml >= $${paramIndex++}`);
             values.push(mincontent);
         }
         if (maxcontent !== undefined) {
-            whereClauses.push(`content_ml <= $${paramIndex++}`);
+            whereClauses.push(`contentml <= $${paramIndex++}`);
             values.push(maxcontent);
         }
-        if (search !== undefined) {
+        if (search !== undefined && String(search).trim() !== '') {
             whereClauses.push(`name ILIKE $${paramIndex++}`);
             values.push(`%${search}%`);
         }
+
         const whereClause = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
-        const countQuery = `SELECT COUNT(*) FROM products ${whereClause}`;
-        const countResult = await query(countQuery, values);
-        const totalItems = parseInt(countResult.rows[0].count, 10);
-        const totalPages = Math.ceil(totalItems / limit);
+
+        // total count
+        const countQuery = `SELECT COUNT(*)::int AS count FROM products ${whereClause}`;
+        const [countRows] = await query(countQuery, values);
+        const totalItems = parseInt(countRows[0]?.count ?? '0', 10);
+        const totalPages = limit > 0 ? Math.ceil(totalItems / limit) : 0;
         if (page > totalPages && totalPages > 0) {
             return next(new HttpError('A page értéke nagyobb, mint a rendelkezésre álló oldalak száma', 400));
         }
-        const dataQuery = `WITH ProductList AS (
-            SELECT * FROM products
+
+        // Aggregate images into one row per product
+        const dataQuery = `SELECT p.prodid, p.name, p.alcoholpercent, p.contentml, p.pricehuf, p.stock, p.createdat,
+            COALESCE(json_agg(pi.id) FILTER (WHERE pi.id IS NOT NULL), '[]') AS images
+            FROM products p
+            LEFT JOIN productimages pi ON p.prodid = pi.prodid
             ${whereClause}
+            GROUP BY p.prodid
             ORDER BY ${sortby} ${sortorder}
-            LIMIT $${paramIndex++} OFFSET $${paramIndex++}
-        )
-            SELECT productimages.id AS imageid, ProductList.*
-            FROM ProductList
-            RIGHT JOIN productimages ON ProductList.prodid = productimages.prodid
-            ORDER BY ${sortby} ${sortorder}`;
+            LIMIT $${paramIndex++} OFFSET $${paramIndex++}`;
+
         values.push(limit, offset);
-        const dataResult = await query(dataQuery, values);
-        const products = [];
-        for (const row of dataResult.rows) {
+        const [rows] = await query(dataQuery, values);
+
+        // Collect unique image ids and batch-fetch CDN URLs
+        const allImageIds = new Set();
+        for (const r of rows) {
             try {
-                const response = await fetch(`${config.CDN.url}/${config.CDN.apiKey}/get`, {
+                const imgs = r.images || [];
+                if (Array.isArray(imgs)) imgs.forEach(id => { if (id) allImageIds.add(id); });
+            } catch (e) {}
+        }
+
+        const fileMap = new Map();
+        if (allImageIds.size > 0) {
+            const uniqueIds = Array.from(allImageIds);
+            try {
+                const resp = await fetch(`${config.CDN.url}/${config.CDN.apiKey}/get`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ fileId: row.imageid })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fileIds: uniqueIds })
                 });
-                const data = await response.json();
-                if (!response.ok || !data.ok) {
-                    throw new Error(`Hiba a fájlok lekérésekor: ${data.error || response.statusText}`);
+                const data = await resp.json();
+                if (resp.ok && data && data.ok && Array.isArray(data.files)) {
+                    for (const f of data.files) {
+                        const id = String(f.id ?? f.fileId ?? f.fileID ?? f.ImageID ?? f.imageid ?? '');
+                        const url = f.cdnUrl ?? f.cdn_url ?? f.url ?? null;
+                        if (id && url) fileMap.set(id, url);
+                    }
                 }
-                const imageUrl = data.files[0].url;
-                let product = products.find(p => p.ProdID === row.prodid);
-                if (!product) {
-                    product = {
-                        ProdID: row.prodid,
-                        name: row.name,
-                        alcoholPerc: row.alcohol_perc,
-                        contentML: row.content_ml,
-                        priceHUF: row.pricehuf,
-                        stock: row.stock,
-                        createdAt: row.createdat,
-                        images: [imageUrl]
-                    };
-                    products.push(product);
-                }
-                else {
-                    product.images.push(imageUrl);
-                }
-            }
-            catch (err) {
-                Colorlog.error(`Hiba a fájlok lekérésekor: ${err.message}`);
-                let product = products.find(p => p.ProdID === row.prodid);
-                if (!product) {
-                    product = {
-                        ProdID: row.prodid,
-                        name: row.name,
-                        alcoholPerc: row.alcohol_perc,
-                        contentML: row.content_ml,
-                        priceHUF: row.pricehuf,
-                        stock: row.stock,
-                        createdAt: row.createdat,
-                        images: []
-                    };
-                    products.push(product);
-                }
+            } catch (err) {
+                Colorlog.error(`CDN batch fetch failed: ${err.message}`);
             }
         }
+
+        const products = rows.map(r => {
+            const imgs = Array.isArray(r.images) ? r.images : [];
+            const imageUrls = imgs.map(id => fileMap.get(String(id))).filter(Boolean);
+            return {
+                ProdID: r.prodid,
+                name: r.name,
+                alcoholPercent: r.alcoholpercent,
+                contentML: r.contentml,
+                priceHUF: r.pricehuf,
+                stock: r.stock,
+                createdAt: r.createdat,
+                images: imageUrls
+            };
+        });
+
         res.json({
             products,
             pagination: {
