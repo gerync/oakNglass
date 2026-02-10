@@ -2,7 +2,7 @@ import { pool } from '../../db/pool.js';
 import HttpError from '../../models/httpError.js';
 import config from '../../config.js';
 
-export async function uploadProductController(req, res) {
+export default async function createProductController(req, res) {
     const { name, alcoholPerc, contentML, priceHUF, Stock, images } = req.productData;
     const conn = await pool.connect();
 

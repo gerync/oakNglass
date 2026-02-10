@@ -1,7 +1,7 @@
 import { query } from '../../db/pool.js';
 import HttpError from '../../models/httpError.js';
 import config from '../../config.js';
-import { Colorlog } from '@gerync/utils2';
+import { Coloredlog } from '@gerync/utils2';
 
 export default async function listProductsController(req, res, next) {
     let { limit, offset, page } = req.pagination || {};
@@ -77,8 +77,7 @@ export default async function listProductsController(req, res, next) {
 
         values.push(limit, offset);
         const [rows] = await query(dataQuery, values);
-
-        // Collect unique image ids and batch-fetch CDN URLs
+        
         const allImageIds = new Set();
         for (const r of rows) {
             try {
@@ -105,7 +104,7 @@ export default async function listProductsController(req, res, next) {
                     }
                 }
             } catch (err) {
-                Colorlog.error(`CDN batch fetch failed: ${err.message}`);
+                Coloredlog.error(`CDN batch fetch failed: ${err.message}`);
             }
         }
 
