@@ -133,6 +133,11 @@ export default async function listProductsController(req, res, next) {
             }
         });
     } catch (err) {
-        next(new HttpError('Hiba a termékek lekérésekor', 500));
+        try {
+            Coloredlog(`Products list error: ${err && err.message ? err.message : String(err)}`, '#ff0000');
+        } catch (e) {}
+        // Propagate original error when possible to preserve stack/message for debugging
+        if (err && err instanceof HttpError) return next(err);
+        return next(new HttpError(err && err.message ? err.message : 'Hiba a termékek lekérésekor', 500));
     }
 }
