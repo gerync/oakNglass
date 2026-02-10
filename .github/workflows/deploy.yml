@@ -1,6 +1,5 @@
 #region Metadata
 name: "Deploy OakNGlass Backend"
-
 on:
 #endregion
   push:
@@ -27,112 +26,183 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          ssh-keyscan -p ${{ secrets.SERVER_PORT }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+          
+          
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          
           cat <<EOF > ~/.ssh/config
-          Host ssh.gerync.com
-            ProxyCommand cloudflared access ssh --hostname %h
+          Host deployment-server
+            HostName ssh.gerync.com
+            User ${{ secrets.SERVER_USER }}
+            IdentityFile ~/.ssh/id_ed25519
+            ProxyCommand cloudflared access ssh --hostname %h --service-token-id ${{ secrets.CF_CLIENT_ID }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET }}
+            StrictHostKeyChecking accept-new
           EOF
+          chmod 600 ~/.ssh/config
+          
+          # Debug: Check the actual SERVER_USER value
+          SERVER_USER="${{ secrets.SERVER_USER }}"
+          echo "SERVER_USER length: ${#SERVER_USER}"
+          echo "SERVER_USER (with quotes): '${SERVER_USER}'"
+          
+          # Trim any whitespace
+          SERVER_USER=$(echo "$SERVER_USER" | xargs)
+          echo "SERVER_USER after trim: '${SERVER_USER}'"
+          
+          if [ -z "$SERVER_USER" ]; then
+            echo "ERROR: SERVER_USER is empty after trim!"
+            exit 1
+          fi
+          
+          # Create SSH config using the trimmed variable
+          cat > ~/.ssh/config << EOF
+          Host deployment-server
+            HostName ssh.gerync.com
+            User ${SERVER_USER}
+            IdentityFile ~/.ssh/id_ed25519
+            ProxyCommand cloudflared access ssh --hostname ssh.gerync.com --service-token-id ${{ secrets.CF_CLIENT_ID }} --service-token-secret ${{ secrets.CF_CLIENT_SECRET }}
+            StrictHostKeyChecking accept-new
+            UserKnownHostsFile ~/.ssh/known_hosts
+          EOF
+          
+          chmod 600 ~/.ssh/config
+          
+          # Debug: Show full config
+          echo "=== Full SSH Config ==="
+          cat ~/.ssh/config
+          echo "======================="
+          
+          # Test SSH config parsing
+          echo "Testing SSH config..."
+          ssh -G deployment-server | grep "^user " || echo "WARNING: User not found in parsed config"
+      #endregion
+
+      #region PrepareDeploymentScript
+      - name: Prepare Deployment Script
+        run: |
+          # Get and trim SERVER_USER
+          SERVER_USER="${{ secrets.SERVER_USER }}"
+          SERVER_USER=$(echo "$SERVER_USER" | xargs)
+          
+          # Create deployment script
+          cat > /tmp/deploy.sh << EOF
+          #!/bin/bash
+          set -e
+          
+          echo "Starting deployment..."
+          
+          cd /home/${SERVER_USER}/Repos/oakNglass
+          git pull origin auto-deployment
+          
+          cd backend
+          
+          umask 077
+          cat > config.json << 'CONFIGEOF'
+          {
+            "backend": { "host": "\${BACKEND_HOST:-0.0.0.0}", "port": \${BACKEND_PORT:-8080} },
+            "isProduction": true,
+            "frontend": { "host": "\${FRONTEND_HOST:-localhost}", "port": \${FRONTEND_PORT:-3000} },
+            "database": {
+                "host": "\${DB_HOST}",
+                "port": \${DB_PORT:-5432},
+                "username": "\${DB_USER}",
+                "password": "\${DB_PASS}",
+                "dbname": "\${DB_NAME}",
+                "maxConnections": \${DB_MAX_CONN:-20},
+                "ssl": \${DB_SSL:-false}
+            },
+            "email": {
+                "smtpHost": "\${SMTP_HOST}",
+                "smtpPort": \${SMTP_PORT:-587},
+                "auth": { "user": "\${SMTP_USER}", "pass": "\${SMTP_PASS}" },
+                "alias": { "name": "\${EMAIL_ALIAS_NAME:-Oak N Glass}", "address": "\${EMAIL_ALIAS_ADDRESS:-no-reply@oak.example.com}" },
+                "codesExpiry": \${EMAIL_CODES_EXPIRY:-360000000}
+            },
+            "security": {
+              "tokenExpiry": {
+                "access": "\${TOKEN_ACCESS:-30m}",
+                "refresh": "\${TOKEN_REFRESH:-30d}",
+                "resetPassword": "\${TOKEN_RESET:-30m}"
+              },
+              "secrets": {
+                "jwt": "\${JWT_SECRET}",
+                "cookies": "\${COOKIE_SECRET}",
+                "encryption": "\${ENCRYPTION_SECRET}",
+                "salt": "\${SALT_SECRET}"
+              }
+            },
+            "CDN": {
+              "url": "\${CDN_URL}",
+              "apiKey": "\${CDN_KEY}"
+            }
+          }
+          CONFIGEOF
+          
+          echo "Building Docker image..."
+          docker build --pull -t oaknglass-backend:latest .
+          
+          echo "Stopping existing container..."
+          docker stop oaknglass 2>/dev/null || true
+          docker rm oaknglass 2>/dev/null || true
+          
+          echo "Starting new container..."
+          docker run -d \
+            --name oaknglass \
+            --restart unless-stopped \
+            -p \${BACKEND_PORT:-8080}:\${BACKEND_PORT:-8080} \
+            -v \$(pwd)/config.json:/app/config.json:ro \
+            oaknglass-backend:latest
+          
+          echo "Waiting for container to start..."
+          sleep 5
+          
+          echo "Health check..."
+          curl --fail http://localhost:\${BACKEND_PORT:-8080}/ || exit 1
+          
+          echo "Deployment completed successfully!"
+          EOF
+          
+          chmod +x /tmp/deploy.sh
+          echo "Deployment script created for user: ${SERVER_USER}"
       #endregion
 
       #region RemoteDeploy
       - name: Execute Remote Deployment
-        uses: appleboy/ssh-action@v1.0.3
-        env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASS: ${{ secrets.DB_PASS }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
-          ENCRYPTION_SECRET: ${{ secrets.ENCRYPTION_SECRET }}
-          SALT_SECRET: ${{ secrets.SALT_SECRET }}
-          CDN_URL: ${{ secrets.CDN_URL }}
-          CDN_KEY: ${{ secrets.CDN_KEY }}
-          FRONTEND_HOST: ${{ secrets.FRONTEND_HOST }}
-          FRONTEND_PORT: ${{ secrets.FRONTEND_PORT }}
-          BACKEND_HOST: ${{ secrets.BACKEND_HOST }}
-          BACKEND_PORT: ${{ secrets.BACKEND_PORT }}
-          DB_MAX_CONN: ${{ secrets.DB_MAX_CONN }}
-          DB_SSL: ${{ secrets.DB_SSL }}
-          EMAIL_ALIAS_NAME: ${{ secrets.EMAIL_ALIAS_NAME }}
-          EMAIL_ALIAS_ADDRESS: ${{ secrets.EMAIL_ALIAS_ADDRESS }}
-          EMAIL_CODES_EXPIRY: ${{ secrets.EMAIL_CODES_EXPIRY }}
-          TOKEN_ACCESS: ${{ secrets.TOKEN_ACCESS }}
-          TOKEN_REFRESH: ${{ secrets.TOKEN_REFRESH }}
-          TOKEN_RESET: ${{ secrets.TOKEN_RESET }}
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_PORT }}
-          envs: DB_HOST,DB_PORT,DB_USER,DB_PASS,DB_NAME,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,JWT_SECRET,COOKIE_SECRET,ENCRYPTION_SECRET,SALT_SECRET,CDN_URL,CDN_KEY,FRONTEND_HOST,FRONTEND_PORT,BACKEND_HOST,BACKEND_PORT,DB_MAX_CONN,DB_SSL,EMAIL_ALIAS_NAME,EMAIL_ALIAS_ADDRESS,EMAIL_CODES_EXPIRY,TOKEN_ACCESS,TOKEN_REFRESH,TOKEN_RESET
-          script: |
-            set -e
-
-            cd /home/${{ secrets.SERVER_USER }}/Repos/oakNglass
-            git pull origin auto-deployment
-
-            cd backend
-
-            umask 077
-            cat > config.json <<EOF
-            {
-              "backend": { "host": "${BACKEND_HOST:-0.0.0.0}", "port": ${BACKEND_PORT:-8080} },
-              "isProduction": true,
-              "frontend": { "host": "${FRONTEND_HOST:-localhost}", "port": ${FRONTEND_PORT:-3000} },
-              "database": {
-                  "host": "${DB_HOST}",
-                  "port": ${DB_PORT:-5432},
-                  "username": "${DB_USER}",
-                  "password": "${DB_PASS}",
-                  "dbname": "${DB_NAME}",
-                  "maxConnections": ${DB_MAX_CONN:-20},
-                  "ssl": ${DB_SSL:-false}
-              },
-              "email": {
-                  "smtpHost": "${SMTP_HOST}",
-                  "smtpPort": ${SMTP_PORT:-587},
-                  "auth": { "user": "${SMTP_USER}", "pass": "${SMTP_PASS}" },
-                  "alias": { "name": "${EMAIL_ALIAS_NAME:-Oak N Glass}", "address": "${EMAIL_ALIAS_ADDRESS:-no-reply@oak.example.com}" },
-                  "codesExpiry": ${EMAIL_CODES_EXPIRY:-360000000}
-              },
-              "security": {
-                "tokenExpiry": {
-                  "access": "${TOKEN_ACCESS:-30m}",
-                  "refresh": "${TOKEN_REFRESH:-30d}",
-                  "resetPassword": "${TOKEN_RESET:-30m}"
-                },
-                "secrets": {
-                  "jwt": "${JWT_SECRET}",
-                  "cookies": "${COOKIE_SECRET}",
-                  "encryption": "${ENCRYPTION_SECRET}",
-                  "salt": "${SALT_SECRET}"
-                }
-              },
-              "CDN": {
-                "url": "${CDN_URL}",
-                "apiKey": "${CDN_KEY}"
-              }
-            }
-            EOF
-
-            docker build --pull -t oaknglass-backend:latest .
-
-            docker stop oaknglass || true
-            docker rm oaknglass || true
-
-            docker run -d \
-              --name oaknglass \
-              --restart unless-stopped \
-              -p ${BACKEND_PORT:-8080}:${BACKEND_PORT:-8080} \
-              -v $(pwd)/config.json:/app/config.json:ro \
-              oaknglass-backend:latest
-
-            sleep 5
-            curl --fail http://localhost:${BACKEND_PORT:-8080}/ || exit 1
+        run: |
+          echo "Transferring deployment script..."
+          scp -v -o StrictHostKeyChecking=accept-new /tmp/deploy.sh deployment-server:/tmp/deploy.sh
+          
+          echo "Executing deployment on remote server..."
+          ssh -v -o StrictHostKeyChecking=accept-new deployment-server << EOF
+          export DB_HOST='${{ secrets.DB_HOST }}'
+          export DB_PORT='${{ secrets.DB_PORT }}'
+          export DB_USER='${{ secrets.DB_USER }}'
+          export DB_PASS='${{ secrets.DB_PASS }}'
+          export DB_NAME='${{ secrets.DB_NAME }}'
+          export SMTP_HOST='${{ secrets.SMTP_HOST }}'
+          export SMTP_PORT='${{ secrets.SMTP_PORT }}'
+          export SMTP_USER='${{ secrets.SMTP_USER }}'
+          export SMTP_PASS='${{ secrets.SMTP_PASS }}'
+          export JWT_SECRET='${{ secrets.JWT_SECRET }}'
+          export COOKIE_SECRET='${{ secrets.COOKIE_SECRET }}'
+          export ENCRYPTION_SECRET='${{ secrets.ENCRYPTION_SECRET }}'
+          export SALT_SECRET='${{ secrets.SALT_SECRET }}'
+          export CDN_URL='${{ secrets.CDN_URL }}'
+          export CDN_KEY='${{ secrets.CDN_KEY }}'
+          export FRONTEND_HOST='${{ secrets.FRONTEND_HOST }}'
+          export FRONTEND_PORT='${{ secrets.FRONTEND_PORT }}'
+          export BACKEND_HOST='${{ secrets.BACKEND_HOST }}'
+          export BACKEND_PORT='${{ secrets.BACKEND_PORT }}'
+          export DB_MAX_CONN='${{ secrets.DB_MAX_CONN }}'
+          export DB_SSL='${{ secrets.DB_SSL }}'
+          export EMAIL_ALIAS_NAME='${{ secrets.EMAIL_ALIAS_NAME }}'
+          export EMAIL_ALIAS_ADDRESS='${{ secrets.EMAIL_ALIAS_ADDRESS }}'
+          export EMAIL_CODES_EXPIRY='${{ secrets.EMAIL_CODES_EXPIRY }}'
+          export TOKEN_ACCESS='${{ secrets.TOKEN_ACCESS }}'
+          export TOKEN_REFRESH='${{ secrets.TOKEN_REFRESH }}'
+          export TOKEN_RESET='${{ secrets.TOKEN_RESET }}'
+          
+          bash /tmp/deploy.sh
+          EOF
       #endregion

@@ -47,7 +47,7 @@ export default async function LoginController(req, res) {
             maxAge: config.security.tokenExpiry.refresh * 1.5
         });
         res.cookie('accessToken', accessToken, {
-            httpOnly: false,
+            httpOnly: true,
             secure: config.backend.host.includes('localhost') ? false : true,
             sameSite: 'strict',
             maxAge: config.security.tokenExpiry.access * 1.5
