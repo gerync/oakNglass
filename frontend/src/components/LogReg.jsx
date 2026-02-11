@@ -9,7 +9,7 @@ function LogRegModal({ show, setShow }) {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <Modal show={show} onHide={() => setShow()} centered className='logreg-modal'>
+    <Modal show={show} onHide={() => {setShow(); setIsLogin(true)}} centered className='logreg-modal'>
 
       <Modal.Header closeButton className="border-0">
         <div className="switch-container">
