@@ -1,0 +1,30 @@
+.content-bg {
+  background-color: #FFF3F3;
+  width: 100% !important;
+  align-items: center;
+}
+
+.sort-header {
+  border: #8A0F0F solid 1px;
+}
+
+.custom-range {
+  --ant-slider-track-bg: #8A0F0F !important;
+  --ant-slider-handle-color: #8A0F0F !important;
+  --ant-slider-handle-active-color: #8A0F0F !important;
+  --ant-slider-handle-active-outline-color: rgb(138, 15, 15, 0.3) !important;
+  --ant-slider-track-hover-bg: #8A0F0F !important;
+
+  --ant-slider-track-hover-bg: #8A0F0F !important;
+  --ant-slider-dot-active-border-color: #8A0F0F !important;
+}
+.custom-range:hover {
+  --ant-slider-track-bg: #8A0F0F !important;
+  --ant-slider-handle-color: #8A0F0F !important;
+  --ant-slider-handle-active-color: #8A0F0F !important;
+  --ant-slider-handle-active-outline-color: rgb(138, 15, 15, 0.3) !important;
+  --ant-slider-track-hover-bg: #8A0F0F !important;
+
+  --ant-slider-track-hover-bg: #8A0F0F !important;
+  --ant-slider-dot-active-border-color: #8A0F0F !important;
+}

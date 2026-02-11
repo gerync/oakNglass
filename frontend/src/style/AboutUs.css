@@ -1,0 +1,10 @@
+.content-bg{
+  background-color: #FFF3F3;
+  width: 100%;
+  align-items: center;
+}
+
+p{
+  max-width: 350px;
+  text-align: justify;
+}
