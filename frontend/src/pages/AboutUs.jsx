@@ -2,8 +2,14 @@ import { Container, Row, Col, Card } from "react-bootstrap";
 import '../style/AboutUs.css';
 
 function AboutUs() {
+  const Date1 = new Date('2007/03/19');
+  const Date2 = new Date('2006/08/16');
+  const Today = new Date();
+  const MILLISECONDS_IN_YEAR = 1000*60*60*24*365;
+
+
   return (
-    <Container fluid className="content-bg py-5">
+    <Container fluid className="content-bg py-5 mt-3">
       <div>
         <div>
           <h1 style={{ fontSize: '3.5rem', fontFamily: 'serif' }}>Cégünkről</h1>
@@ -45,6 +51,8 @@ function AboutUs() {
               <Card.Img variant='top' src="src/assets/Manface.webp" />
               <Card.Title>
                 Szücs Gergely
+                <br />
+                {((Today-Date1)/MILLISECONDS_IN_YEAR).toString().split('.')[0]}
               </Card.Title>
               <Card.Body>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce suscipit, augue quis ullamcorper maximus, mauris tellus fringilla eros, sed dictum risus purus id tortor. Nullam facilisis, elit id placerat pulvinar, felis nulla semper orci, non egestas purus felis nec diam.
@@ -56,6 +64,8 @@ function AboutUs() {
               <Card.Img variant='top' src="src/assets/Manface.webp" />
               <Card.Title>
                 Katona Zalán
+                <br />
+                {((Today-Date2)/MILLISECONDS_IN_YEAR).toString().split('.')[0]}
               </Card.Title>
               <Card.Body>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce suscipit, augue quis ullamcorper maximus, mauris tellus fringilla eros, sed dictum risus purus id tortor. Nullam facilisis, elit id placerat pulvinar, felis nulla semper orci, non egestas purus felis nec diam.

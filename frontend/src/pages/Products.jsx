@@ -5,7 +5,7 @@ import '../style/Products.css';
 function Products() {
   return (
     <>
-      <Container fluid className="content-bg">
+      <Container fluid className="content-bg mt-3">
         <Row>
           <Col md='3'>
             <h3 className="sort-header">Szűrés</h3>
