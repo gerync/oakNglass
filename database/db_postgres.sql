@@ -1,8 +1,10 @@
 -- PostgreSQL DB
 
 -- #region create DB
+CREATE DATABASE oaknglass;
+\c oaknglass;
 -- Ensure extensions
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION pgcrypto;
 -- #endregion
 -- #region users
 CREATE TABLE Users (
