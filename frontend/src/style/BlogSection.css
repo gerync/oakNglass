@@ -1,9 +1,35 @@
 .background {
-  background-color: #FFF3F3;
+  background-color: var(--content-bg);
   width: 100% !important;
   min-height: 325px;
 }
 
+.react-calendar {
+  background-color: var(--content-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.react-calendar__tile--active {
+  background-color: #800020 !important;
+}
+
+.react-calendar__month-view__days__day {
+  color: var(--text-color) !important;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #800020!important;
+}
+.react-calendar__navigation__label__labelText{
+  color: var(--text-color) !important;
+}
+.react-calendar__year-view__months__month{
+  color: var(--text-color) !important;
+}
+
+.react-calendar__navigation__arrow{
+  color: var(--text-color) !important;
+}
 h3 {
   margin: 0;
   text-align: center;

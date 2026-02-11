@@ -8,3 +8,8 @@ p{
   max-width: 350px;
   text-align: justify;
 }
+
+.card{
+  background-color: var(--main-bg);
+  color: var(--text-color);
+}

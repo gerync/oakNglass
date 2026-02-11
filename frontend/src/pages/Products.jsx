@@ -7,11 +7,11 @@ function Products() {
     <>
       <Container fluid className="content-bg mt-3">
         <Row>
-          <Col md='3'>
+          <Col md='3' style={{ border: '1px solid #8A0F0F' }} className='pt-3'>
             <h3 className="sort-header">Szűrés</h3>
             <div>
               Alkoholtartalom
-              <Slider range defaultValue={[0, 2000]} className="custom-range"/>
+              <Slider range defaultValue={[0, 2000]} className="custom-range" />
             </div>
             <div>
               Űrtartalom
@@ -20,7 +20,7 @@ function Products() {
               Elérhető mennyiség
             </div>
           </Col>
-          <Col md='9'><h3>Termékek</h3></Col>
+          <Col md='9' className='pt-3'><h3>Termékek</h3></Col>
         </Row>
       </Container>
     </>

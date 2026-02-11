@@ -1,31 +1,33 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  font-family: 'Texturina', serif !important;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: 16pt!important;
   line-height: 1.5;
-  font-weight: 400;
-  padding-top: 50px;
-
-  color-scheme: light dark;
-  color: #FBE6E9!important;
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-}
-a:hover {
-  color: #535bf2;
 }
 
+@font-face{
+  font-family: 'Texturina';
+  src: local('Texturina'), url('../assets/Texturina.ttf') format('truetype');
+}
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #FBE6E9 !important;
+  background-color: light-dark(#FBE6E9, #1A1614)!important;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+:root {
+  padding-top: 50px;
+  color-scheme: light dark;
+  color: #FBE6E9!important;
+  background-color: #242424;
+  --content-bg: light-dark(#FFF3F3, #25201E)!important;
+  --text-color: light-dark(#000000, #E0D5C1)!important;
+  --main-bg: light-dark(#FBE6E9, #1A1614)!important;
+
 }

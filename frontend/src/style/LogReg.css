@@ -2,7 +2,7 @@
 .modal-header {
   border-bottom: none !important;
   padding-top: 2rem !important;
-  background-color: #FBE6E9 !important;
+  background-color: var(--main-bg);
 }
 .modal-header .btn-close {
   margin: 0; 
@@ -14,7 +14,8 @@
   min-height: 350px;
   display: flex;
   flex-direction: column;
-  background-color: #FBE6E9 !important;
+  background-color: var(--main-bg);
+  color: var(--text-color);
 }
 
 /*Sliding switch*/
@@ -24,11 +25,16 @@
   width: 100%;
   padding-top: 10px;
 }
+@media (prefers-color-scheme: dark) {
+  .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+  }
+}
 
 .nav-pill-wrapper {
   position: relative;
   display: flex;
-  background-color: rgb(255, 243, 243);
+  background-color: var(--content-bg);
   padding: 4px;
   border-radius: 50px;
   width: fit-content;
@@ -43,6 +49,7 @@
   font-weight: 600;
   transition: color 0.3 ease;
   color: rgb(138, 15, 15);
+  color: var(--text-color);
 }
 
 .nav-pill-btn.active {

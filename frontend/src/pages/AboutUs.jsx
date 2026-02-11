@@ -52,7 +52,7 @@ function AboutUs() {
               <Card.Title>
                 Szücs Gergely
                 <br />
-                {((Today-Date1)/MILLISECONDS_IN_YEAR).toString().split('.')[0]}
+                <span className="text-secondary">{((Today-Date1)/MILLISECONDS_IN_YEAR).toString().split('.')[0]}</span>
               </Card.Title>
               <Card.Body>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce suscipit, augue quis ullamcorper maximus, mauris tellus fringilla eros, sed dictum risus purus id tortor. Nullam facilisis, elit id placerat pulvinar, felis nulla semper orci, non egestas purus felis nec diam.
@@ -65,7 +65,7 @@ function AboutUs() {
               <Card.Title>
                 Katona Zalán
                 <br />
-                {((Today-Date2)/MILLISECONDS_IN_YEAR).toString().split('.')[0]}
+                <span className="text-secondary">{((Today-Date2)/MILLISECONDS_IN_YEAR).toString().split('.')[0]}</span>
               </Card.Title>
               <Card.Body>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce suscipit, augue quis ullamcorper maximus, mauris tellus fringilla eros, sed dictum risus purus id tortor. Nullam facilisis, elit id placerat pulvinar, felis nulla semper orci, non egestas purus felis nec diam.

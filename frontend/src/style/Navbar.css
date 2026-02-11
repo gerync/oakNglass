@@ -1,6 +1,6 @@
 
 .custom-navbar {
-  background-color: #8A0F0F;
+  background-color: #800020;
   padding-left: 25px !important;
   padding-right: 25px !important;
 
@@ -9,7 +9,8 @@
 .custom-navbar .nav-link,
 .custom-navbar .navbar-brand,
 .custom-navbar .dropdown-item {
-  color: #FBE6E9 !important;
+  color: #FBE6E9;
+  color: light-dark(#FBE6E9, #D4AF37)
 }
 .dropdown-item{
   font-size: 14pt!important;
@@ -17,18 +18,18 @@
 
 .custom-navbar .nav-link:hover,
 .custom-navbar .dropdown-item:hover {
-  color: #ffffff !important;
+  color: light-dark(#FBE6E9, #D4AF37) !important;
   background-color: transparent;
 }
 
 .dropdown-menu {
-  background-color: #8A0F0F !important;
-  
+  background-color: #800020 !important;
 }
 
 .active {
   font-weight: bolder!important;
   text-decoration: underline!important;
+  color: light-dark(#FBE6E9, #D4AF37) !important;
 }
 
 .navbar-toggler-icon{
