@@ -131,3 +131,17 @@ CREATE TABLE Ratings (
 CREATE INDEX idx_RatingID ON Ratings(RatingID);
 CREATE INDEX idx_reviewid ON Ratings(ReviewID);
 -- #endregion
+-- #region Favorites
+CREATE TABLE Favorites (
+    FavoriteID SERIAL PRIMARY KEY,
+    UserID UUID NOT NULL,
+    ProdID INT NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UserID) REFERENCES Users(UUID) ON DELETE CASCADE,
+    FOREIGN KEY (ProdID) REFERENCES Products(ProdID) ON DELETE CASCADE,
+    UNIQUE (UserID, ProdID)
+);
+CREATE INDEX idx_FavoriteID ON Favorites(FavoriteID);
+CREATE INDEX idx_fav_userid ON Favorites(UserID);
+CREATE INDEX idx_fav_prodid ON Favorites(ProdID);
+-- #endregion
