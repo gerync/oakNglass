@@ -13,3 +13,7 @@ p{
   background-color: var(--main-bg);
   color: var(--text-color);
 }
+h1{
+  font-size: 3.5rem;
+  font-family: 'serif';
+}

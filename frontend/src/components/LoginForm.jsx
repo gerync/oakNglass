@@ -47,7 +47,7 @@ function LoginForm({ setShow }) {
   return (
     <Container className="py-3 d-flex justify-content-center">
       <div className="registration-box p-4 shadow-sm rounded" style={{ maxWidth: '600px', width: '100%' }}>
-        <h2 className="text-center mb-4" style={{ fontFamily: 'serif' }}>Bejelentkezés</h2>
+        <h2 className="text-center mb-4">Bejelentkezés</h2>
 
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">

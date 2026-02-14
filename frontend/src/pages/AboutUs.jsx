@@ -12,7 +12,7 @@ function AboutUs() {
     <Container fluid className="content-bg py-5 mt-3">
       <div>
         <div>
-          <h1 style={{ fontSize: '3.5rem', fontFamily: 'serif' }}>Cégünkről</h1>
+          <h1>Cégünkről</h1>
           <hr />
         </div>
 
@@ -44,7 +44,7 @@ function AboutUs() {
         </Row>
       </div>
       <div>
-        <h1 style={{ fontSize: '3.5rem', fontFamily: 'serif' }}>Csapatunkról</h1>
+        <h1 className="mt-5">Csapatunkról</h1>
         <hr />
         <Row>
           <Col md="6" lg="6">
