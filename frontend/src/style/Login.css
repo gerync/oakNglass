@@ -3,3 +3,8 @@ h2 {
   font-family: 'Texturina', serif !important;
 }
 
+.btn-submit {
+  background-color: #800020!important;
+  color: light-dark(#FBE6E9, #D4AF37);
+  font-family: 'Texturina', serif !important;
+}

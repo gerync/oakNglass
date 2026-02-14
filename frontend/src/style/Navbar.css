@@ -42,3 +42,8 @@
     margin: auto auto;
   }
 }
+
+.btn-theme{
+  background-color: transparent!important;
+  border: none;
+}
