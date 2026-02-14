@@ -5,7 +5,7 @@ function AboutUs() {
   const Date1 = new Date('2007/03/19');
   const Date2 = new Date('2006/08/16');
   const Today = new Date();
-  const MILLISECONDS_IN_YEAR = 1000*60*60*24*365;
+  const MILLISECONDS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
 
 
   return (
@@ -16,16 +16,17 @@ function AboutUs() {
           <hr />
         </div>
 
-        <Row className="justify-content-center g-4 text-center">
-          <Col xs={12} lg={4}>
-            <p className="px-3">
+        <Row className="justify-content-center g-4">
+          <Col xs={12} lg={4} className="text-center">
+            <p className="px-3 m-auto">
               Öt generáció óta őrizzük a receptjeinket és az érlelés titkait;
               minden üveg egy-egy pillanat a múltból, amit gondosan továbbörökítünk.
             </p>
           </Col>
 
-          <Col xs={12} lg={4}>
-            <p className="px-3">
+
+          <Col xs={12} lg={4} className="text-center text-md-end text-lg-center">
+            <p className="px-3 m-auto">
               Hisszük, hogy a minőség nem véletlen: a szőlő, a gyümölcs és a hordók
               találkozása adja azt az egyedi karaktert, ami a Kárpát-medencében
               híressé tett minket. Ha tőlünk rendel, nem csak italt kap, hanem
@@ -33,8 +34,8 @@ function AboutUs() {
             </p>
           </Col>
 
-          <Col xs={12} lg={4}>
-            <p className="px-3">
+          <Col xs={12} lg={4} className="text-center m-aut">
+            <p className="px-3 m-auto">
               Ma a webshopon keresztül hozzuk el ezt a hagyományt a világba:
               válogatott borok, kézműves pálinkák és fahordós whiskey-különlegességek
               várják azokat, akik értékelik a kézi munkát és a helyi ízeket.
@@ -52,7 +53,7 @@ function AboutUs() {
               <Card.Title>
                 Szücs Gergely
                 <br />
-                <span className="text-secondary">{((Today-Date1)/MILLISECONDS_IN_YEAR).toString().split('.')[0]}</span>
+                <span className="text-secondary">{((Today - Date1) / MILLISECONDS_IN_YEAR).toString().split('.')[0]}</span>
               </Card.Title>
               <Card.Body>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce suscipit, augue quis ullamcorper maximus, mauris tellus fringilla eros, sed dictum risus purus id tortor. Nullam facilisis, elit id placerat pulvinar, felis nulla semper orci, non egestas purus felis nec diam.
@@ -65,7 +66,7 @@ function AboutUs() {
               <Card.Title>
                 Katona Zalán
                 <br />
-                <span className="text-secondary">{((Today-Date2)/MILLISECONDS_IN_YEAR).toString().split('.')[0]}</span>
+                <span className="text-secondary">{((Today - Date2) / MILLISECONDS_IN_YEAR).toString().split('.')[0]}</span>
               </Card.Title>
               <Card.Body>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce suscipit, augue quis ullamcorper maximus, mauris tellus fringilla eros, sed dictum risus purus id tortor. Nullam facilisis, elit id placerat pulvinar, felis nulla semper orci, non egestas purus felis nec diam.
