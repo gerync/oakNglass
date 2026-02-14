@@ -19,7 +19,6 @@ function Home() {
     <>
       <Container>
         <HomeCarousel />
-
         <Row>
           <Col md="3">
             <Calendar value={today}/>

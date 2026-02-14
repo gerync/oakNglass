@@ -7,6 +7,7 @@
 .react-calendar {
   background-color: var(--content-bg) !important;
   color: var(--text-color) !important;
+  transition: var(--theme-transition);
 }
 
 .react-calendar__tile--active {

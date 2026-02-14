@@ -1,4 +1,4 @@
-import { Navbar, Nav, NavDropdown, Image } from "react-bootstrap";
+import { Navbar, Nav, NavDropdown, Image, Button } from "react-bootstrap";
 import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import '../style/Navbar.css';
 
@@ -14,14 +14,39 @@ import { GlobalContext } from "../contexts/GlobalContext";
 function NavbarComponent() {
   const { user } = useContext(GlobalContext);
   const [showLogReg, setShowLogReg] = useState(false);
+
+  const [isLight, setIsLight] = useState(() => {
+    const savedTheme = localStorage.getItem('user-theme');
+
+    if (savedTheme) {
+      document.documentElement.style.colorScheme = savedTheme;
+      return savedTheme === 'light';
+    }
+
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = prefersDark ? 'dark' : 'light';
+
+    document.documentElement.style.colorScheme = initialTheme;
+    return !prefersDark;
+  });
+
   const toggleLogReg = () => {
     setShowLogReg((prev) => !prev);
+  };
+
+  const toggleTheme = () => {
+    const newIsLight = !isLight;
+    const newTheme = newIsLight ? 'light' : 'dark';
+
+    setIsLight(newIsLight);
+    document.documentElement.style.colorScheme = newTheme;
+    localStorage.setItem('user-theme', newTheme);
   };
 
 
   return (
     <>
-      <LogRegModal show={showLogReg} setShow={toggleLogReg}/>
+      <LogRegModal show={showLogReg} setShow={toggleLogReg} />
       <BrowserRouter expand="md" fixed="top" className="custom-navbar nav-inner">
         <Navbar expand="md" fixed="top" className="custom-navbar">
           <Navbar.Toggle aria-controls="basic-navbar-nav" className="custom-toggle ms-auto" />
@@ -54,6 +79,9 @@ function NavbarComponent() {
                 ) : null
               }
             </Nav>
+            <Button onClick={toggleTheme} className="btn-theme">
+              <Image src={isLight ? "src/assets/moon.svg" : "src/assets/sun.svg"} height='30px' />
+            </Button>
           </Navbar.Collapse>
         </Navbar>
 
