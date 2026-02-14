@@ -1,0 +1,57 @@
+{
+  "products": [
+    {
+      "ProdID": 101,
+      "name": "Arany Ászok Classic",
+      "alcoholPercent": 4.5,
+      "contentML": 500,
+      "priceHUF": 350,
+      "stock": 120,
+      "createdAt": "2024-03-20T10:30:00.000Z",
+      "images": [
+        "https://cdn.example.com/images/beer-101-front.jpg",
+        "https://cdn.example.com/images/beer-101-label.jpg"
+      ]
+    },
+    {
+      "ProdID": 102,
+      "name": "Tokaji Aszú 5 Puttonyos",
+      "alcoholPercent": 11.5,
+      "contentML": 500,
+      "priceHUF": 8500,
+      "stock": 15,
+      "createdAt": "2024-03-18T14:15:00.000Z",
+      "images": [
+        "https://cdn.example.com/images/wine-102.jpg"
+      ]
+    },
+    {
+      "ProdID": 103,
+      "name": "Unicum Gyógynövénylikőr",
+      "alcoholPercent": 40.0,
+      "contentML": 700,
+      "priceHUF": 6200,
+      "stock": 45,
+      "createdAt": "2024-03-15T09:00:00.000Z",
+      "images": []
+    },
+    {
+      "ProdID": 104,
+      "name": "Grey Goose Vodka",
+      "alcoholPercent": 40.0,
+      "contentML": 1000,
+      "priceHUF": 14500,
+      "stock": 8,
+      "createdAt": "2024-03-10T11:45:00.000Z",
+      "images": [
+        "https://cdn.example.com/images/vodka-104-main.jpg"
+      ]
+    }
+  ],
+  "pagination": {
+    "totalItems": 42,
+    "totalPages": 4,
+    "currentPage": 1,
+    "itemsPerPage": 12
+  }
+}
