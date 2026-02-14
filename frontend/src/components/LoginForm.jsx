@@ -1,11 +1,47 @@
-import { Container, Form, Button, Row, Col } from 'react-bootstrap';
+import { Container, Form, Button, Row, Col, Spinner } from 'react-bootstrap';
 import '../style/Login.css';
+import { useContext, useState } from 'react';
+import { GlobalContext } from '../contexts/GlobalContext';
+import { ENDPOINTS } from '../api/endpoints';
+import { toast } from 'react-toastify';
 
-function LoginForm() {
+function LoginForm({ setShow }) {
+  const [loading, setLoading] = useState(false);
+  const { setIsLoggedIn } = useContext(GlobalContext);
 
-  function handleSubmit(){
 
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.AUTH.LOGIN}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          identifier: e.target.identifier.value,
+          password: e.target.password.value,
+        })
+      });
+
+      if (res.ok) {
+        setIsLoggedIn(true);
+        toast.success('Sikeres bejelentkezés');
+        setShow(false);
+
+      }else{
+        if(res.status == 404) toast.error('Helytelen bejelentkezési adatok.');
+      }
+    } catch {
+      toast.error('Hiba történt a bejelentkezés során!');
+    } finally {
+      setLoading(false);
+    }
   }
+
 
 
   return (
@@ -14,30 +50,29 @@ function LoginForm() {
         <h2 className="text-center mb-4" style={{ fontFamily: 'serif' }}>Bejelentkezés</h2>
 
         <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-3">
-                <Form.Label>Email cím vagy telefonszám</Form.Label>
-                <Form.Control required type="text" placeholder="janos@pelda.hu | +36 30 123 4567" />
-              </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Email cím vagy telefonszám</Form.Label>
+            <Form.Control required type="text" name='identifier' placeholder="janos@pelda.hu, +36 30 123 4567" />
+          </Form.Group>
 
 
-          <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Jelszó</Form.Label>
-                <Form.Control required type="password" placeholder="******" />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Jelszó megerősítése</Form.Label>
-                <Form.Control required type="password" placeholder="******" />
-              </Form.Group>
-            </Col>
-          </Row>
+          <Form.Group className="mb-3">
+            <Form.Label>Jelszó</Form.Label>
+            <Form.Control required type="password" name='password' placeholder="******" />
+          </Form.Group>
+
 
           <div className="text-center mt-4">
             <Button type="submit" className="px-5 btn-submit">
-              Bejelentkezés
+              {loading ?
+                (
+                  <>
+                    <Spinner animation="border" size="sm" className="me-2" />
+                    Bejelentkezés...
+                  </>
+                ) : ('Bejelentkezés')
+              }
+
             </Button>
           </div>
         </Form>

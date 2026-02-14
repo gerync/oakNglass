@@ -32,6 +32,11 @@ body {
   --text-color: light-dark(#000000, #E0D5C1) !important;
   --main-bg: light-dark(#FBE6E9, #1A1614) !important;
   --theme-transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, filter 0.4s ease;
+
+  --toastify-color-success: light-dark(#FFF3F3, #25201E);
+  --toastify-text-color-success: light-dark(#000000, #E0D5C1);
+
+  --toastify-color-error: #800020;
 }
 
 body, .content-bg, .card, h1, p, .btn-close, .background {

@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from '../components/Navbar'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 import Home from "../pages/Home";
 import Products from "../pages/Products";
@@ -11,6 +12,14 @@ function App() {
 
   return (
     <>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <BrowserRouter expand="md" fixed="top" className="custom-navbar nav-inner">
         <Navbar />
 
@@ -20,7 +29,6 @@ function App() {
           <Route path="/rolunk" exact activeClassName="active" element={<AboutUs />} />
         </Routes>
       </BrowserRouter>
-
     </>
   )
 }

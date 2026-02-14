@@ -9,7 +9,7 @@ function LogRegModal({ show, setShow }) {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <Modal show={show} onHide={() => {setShow(); setIsLogin(true)}} centered className='logreg-modal'>
+    <Modal show={show} onHide={() => { setShow(); setIsLogin(true) }} centered className='logreg-modal'>
 
       <Modal.Header closeButton className="border-0">
         <div className="switch-container">
@@ -24,10 +24,10 @@ function LogRegModal({ show, setShow }) {
       <Modal.Body className='overflow-hidden'>
         <div className={`form-slider ${isLogin ? 'show-login' : 'show-register'}`}>
           <div className='form-pane'>
-            <LoginForm />
+            <LoginForm setShow={setShow}/>
           </div>
           <div className='form-pane'>
-            <RegisterForm />
+            <RegisterForm setShow={setShow}/>
           </div>
         </div>
       </Modal.Body>

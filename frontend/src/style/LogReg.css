@@ -9,6 +9,10 @@
   position: absolute;
   right: 1.5rem;
   top: 1.5rem;
+  filter: invert(1) grayscale(100%) brightness(0%) !important;
+}
+[data-theme="dark"] .modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%) !important;
 }
 .modal-body {
   min-height: 350px;
@@ -24,11 +28,6 @@
   justify-content: center;
   width: 100%;
   padding-top: 10px;
-}
-@media (prefers-color-scheme: dark) {
-  .btn-close {
-    filter: invert(1) grayscale(100%) brightness(200%);
-  }
 }
 
 .nav-pill-wrapper {

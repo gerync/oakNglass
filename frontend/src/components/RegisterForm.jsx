@@ -1,9 +1,11 @@
 import { Container, Form, Button, Row, Col } from 'react-bootstrap';
 import '../style/Login.css';
+import { ENDPOINTS } from '../api/endpoints';
 
 function RegisterForm() {
 
-  function handleSubmit() {
+  async function handleSubmit() {
+
 
   }
 

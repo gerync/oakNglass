@@ -2,7 +2,6 @@ import { Navbar, Nav, NavDropdown, Image, Button } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import '../style/Navbar.css';
 
-
 import LogRegModal from '../components/LogReg';
 
 import { useContext, useState } from "react";
@@ -18,6 +17,7 @@ function NavbarComponent() {
 
     if (savedTheme) {
       document.documentElement.style.colorScheme = savedTheme;
+      document.documentElement.setAttribute('data-theme', savedTheme);
       return savedTheme === 'light';
     }
 
@@ -25,6 +25,7 @@ function NavbarComponent() {
     const initialTheme = prefersDark ? 'dark' : 'light';
 
     document.documentElement.style.colorScheme = initialTheme;
+    document.documentElement.setAttribute('data-theme', initialTheme);
     return !prefersDark;
   });
 
@@ -38,12 +39,14 @@ function NavbarComponent() {
 
     setIsLight(newIsLight);
     document.documentElement.style.colorScheme = newTheme;
+    document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('user-theme', newTheme);
   };
 
 
   return (
     <>
+    <LogRegModal show={showLogReg} setShow={toggleLogReg} />
       <Navbar expand="md" fixed="top" className="custom-navbar">
         <Navbar.Toggle aria-controls="basic-navbar-nav" className="custom-toggle ms-auto" />
         <Navbar.Collapse className="nav-inner">
