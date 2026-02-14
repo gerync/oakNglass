@@ -17,22 +17,22 @@ ENV NODE_ENV production
 WORKDIR /usr/src/app
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.npm to speed up subsequent builds.
-# Leverage a bind mounts to package.json and package-lock.json to avoid having to copy them into
-# into this layer.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
+# Copy package metadata and run `npm ci` inside the image. Avoid bind mounts which can
+# be unsupported or produce errors in some Podman/BuildKit setups.
+COPY backend/package.json backend/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev
-
-# Run the application as a non-root user.
-USER node
+# Copy application config into the image so the runtime doesn't need a host
+# mount (avoids Podman rootless permission issues).
 
 # Copy the rest of the source files into the image.
-COPY . .
+COPY config.json /usr/src/config.json
+
+# Copy backend source files into the image
+COPY backend/. ./
 
 # Expose the port that the application listens on.
-EXPOSE 8090
+EXPOSE 10000
 
 # Run the application.
 CMD node ./src/index.js
