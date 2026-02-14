@@ -33,7 +33,7 @@ function LoginForm({ setShow }) {
         setShow(false);
 
       }else{
-        if(res.status == 404) toast.error('Helytelen bejelentkezési adatok.');
+        if(res.status == 401) toast.error('Helytelen bejelentkezési adatok.');
       }
     } catch {
       toast.error('Hiba történt a bejelentkezés során!');
@@ -45,7 +45,7 @@ function LoginForm({ setShow }) {
 
 
   return (
-    <Container className="py-5 d-flex justify-content-center">
+    <Container className="py-3 d-flex justify-content-center">
       <div className="registration-box p-4 shadow-sm rounded" style={{ maxWidth: '600px', width: '100%' }}>
         <h2 className="text-center mb-4" style={{ fontFamily: 'serif' }}>Bejelentkezés</h2>
 

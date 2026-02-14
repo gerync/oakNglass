@@ -27,7 +27,7 @@ function LogRegModal({ show, setShow }) {
             <LoginForm setShow={setShow}/>
           </div>
           <div className='form-pane'>
-            <RegisterForm setShow={setShow}/>
+            <RegisterForm setShow={setShow} setIsLogin={setIsLogin}/>
           </div>
         </div>
       </Modal.Body>
