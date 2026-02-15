@@ -13,10 +13,7 @@ import ErrorHandlerMiddleware from './middlewares/general/error.js';
 
 // #region Initialization
 const app = express();
-app.use(cors({
-    origin: `https://${config.frontend.host}:${config.frontend.port}`,
-    credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
@@ -26,6 +23,7 @@ app.use(cookieParser());
 app.use('/api/auth', routes.auth);
 app.use('/api/promote', routes.promote);
 app.use('/api/products', routes.products);
+app.use('/api/favourites', routes.favourites);
 
 app.get('/api/health', (req, res) => {
     return res.status(200).json({ status: 'ok' });
