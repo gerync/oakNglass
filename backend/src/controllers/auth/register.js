@@ -35,11 +35,24 @@ export default async function RegisterController(req, res) {
             'user',
             req.emailSubscribe
         );
+        // Check if a user already exists with same email or mobile
+        if (newUser.hashedMobile) {
+            const exists = await client.query('SELECT uuid FROM users WHERE hashedemail = $1 OR hashedmobile = $2', [newUser.hashedEmail, newUser.hashedMobile]);
+            if (exists.rows.length) {
+                throw new HttpError('Telefon szám vagy email cím már használatban van', 409);
+            }
+        } else {
+            const exists = await client.query('SELECT uuid FROM users WHERE hashedemail = $1', [newUser.hashedEmail]);
+            if (exists.rows.length) {
+                throw new HttpError('Felhasználó már létezik', 409);
+            }
+        }
+
         await client.query('BEGIN');
         const insertQuery = `
-            INSERT INTO users (UUID, HashedFullName, FullNameEnc, EmailEnc, HashedEmail, MobileEnc, HashedMobile, HashedPassword, Birthdate, AddressEnc, Role, EmailSubscribed)
-            VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-            RETURNING UUID
+            INSERT INTO users (HashedFullName, FullNameEnc, EmailEnc, HashedEmail, MobileEnc, HashedMobile, HashedPassword, Birthdate, AddressEnc, Role, EmailSubscribed)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            RETURNING uuid
         `;
         const insertValues = [
             newUser.hashedFullName,
@@ -56,11 +69,18 @@ export default async function RegisterController(req, res) {
         ];
         const result = await client.query(insertQuery, insertValues);
         await client.query('COMMIT');
+        if (!result || !result.rows || !result.rows[0] || !result.rows[0].uuid) {
+            throw new HttpError('Failed to create user', 500);
+        }
         const createdUserId = result.rows[0].uuid;
         await code('verification', createdUserId);
         return res.status(201).json({ message: 'Sikeres regisztráció. Kérjük, ellenőrizze email címét a fiók aktiválásához.' });
     } catch (err) {
         await client.query('ROLLBACK');
+        // map Postgres unique-violation to 409 if not already handled
+        if (! (err instanceof HttpError) && err && err.code === '23505') {
+            throw new HttpError('Felhasználó már létezik', 409);
+        }
         const httpErr = err instanceof HttpError ? err : new HttpError(`${req.method} ${req.originalUrl} - ${err.message}`, err.status || 500);
         throw httpErr;
     } finally {
