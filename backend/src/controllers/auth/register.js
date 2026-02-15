@@ -35,7 +35,6 @@ export default async function RegisterController(req, res) {
             'user',
             req.emailSubscribe
         );
-        // Check if a user already exists with same email or mobile
         if (newUser.hashedMobile) {
             const exists = await client.query('SELECT uuid FROM users WHERE hashedemail = $1 OR hashedmobile = $2', [newUser.hashedEmail, newUser.hashedMobile]);
             if (exists.rows.length) {
@@ -44,7 +43,7 @@ export default async function RegisterController(req, res) {
         } else {
             const exists = await client.query('SELECT uuid FROM users WHERE hashedemail = $1', [newUser.hashedEmail]);
             if (exists.rows.length) {
-                throw new HttpError('Felhasználó már létezik', 409);
+                throw new HttpError('Email cím már használatban van', 409);
             }
         }
 
