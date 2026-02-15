@@ -1,9 +1,9 @@
 import express from 'express';
 
-import { AddfavouritesController, RemovefavouritesController, GetfavouritesController } from '../controllers/products/favourites';
-import { addFavouritesMiddleware, removeFavouritesMiddleware, getFavouritesMiddleware } from '../middlewares/products/favourites';
+import { AddfavouritesController, RemovefavouritesController, GetfavouritesController } from '../controllers/products/favourites.js';
+import { addFavouritesMiddleware, removeFavouritesMiddleware, getFavouritesMiddleware } from '../middlewares/products/favourites.js';
 
-import ProtectMiddleware from '../middlewares/general/protect';
+import ProtectMiddleware from '../middlewares/general/protect.js';
 
 const router = express.Router();
 
