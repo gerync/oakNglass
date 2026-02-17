@@ -35,7 +35,7 @@ export function OrderProductsMiddleware(req, res, next) {
 
 export function GetOrderDetailsMiddleware(req, res, next) {
     const orderId = req.params.id;
-    const userId = req.user.id;
+    const userId = req.user.uuid;
     if (!orderId || orderId.length < 16) {
         return next(new HttpError('Érvénytelen rendelés azonosító.', 400));
     }

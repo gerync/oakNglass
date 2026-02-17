@@ -4,7 +4,7 @@ import config from "../../config.js";
 
 export async function AddfavouritesController(req, res) {
     const productID = req.productID;
-    const userID = req.user.id;
+    const userID = req.user.uuid;
     const conn = await pool.connection();
     try {
         conn.query('BEGIN');
@@ -30,7 +30,7 @@ export async function AddfavouritesController(req, res) {
 
 export async function RemovefavouritesController(req, res) {
     const productID = req.productID;
-    const userID = req.user.id;
+    const userID = req.user.uuid;
     const conn = await pool.connection();
     try {
         conn.query('BEGIN');
@@ -51,7 +51,7 @@ export async function RemovefavouritesController(req, res) {
 }
 
 export async function GetfavouritesController(req, res) {
-    const userID = req.user.id;
+    const userID = req.user.uuid;
     const conn = await pool.connection();
     try {
         const results = await conn.query(`SELECT p.id AS product_id, p.name, p.price,

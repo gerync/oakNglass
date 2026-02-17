@@ -2,7 +2,7 @@ import { pool } from '../../db/pool.js';
 import HttpError from '../../models/httpError.js';
 
 export async function OrderProductsController(req, res, next) {
-    const userId = req.user.id;
+    const userId = req.user.uuid;
     const products = req.body.products;
     const conn = await pool.connect();
     try {
@@ -49,7 +49,7 @@ export async function OrderProductsController(req, res, next) {
 }
 
 export async function GetMyOrders(req, res, next) {
-    const userId = req.user.id;
+    const userId = req.user.uuid;
     try {
         const result = await pool.query(
             'SELECT OrderID, TotalPriceHUF, ShipmentAddress, OrderDate FROM Orders WHERE UserID = $1',
@@ -62,7 +62,7 @@ export async function GetMyOrders(req, res, next) {
 }
 
 export async function GetOrderDetails(req, res, next) {
-    const userId = req.user.id;
+    const userId = req.user.uuid;
     const orderId = req.params.orderId;
     try {
         const orderResult = await pool.query(
