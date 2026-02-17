@@ -60,7 +60,7 @@ CREATE INDEX idx_ProductImages_ID ON ProductImages(ID);
 -- #endregion
 -- #region orders, orderItems
 CREATE TABLE Orders (
-    OrderID SERIAL PRIMARY KEY,
+    OrderID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     UserID UUID NOT NULL,
     TotalPriceHUF INT NOT NULL,
     ShipmentAddress TEXT NOT NULL,
@@ -72,7 +72,7 @@ CREATE INDEX idx_OrderID ON Orders(OrderID);
 CREATE INDEX idx_userid ON Orders(UserID);
 CREATE TABLE OrderItems (
     OrderItemID SERIAL PRIMARY KEY,
-    OrderID INT NOT NULL,
+    OrderID UUID NOT NULL,
     ProdID INT NOT NULL,
     Quantity INT NOT NULL,
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE,

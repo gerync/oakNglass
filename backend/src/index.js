@@ -38,6 +38,7 @@ app.use('/api/auth', routes.auth);
 app.use('/api/promote', routes.promote);
 app.use('/api/products', routes.products);
 app.use('/api/favourites', routes.favourites);
+app.use('/api/order', routes.order);
 
 app.get('/api/health', (req, res) => {
     return res.status(200).json({ status: 'ok' });
