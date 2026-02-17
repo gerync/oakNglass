@@ -1,5 +1,9 @@
 import { pool } from '../../db/pool.js';
 import HttpError from '../../models/httpError.js';
+import sendEmail from '../../email/index.js';
+import { decryptData } from '../../utils/security/encrypt.js';
+import config from '../../config.js';
+import { buildOrderHtml } from '../../email/content.js';
 
 export async function OrderProductsController(req, res, next) {
     const userId = req.user.uuid;
@@ -13,6 +17,7 @@ export async function OrderProductsController(req, res, next) {
         );
         const orderId = result.rows[0].orderid;
         let totalPrice = 0;
+        const items = [];
         for (const product of products) {
             try {
                 const insertResult = await conn.query(
@@ -25,10 +30,18 @@ export async function OrderProductsController(req, res, next) {
                     return next(new HttpError('Hiba történt a termék beszúrásakor.', 500));
                 }
                 const priceResult = await conn.query(
-                    'SELECT PriceHUF FROM Products WHERE ProdID = $1',
+                    'SELECT PriceHUF, Name FROM Products WHERE ProdID = $1',
                     [product.productId]
                 );
-                totalPrice += priceResult.rows[0].pricehuf * product.quantity;
+                if (priceResult.rows.length === 0) {
+                    await conn.query('ROLLBACK');
+                    return next(new HttpError('Termék nem található.', 404));
+                }
+                const price = priceResult.rows[0].pricehuf;
+                const name = priceResult.rows[0].name;
+                const lineTotal = price * product.quantity;
+                items.push({ name, price, quantity: product.quantity, lineTotal });
+                totalPrice += lineTotal;
             } catch (err) {
                 await conn.query('ROLLBACK');
                 return next(new HttpError('Hiba történt a termék beszúrásakor.', 500));
@@ -39,6 +52,19 @@ export async function OrderProductsController(req, res, next) {
             [totalPrice, orderId]
         );
         await conn.query('COMMIT');
+        // Send a confirmation email (best-effort) using the email content helper
+        try {
+            const userRes = await pool.query('SELECT fullnameenc, emailenc FROM users WHERE uuid = $1', [userId]);
+            if (userRes.rows.length > 0) {
+                const fullName = decryptData(userRes.rows[0].fullnameenc, config.security.secrets.encryption);
+                const email = decryptData(userRes.rows[0].emailenc, config.security.secrets.encryption);
+                const orderHtml = buildOrderHtml(items, totalPrice, orderId);
+                await sendEmail(email, orderHtml, 'orderConfirmation', `${config.frontend.domain()}/orders/${orderId}`, fullName);
+            }
+        } catch (emailErr) {
+            console.error('Hiba az email küldésekor:', emailErr);
+        }
+
         res.status(201).json({ orderId });
     } catch (err) {
         await conn.query('ROLLBACK');
