@@ -13,8 +13,19 @@ import ErrorHandlerMiddleware from './middlewares/general/error.js';
 
 // #region Initialization
 const app = express();
+// Configure CORS to allow the configured frontend domain and common dev origins
+const allowedOrigins = [
+    config.frontend.domain(),
+    'http://localhost:5173',
+    'https://localhost:5173'
+];
 app.use(cors({
-    origin: `https://${config.frontend.host}:${config.frontend.port}`,
+    origin: function(origin, callback) {
+        // Allow requests with no origin (e.g., mobile apps, curl, same-origin)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1) return callback(null, true);
+        return callback(new Error('CORS policy: Origin not allowed'), false);
+    },
     credentials: true
 }));
 app.use(express.json());
@@ -26,6 +37,8 @@ app.use(cookieParser());
 app.use('/api/auth', routes.auth);
 app.use('/api/promote', routes.promote);
 app.use('/api/products', routes.products);
+app.use('/api/favourites', routes.favourites);
+app.use('/api/order', routes.order);
 
 app.get('/api/health', (req, res) => {
     return res.status(200).json({ status: 'ok' });

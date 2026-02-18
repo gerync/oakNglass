@@ -1,8 +1,10 @@
 -- PostgreSQL DB
 
 -- #region create DB
+CREATE DATABASE oaknglass;
+\c oaknglass;
 -- Ensure extensions
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION pgcrypto;
 -- #endregion
 -- #region users
 CREATE TABLE Users (
@@ -58,7 +60,7 @@ CREATE INDEX idx_ProductImages_ID ON ProductImages(ID);
 -- #endregion
 -- #region orders, orderItems
 CREATE TABLE Orders (
-    OrderID SERIAL PRIMARY KEY,
+    OrderID UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     UserID UUID NOT NULL,
     TotalPriceHUF INT NOT NULL,
     ShipmentAddress TEXT NOT NULL,
@@ -70,7 +72,7 @@ CREATE INDEX idx_OrderID ON Orders(OrderID);
 CREATE INDEX idx_userid ON Orders(UserID);
 CREATE TABLE OrderItems (
     OrderItemID SERIAL PRIMARY KEY,
-    OrderID INT NOT NULL,
+    OrderID UUID NOT NULL,
     ProdID INT NOT NULL,
     Quantity INT NOT NULL,
     FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE,
@@ -128,4 +130,18 @@ CREATE TABLE Ratings (
 );
 CREATE INDEX idx_RatingID ON Ratings(RatingID);
 CREATE INDEX idx_reviewid ON Ratings(ReviewID);
+-- #endregion
+-- #region Favorites
+CREATE TABLE Favorites (
+    FavoriteID SERIAL PRIMARY KEY,
+    UserID UUID NOT NULL,
+    ProdID INT NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UserID) REFERENCES Users(UUID) ON DELETE CASCADE,
+    FOREIGN KEY (ProdID) REFERENCES Products(ProdID) ON DELETE CASCADE,
+    UNIQUE (UserID, ProdID)
+);
+CREATE INDEX idx_FavoriteID ON Favorites(FavoriteID);
+CREATE INDEX idx_fav_userid ON Favorites(UserID);
+CREATE INDEX idx_fav_prodid ON Favorites(ProdID);
 -- #endregion

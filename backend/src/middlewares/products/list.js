@@ -1,5 +1,6 @@
+import e from 'express';
 import HttpError from '../../models/httpError.js';
-export default async function listProductsMiddleware(req, res, next) {
+export default function listProductsMiddleware(req, res, next) {
     let { page, limit, sortby, sortorder, minprice, maxprice, minstock, maxstock, minalcohol, maxalcohol, mincontent, maxcontent, search } = req.query;
     const parseNum = v => {
         if (v === undefined || v === null || v === '') return undefined;
@@ -87,5 +88,17 @@ export default async function listProductsMiddleware(req, res, next) {
     req.pagination = { page, limit, offset };
     req.sorting = { sortby, sortorder };
     req.filters = { minprice, maxprice, minstock, maxstock, minalcohol, maxalcohol, mincontent, maxcontent, search };
+    next();
+}
+
+export async function getProductDetailsMiddleware(req, res, next) {
+    const id = req.params.id;
+    if (!id || typeof id !== 'string') {
+        return next(new HttpError('Érvénytelen termék ID', 400));
+    }
+    if (!/^[0-9a-fA-F-]{36}$/.test(id)) {
+        return next(new HttpError('Érvénytelen termék ID formátum', 400));
+    }
+    req.productID = parseInt(id, 10);
     next();
 }

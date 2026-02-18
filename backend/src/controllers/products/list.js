@@ -111,15 +111,13 @@ export default async function listProductsController(req, res, next) {
         const products = rows.map(r => {
             const imgs = Array.isArray(r.images) ? r.images : [];
             const imageUrls = imgs.map(id => fileMap.get(String(id))).filter(Boolean);
+            const first = imageUrls[0];
             return {
                 ProdID: r.prodid,
                 name: r.name,
-                alcoholPercent: r.alcoholpercent,
-                contentML: r.contentml,
                 priceHUF: r.pricehuf,
                 stock: r.stock,
-                createdAt: r.createdat,
-                images: imageUrls
+                images: first ? [first] : []
             };
         });
 
@@ -139,5 +137,62 @@ export default async function listProductsController(req, res, next) {
         // Propagate original error when possible to preserve stack/message for debugging
         if (err && err instanceof HttpError) return next(err);
         return next(new HttpError(err && err.message ? err.message : 'Hiba a termékek lekérésekor', 500));
+    }
+}
+
+export async function getProductDetailsController(req, res, next) {
+    const id = req.productID;
+    try {
+        const queryStr = `SELECT p.prodid, p.name, p.description, p.alcoholpercent, p.contentml, p.pricehuf, p.stock, p.createdat,
+            COALESCE(json_agg(pi.id) FILTER (WHERE pi.id IS NOT NULL), '[]') AS images
+            FROM products p
+            LEFT JOIN productimages pi ON p.prodid = pi.prodid
+            WHERE p.prodid = $1
+            GROUP BY p.prodid`;
+        const [rows] = await query(queryStr, [id]);
+        if (rows.length === 0) {
+            return next(new HttpError('A termék nem található', 404));
+        }
+        const product = rows[0];
+
+        const imageIds = Array.isArray(product.images) ? product.images : [];
+        let imageUrls = [];
+
+        if (imageIds.length > 0) {
+            try {
+                const resp = await fetch(`${config.CDN.url}/${config.CDN.apiKey}/get`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fileIds: imageIds })
+                });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    const files = Array.isArray(data.files) ? data.files : [];
+                    const map = new Map(files.map(f => [String(f.fileId ?? f.id ?? ''), f.cdnUrl ?? f.cdn_url ?? f.url ?? null]));
+                    imageUrls = imageIds.map(id => map.get(String(id))).filter(Boolean);
+                }
+            } catch (err) {
+                Coloredlog.error(`CDN batch fetch failed: ${err.message}`);
+            }
+        }
+
+        res.json({
+            id: product.prodid,
+            name: product.name,
+            description: product.description,
+            alcoholPercent: product.alcoholpercent,
+            contentML: product.contentml,
+            priceHUF: product.pricehuf,
+            stock: product.stock,
+            createdAt: product.createdat,
+            images: imageUrls
+        });
+    }
+    catch (err) {
+        try {
+            Coloredlog(`Product details error: ${err && err.message ? err.message : String(err)}`, '#ff0000');
+        } catch (e) {}
+        if (err && err instanceof HttpError) return next(err);
+        return next(new HttpError(err && err.message ? err.message : 'Hiba a termék részleteinek lekérésekor', 500));
     }
 }
