@@ -16,7 +16,7 @@ export default async function LoginController(req, res) {
     try {
         await client.query('BEGIN');
         const userRes = await client.query(
-            'SELECT uuid, hashedpassword, role FROM users WHERE hashedemail = $1 OR hashedmobile = $2',
+            'SELECT uuid, hashedpassword, role FROM users WHERE hashedemail = $1 OR hashedmobilenumber = $2',
             [hashedIdentifier, hashedIdentifier]
         );
         if (userRes.rows.length === 0) {
