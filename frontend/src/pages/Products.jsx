@@ -30,9 +30,9 @@ function Products() {
 
   const constructFilterParams = (filters) => {
     let filterList = '';
-    filters.forEach((item) => {
-      if(item.value !== null) {
-        filterList += `$&{item.key}=${item.value}`;
+    Object.keys(filters).forEach((item) => {
+      if(filters[item] !== null) {
+        filterList += `$&{item}=${filters[item]}`;
       }
     });
     return filterList;
@@ -42,7 +42,7 @@ function Products() {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-	 const filterList = contructFilterParams(filters);
+	 const filterList = constructFilterParams(filters);
          const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.PRODUCTS.GET_ALL}?page=${currentPage}&limit=${limit}${filterList?filterList:''}`);
          const data = await res.json();
  
@@ -148,7 +148,7 @@ function Products() {
               (
                 <Row >
                   {
-                    filteredProducts.map(item => (
+                    products.map(item => (
                       <Col md={3} key={item.ProdID}>
                         <Card className="mb-2">
                           <Card.Img alt="img"></Card.Img>
