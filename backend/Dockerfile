@@ -25,13 +25,16 @@ RUN npm install --omit=dev
 USER node
 
 # Copy the rest of the source files into the image.
-COPY . .
+COPY config.json /usr/src/config.json
+
+# Copy backend source files into the image
+COPY backend/. ./
 
 # Copy config.json to parent so config.js (which resolves to ../../config.json) can read it
 COPY config.json ../config.json
 
 # Expose the port that the application listens on.
-EXPOSE 8090
+EXPOSE 10000
 
 # Run the application. Enable legacy specifier resolution so extensionless imports work.
 ENV NODE_OPTIONS=--experimental-specifier-resolution=node
