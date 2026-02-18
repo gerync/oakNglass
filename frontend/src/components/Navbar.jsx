@@ -9,7 +9,7 @@ import { GlobalContext } from "../contexts/GlobalContext";
 
 
 function NavbarComponent() {
-  const { user } = useContext(GlobalContext);
+  const { isLoggedIn } = useContext(GlobalContext);
   const [showLogReg, setShowLogReg] = useState(false);
 
   const [isLight, setIsLight] = useState(() => {
@@ -59,13 +59,13 @@ function NavbarComponent() {
           </Nav>
           <Nav className="ms-auto">
             {
-              !user ? (
+              !isLoggedIn ? (
                 <Nav.Link className="nav-link-custom" onClick={() => toggleLogReg()}>Bejelentkezés</Nav.Link>
               ) : null
             }
 
             {
-              user ? (
+              isLoggedIn ? (
                 <NavDropdown
                   title="Fiók"
                   id="basic-nav-dropdown"

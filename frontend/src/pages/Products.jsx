@@ -10,31 +10,47 @@ import { useSearchParams } from "react-router-dom";
 
 
 function Products() {
-  const [products, setProducts] = useState(mock.products);
-  const [pagination, setPagination] = useState(mock.pagination);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const filteredProducts = products.slice(0, pagination.itemsPerPage)
-
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(pagination.totalPages);
+  const [totalPages, setTotalPages] = useState(0);
   const limit = 12;
+  const [filters, setFilters] = useState({
+    minPrice: null,
+    maxPrice: null,
+    minStock: null,
+    maxStock: null,
+    minAlcohlo: null,
+    maxAlcohol: null,
+    minContent: null,
+    maxContent: null,   
+  });
+  const [sortBy, setSortBy] = useState('');
 
-
+  const constructFilterParams = (filters) => {
+    let filterList = '';
+    filters.forEach((item) => {
+      if(item.value !== null {
+        filterList += `$&{item.key}=${item.value}`;
+      }
+    });
+    return filterList;
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        /*const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.PRODUCTS.GET_ALL}?page=${currentPage}&limit=${limit}`);
+	 const filterList = contructFilterParams(filters);
+         const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.PRODUCTS.GET_ALL}?page=${currentPage}&limit=${limit}${filterList?filterList:''}`);
          const data = await res.json();
  
          if (res.ok) {
            setProducts(data.products);
            setTotalPages(data.pagination.totalPages);
-           setSearchParams({page: 1})
-         }*/
+           setSearchParams({page: 1});
+         }
       }
       catch {
         toast.error('Hiba történt az adatok betöltése közben!');
@@ -115,13 +131,15 @@ function Products() {
             <h3 className="sort-header">Szűrés</h3>
             <div>
               Alkoholtartalom
-              <Slider range defaultValue={[0, 2000]} className="custom-range" />
+              <Slider range defaultValue={[0, 100]} className="custom-range" />
             </div>
             <div>
               Űrtartalom
+	      <Slider range defaultValue={[0, 1000]} className='custom-range'/>
             </div>
             <div>
               Elérhető mennyiség
+	      <Slider range defaultValue={[0, 70]} className='custom-range'/>
             </div>
           </Col>
           <Col md='9' className='pt-3 col-product'>
