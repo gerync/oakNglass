@@ -27,8 +27,8 @@ USER node
 # Copy the rest of the source files into the image.
 COPY config.json /usr/src/config.json
 
-# Copy backend source files into the image
-COPY backend/. ./
+# Copy backend source files into the image (project's source is in `src`)
+COPY src/. ./src/
 
 # Copy config.json to parent so config.js (which resolves to ../../config.json) can read it
 COPY config.json ../config.json
