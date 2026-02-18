@@ -356,9 +356,29 @@ export default function MetallicPaint({
   const uploadTexture = useCallback(imgData => {
     const gl = glRef.current;
     const uniforms = uniformsRef.current;
-    if (!gl || !imgData) return;
+    const canvas = canvasRef.current;
+    if (!gl || !imgData || !canvas) return;
 
     if (textureRef.current) gl.deleteTexture(textureRef.current);
+
+    // Resize canvas to match image aspect ratio
+    const imgRatio = imgData.width / imgData.height;
+    const baseSize = 1000 * devicePixelRatio;
+    let canvasWidth, canvasHeight;
+    
+    if (imgRatio > 1) {
+      // Image is wider than tall
+      canvasWidth = baseSize;
+      canvasHeight = baseSize / imgRatio;
+    } else {
+      // Image is taller than wide
+      canvasWidth = baseSize * imgRatio;
+      canvasHeight = baseSize;
+    }
+    
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    gl.viewport(0, 0, canvasWidth, canvasHeight);
 
     const tex = gl.createTexture();
     gl.activeTexture(gl.TEXTURE0);
@@ -370,9 +390,9 @@ export default function MetallicPaint({
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imgData.width, imgData.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, imgData.data);
     gl.uniform1i(uniforms.u_tex, 0);
 
-    const ratio = imgData.width / imgData.height;
-    gl.uniform1f(uniforms.u_imgRatio, ratio);
-    gl.uniform1f(uniforms.u_ratio, 1);
+    const canvasRatio = canvasWidth / canvasHeight;
+    gl.uniform1f(uniforms.u_imgRatio, imgRatio);
+    gl.uniform1f(uniforms.u_ratio, canvasRatio);
 
     textureRef.current = tex;
     imgDataRef.current = imgData;
@@ -383,10 +403,11 @@ export default function MetallicPaint({
 
     const canvas = canvasRef.current;
     const gl = glRef.current;
-    const side = 1000 * devicePixelRatio;
-    canvas.width = side;
-    canvas.height = side;
-    gl.viewport(0, 0, side, side);
+    // Initial canvas size - will be resized when texture is loaded
+    const size = 100;
+    canvas.width = size;
+    canvas.height = size;
+    gl.viewport(0, 0, size, size);
 
     setReady(true);
 

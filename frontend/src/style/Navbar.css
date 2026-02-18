@@ -6,6 +6,13 @@
 
 }
 
+.custom-navbar .navbar-brand {
+  padding: 0;
+  height: 50px;
+  display: flex;
+  align-items: center;
+}
+
 .custom-navbar .nav-link,
 .custom-navbar .navbar-brand,
 .custom-navbar .dropdown-item {

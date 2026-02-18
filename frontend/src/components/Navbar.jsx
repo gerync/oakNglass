@@ -54,7 +54,7 @@ function NavbarComponent() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" className="custom-toggle ms-auto" />
         <Navbar.Collapse className="nav-inner">
           <Navbar.Brand as={NavLink} to='/' className="brand">
-            <div style={{ width: '100%', height: '100px' }}>
+            <div style={{ height: '50px', width: 'auto' }}>
               <MetallicPaint
                 imageSrc={logo}
                 // Pattern
@@ -78,8 +78,8 @@ function NavbarComponent() {
                 distortion={1}
                 contour={0.2}
                 // Colors
-                lightColor="#bf4f4f"
-                darkColor="#820000"
+                lightColor="#bb2b2b"
+                darkColor="#4f0000"
                 tintColor="#ff0000"
               />
             </div>
