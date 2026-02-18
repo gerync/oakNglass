@@ -31,7 +31,7 @@ function Products() {
   const constructFilterParams = (filters) => {
     let filterList = '';
     filters.forEach((item) => {
-      if(item.value !== null {
+      if(item.value !== null) {
         filterList += `$&{item.key}=${item.value}`;
       }
     });
