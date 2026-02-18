@@ -10,6 +10,12 @@ import { useSearchParams } from "react-router-dom";
 
 
 function Products() {
+  const MAX = {
+    ALCOHOL: 70,
+    STOCK: 70,
+    CONTENT: 1000,
+    PRICE: 100000
+  }
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -18,21 +24,30 @@ function Products() {
   const limit = 12;
   const [filters, setFilters] = useState({
     minPrice: null,
-    maxPrice: null,
+    maxPrice: MAX.PRICE,
     minStock: null,
-    maxStock: null,
-    minAlcohlo: null,
-    maxAlcohol: null,
+    maxStock: MAX.STOCK,
+    minAlcohol: null,
+    maxAlcohol: MAX.ALCOHOL,
     minContent: null,
-    maxContent: null,
+    maxContent: MAX.CONTENT,
   });
+
   const [sortBy, setSortBy] = useState('');
+
+  const handleSliderChange = (field, min, max) => (values) => {
+    setFilters(prev => ({
+      ...prev,
+      [`min${field}`]: values[0] === min ? null : values[0],
+      [`max${field}`]: values[1] === max ? null : values[1]
+    }));
+  };
 
   const constructFilterParams = (filters) => {
     let filterList = '';
     Object.keys(filters).forEach((item) => {
       if (filters[item] !== null) {
-        filterList += `$&{item}=${filters[item]}`;
+        filterList += `&${item}=${filters[item]}`;
       }
     });
     return filterList;
@@ -127,16 +142,19 @@ function Products() {
           <Col md='3' className='pt-3 col-sort'>
             <h3 className="sort-header">Szűrés</h3>
             <div>
-              Alkoholtartalom
-              <Slider range defaultValue={[0, 100]} min={0} max={100}  />
+              Alkoholtartalom (%)
+              <Slider step={5} tooltip={{formatter: (value) => `${value}%`}} range defaultValue={[filters.minAlcohol, filters.maxAlcohol]} min={0} max={MAX.ALCOHOL} onAfterChange={handleSliderChange('Alcohol', 0, MAX.ALCOHOL)} />
             </div>
             <div>
-              Űrtartalom
-              <Slider range defaultValue={[0, 1000]} min={0} max={1000}  />
+              Űrtartalom (ml)
+              <Slider step={125} tooltip={{formatter: (value) => `${value} ml`}} range defaultValue={[filters.minContent, filters.maxContent]} min={0} max={MAX.CONTENT} onAfterChange={handleSliderChange('Content', 0, MAX.CONTENT)} />
             </div>
             <div>
-              Elérhető mennyiség
-              <Slider range defaultValue={[0, 70]} min={0} max={70}  />
+              Elérhető mennyiség (db)
+              <Slider step={5} range defaultValue={[filters.minStock, filters.maxStock]} min={0} max={MAX.STOCK} onAfterChange={handleSliderChange('Stock', 0, MAX.STOCK)} />
+            </div><div>
+              Ár (Ft)
+              <Slider step={5000} tooltip={{formatter: (value) => `${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} Ft`}} range defaultValue={[filters.minPrice, filters.maxPrice]} min={0} max={MAX.PRICE} onAfterChange={handleSliderChange('Price', 0, MAX.PRICE)} />
             </div>
           </Col>
           <Col md='9' className='pt-3 col-product'>

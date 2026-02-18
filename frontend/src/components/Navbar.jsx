@@ -3,6 +3,9 @@ import { NavLink } from "react-router-dom";
 import '../style/Navbar.css';
 
 import LogRegModal from '../components/LogReg';
+import logo from '../assets/LogoBLACK.svg';
+
+import MetallicPaint from "../style/metallicpaint/MetallicPaint";
 
 import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/GlobalContext";
@@ -46,11 +49,44 @@ function NavbarComponent() {
 
   return (
     <>
-    <LogRegModal show={showLogReg} setShow={toggleLogReg} />
+      <LogRegModal show={showLogReg} setShow={toggleLogReg} />
       <Navbar expand="md" fixed="top" className="custom-navbar">
         <Navbar.Toggle aria-controls="basic-navbar-nav" className="custom-toggle ms-auto" />
         <Navbar.Collapse className="nav-inner">
-          <Navbar.Brand as={NavLink} to='/' className="brand"><Image src="src/assets/Logo.svg" height='50px' /></Navbar.Brand>
+          <Navbar.Brand as={NavLink} to='/' className="brand">
+            <div style={{ width: '100%', height: '100px' }}>
+              <MetallicPaint
+                imageSrc={logo}
+                // Pattern
+                seed={42}
+                scale={4}
+                patternSharpness={1}
+                noiseScale={0.5}
+                // Animation
+                speed={0.15}
+                liquid={0.75}
+                mouseAnimation={false}
+                // Visual
+                brightness={2}
+                contrast={0.5}
+                refraction={0.01}
+                blur={0.015}
+                chromaticSpread={2}
+                fresnel={1}
+                angle={15}
+                waveAmplitude={1}
+                distortion={1}
+                contour={0.2}
+                // Colors
+                lightColor="#bf4f4f"
+                darkColor="#820000"
+                tintColor="#ff0000"
+              />
+            </div>
+
+
+
+          </Navbar.Brand>
           <Nav>
             <Nav.Link className="nav-link-custom" as={NavLink} to='/'>Kezdőlap</Nav.Link>
             <Nav.Link className="nav-link-custom" as={NavLink} to='/termekek'>Termékek</Nav.Link>

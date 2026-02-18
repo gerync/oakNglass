@@ -9,20 +9,20 @@ function HomeCarousel() {
           <div className='split-container'>
             <div className='overlay'>
               <div className='overlay-content'>
-                <h1>Első slide</h1>
+                <h1>Pálinka</h1>
               </div>
             </div>
-            <Image className='d-block w-100 carousel-img' src='src/assets/kep.png' />
+            <Image className='d-block w-100 carousel-img' src='src/assets/1.png' />
           </div>
         </Carousel.Item>
         <Carousel.Item className='custom-item'>
           <div className='split-container'>
             <div className='overlay'>
               <div className='overlay-content'>
-                <h1>Második slide</h1>
+                <h1>Whiskey</h1>
               </div>
             </div>
-            <Image className='d-block w-100 carousel-img' src='src/assets/kep.png' />
+            <Image className='d-block w-100 carousel-img' src='src/assets/8.png' />
           </div>
         </Carousel.Item>
       </Carousel>
