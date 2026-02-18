@@ -120,9 +120,6 @@ function Products() {
   }
 
 
-  if (loading) return <Spinner animation="border" />
-
-
   return (
     <>
       <Container fluid className="content-bg mt-3">
@@ -145,7 +142,7 @@ function Products() {
           <Col md='9' className='pt-3 col-product'>
             <h3 className="sort-header mb-2">Termékek</h3>
 	    {loading?(<Spinner animation='border'/>):(null)}
-            {products ?
+            {products.lenght != 0 ?
               (
                 <Row >
                   {
@@ -171,7 +168,7 @@ function Products() {
               :( !loading? (<>Nem található termék</>) : (null))
             }
 	    {
-	    products?
+	    products.length != 0?
               (
             <div className="d-flex justify-content-center mt-4">
               <Pagination >
