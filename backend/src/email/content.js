@@ -133,6 +133,15 @@ const EmailContent = {
             fullName
         ),
     },
+    orderConfirmation: {
+        subject: "Rendelés visszaigazolás - Oak N Glass",
+        html: (orderHtml, link, fullName) => wrapHtml(
+            'Rendelés visszaigazolása',
+            orderHtml,
+            link ? actionButton('Megtekintés a rendeléshez', link) : '',
+            fullName
+        ),
+    },
 };
 // #endregion
 
@@ -179,3 +188,30 @@ export function NewsLetter(fullName, newProductID) {
 }
 
 export default EmailContent;
+
+/* Build order details HTML for the order confirmation email.
+ - `items`: array of { name, price, quantity, lineTotal }
+ - `total`: total price number
+ - `orderId`: the Order UUID/string
+ Returns HTML string used inside the `orderConfirmation` template.
+ */
+export function buildOrderHtml(items = [], total = 0, orderId = '') {
+    let html = `<p style="margin:0 0 8px 0;color:#444;">Rendelés azonosító: <strong>${orderId}</strong></p>`;
+    html += `<div style="margin-top:12px;">`;
+    for (const it of items) {
+        html += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;"><div style="flex:1">${escapeHtml(it.name)} x${it.quantity}</div><div style="margin-left:12px">${formatPrice(it.price)}</div><div style="margin-left:12px"><strong>${formatPrice(it.lineTotal)}</strong></div></div>`;
+    }
+    html += `</div><p style="margin-top:12px;font-weight:700;">Összesen: ${formatPrice(total)}</p>`;
+    return html;
+}
+
+function formatPrice(v) {
+    return `${Number(v).toLocaleString('hu-HU')} Ft`;
+}
+
+function escapeHtml(str) {
+    if (!str && str !== 0) return '';
+    return String(str).replace(/[&<>"']/g, function (m) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[m];
+    });
+}

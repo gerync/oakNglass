@@ -10,12 +10,14 @@ import config from "../../config.js";
 export default async function LoginController(req, res) {
     const { identifier, password } = req.body;
 
+    const hashedIdentifier = hash.hashData(identifier);
+
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
         const userRes = await client.query(
             'SELECT uuid, hashedpassword, role FROM users WHERE hashedemail = $1 OR hashedmobile = $2',
-            [identifier, identifier]
+            [hashedIdentifier, hashedIdentifier]
         );
         if (userRes.rows.length === 0) {
             throw new HttpError('Hibás azonosító vagy jelszó', 401);
@@ -29,7 +31,7 @@ export default async function LoginController(req, res) {
         const expiresAt = new Date(Date.now() + config.security.tokenExpiry.refresh);
         const tokenID = crypto.randomUUID();
         await client.query(
-            'INSERT INTO refreshtokens (tokenuserid, tokenid, expiresat) VALUES ($1, $2, $3)',
+            'INSERT INTO refreshtokens (userid, tokenid, expiresat) VALUES ($1, $2, $3)',
             [uuid, tokenID, expiresAt]
         );
         const refreshPayload = { tokenid: tokenID, accessversion: 1 };

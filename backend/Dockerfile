@@ -17,22 +17,25 @@ ENV NODE_ENV production
 WORKDIR /usr/src/app
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.npm to speed up subsequent builds.
-# Leverage a bind mounts to package.json and package-lock.json to avoid having to copy them into
-# into this layer.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev
+# Copy package.json first so the layer can be cached even if source files change later.
+COPY package.json ./
+RUN npm install --omit=dev
 
 # Run the application as a non-root user.
 USER node
 
 # Copy the rest of the source files into the image.
-COPY . .
+COPY config.json /usr/src/config.json
+
+# Copy backend source files into the image
+COPY backend/. ./
+
+# Copy config.json to parent so config.js (which resolves to ../../config.json) can read it
+COPY config.json ../config.json
 
 # Expose the port that the application listens on.
-EXPOSE 8090
+EXPOSE 10000
 
-# Run the application.
+# Run the application. Enable legacy specifier resolution so extensionless imports work.
+ENV NODE_OPTIONS=--experimental-specifier-resolution=node
 CMD node ./src/index.js
