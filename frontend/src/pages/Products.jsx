@@ -1,7 +1,7 @@
+/* eslint-disable no-unused-vars */
 import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
 import { Slider } from "antd";
 import '../style/Products.css';
-import mock from '../assets/mock.json';
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Pagination from 'react-bootstrap/Pagination';
@@ -24,14 +24,14 @@ function Products() {
     minAlcohlo: null,
     maxAlcohol: null,
     minContent: null,
-    maxContent: null,   
+    maxContent: null,
   });
   const [sortBy, setSortBy] = useState('');
 
   const constructFilterParams = (filters) => {
     let filterList = '';
     Object.keys(filters).forEach((item) => {
-      if(filters[item] !== null) {
+      if (filters[item] !== null) {
         filterList += `$&{item}=${filters[item]}`;
       }
     });
@@ -42,15 +42,15 @@ function Products() {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-	 const filterList = constructFilterParams(filters);
-         const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.PRODUCTS.GET_ALL}?page=${currentPage}&limit=${limit}${filterList?filterList:''}`);
-         const data = await res.json();
- 
-         if (res.ok) {
-           setProducts(data.products);
-           setTotalPages(data.pagination.totalPages);
-           setSearchParams({page: 1});
-         }
+        const filterList = constructFilterParams(filters);
+        const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.PRODUCTS.GET_ALL}?page=${currentPage}&limit=${limit}${filterList ? filterList : ''}`);
+        const data = await res.json();
+
+        if (res.ok) {
+          setProducts(data.products);
+          setTotalPages(data.pagination.totalPages);
+          setSearchParams({ page: 1 });
+        }
       }
       catch {
         toast.error('Hiba történt az adatok betöltése közben!');
@@ -61,7 +61,7 @@ function Products() {
     };
 
     fetchProducts();
-  }, [currentPage]);
+  }, [currentPage, filters, setSearchParams]);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -128,21 +128,21 @@ function Products() {
             <h3 className="sort-header">Szűrés</h3>
             <div>
               Alkoholtartalom
-              <Slider range defaultValue={[0, 100]} className="custom-range" />
+              <Slider range defaultValue={[0, 100]} min={0} max={100}  />
             </div>
             <div>
               Űrtartalom
-	      <Slider range defaultValue={[0, 1000]} className='custom-range'/>
+              <Slider range defaultValue={[0, 1000]} min={0} max={1000}  />
             </div>
             <div>
               Elérhető mennyiség
-	      <Slider range defaultValue={[0, 70]} className='custom-range'/>
+              <Slider range defaultValue={[0, 70]} min={0} max={70}  />
             </div>
           </Col>
           <Col md='9' className='pt-3 col-product'>
             <h3 className="sort-header mb-2">Termékek</h3>
-	    {loading?(<Spinner animation='border'/>):(null)}
-            {products.lenght != 0 ?
+            {loading ? (<Spinner animation='border' />) : (null)}
+            {products.length != 0 ?
               (
                 <Row >
                   {
@@ -165,22 +165,22 @@ function Products() {
                   }
                 </Row>
               )
-              :( !loading? (<>Nem található termék</>) : (null))
+              : (!loading ? (<>Nem található termék</>) : (null))
             }
-	    {
-	    products.length != 0?
-              (
-            <div className="d-flex justify-content-center mt-4">
-              <Pagination >
-                <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
-                <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-                {paginationItems(currentPage, totalPages, handlePageChange)}
-                <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-                <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
-              </Pagination>
-            </div>
-	      ):(null)
-	    }
+            {
+              products.length != 0 ?
+                (
+                  <div className="d-flex justify-content-center mt-4">
+                    <Pagination >
+                      <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
+                      <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+                      {paginationItems(currentPage, totalPages, handlePageChange)}
+                      <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+                      <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
+                    </Pagination>
+                  </div>
+                ) : (null)
+            }
           </Col>
         </Row>
       </Container>
