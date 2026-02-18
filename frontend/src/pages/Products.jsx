@@ -144,6 +144,7 @@ function Products() {
           </Col>
           <Col md='9' className='pt-3 col-product'>
             <h3 className="sort-header mb-2">Termékek</h3>
+	    {loading?(<Spinner animation='border'/>):(null)}
             {products ?
               (
                 <Row >
@@ -167,8 +168,11 @@ function Products() {
                   }
                 </Row>
               )
-              : (<>Nem található termék</>)
+              :( !loading? (<>Nem található termék</>) : (null))
             }
+	    {
+	    products?
+              (
             <div className="d-flex justify-content-center mt-4">
               <Pagination >
                 <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
@@ -178,6 +182,8 @@ function Products() {
                 <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
               </Pagination>
             </div>
+	      ):(null)
+	    }
           </Col>
         </Row>
       </Container>
