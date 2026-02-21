@@ -10,19 +10,15 @@ import { useSearchParams } from "react-router-dom";
 
 
 function Products() {
+
   const MAX = {
     ALCOHOL: 70,
     STOCK: 70,
     CONTENT: 1000,
     PRICE: 100000
   }
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const limit = 12;
-  const [filters, setFilters] = useState({
+
+  const DEFAULT_FILTERS = {
     minPrice: null,
     maxPrice: MAX.PRICE,
     minStock: null,
@@ -31,7 +27,16 @@ function Products() {
     maxAlcohol: MAX.ALCOHOL,
     minContent: null,
     maxContent: MAX.CONTENT,
-  });
+  }
+
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const limit = 12;
+  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+
 
   const [sortBy, setSortBy] = useState('');
 
@@ -52,6 +57,7 @@ function Products() {
     });
     return filterList;
   };
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -143,18 +149,49 @@ function Products() {
             <h3 className="sort-header">Szűrés</h3>
             <div>
               Alkoholtartalom (%)
-              <Slider step={5} tooltip={{formatter: (value) => `${value}%`}} range defaultValue={[filters.minAlcohol, filters.maxAlcohol]} min={0} max={MAX.ALCOHOL} onAfterChange={handleSliderChange('Alcohol', 0, MAX.ALCOHOL)} />
+              <Slider
+                range
+                step={5}
+                tooltip={{ formatter: (value) => `${value}%` }}
+                defaultValue={[filters.minAlcohol, filters.maxAlcohol]}
+                min={0}
+                max={MAX.ALCOHOL}
+                onChangeComplete={handleSliderChange('Alcohol', 0, MAX.ALCOHOL)}
+              />
             </div>
             <div>
               Űrtartalom (ml)
-              <Slider step={125} tooltip={{formatter: (value) => `${value} ml`}} range defaultValue={[filters.minContent, filters.maxContent]} min={0} max={MAX.CONTENT} onAfterChange={handleSliderChange('Content', 0, MAX.CONTENT)} />
+              <Slider
+                range
+                step={125}
+                tooltip={{ formatter: (value) => `${value} ml` }}
+                defaultValue={[filters.minContent, filters.maxContent]}
+                min={0}
+                max={MAX.CONTENT}
+                onChangeComplete={handleSliderChange('Content', 0, MAX.CONTENT)}
+              />
             </div>
             <div>
               Elérhető mennyiség (db)
-              <Slider step={5} range defaultValue={[filters.minStock, filters.maxStock]} min={0} max={MAX.STOCK} onAfterChange={handleSliderChange('Stock', 0, MAX.STOCK)} />
+              <Slider
+                range
+                step={5}
+                defaultValue={[filters.minStock, filters.maxStock]}
+                min={0}
+                max={MAX.STOCK}
+                onChangeComplete={handleSliderChange('Stock', 0, MAX.STOCK)}
+              />
             </div><div>
               Ár (Ft)
-              <Slider step={5000} tooltip={{formatter: (value) => `${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} Ft`}} range defaultValue={[filters.minPrice, filters.maxPrice]} min={0} max={MAX.PRICE} onAfterChange={handleSliderChange('Price', 0, MAX.PRICE)} />
+              <Slider
+                range
+                step={5000}
+                tooltip={{ formatter: (value) => `${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} Ft` }}
+                defaultValue={[filters.minPrice, filters.maxPrice]}
+                min={0}
+                max={MAX.PRICE}
+                onChangeComplete={handleSliderChange('Price', 0, MAX.PRICE)}
+              />
             </div>
           </Col>
           <Col md='9' className='pt-3 col-product'>
