@@ -6,6 +6,7 @@ import HomeCarousel from "../components/HomeCarousel";
 import BlogSection from "../components/BlogSection";
 
 import 'react-calendar/dist/Calendar.css';
+import '../style/Calendar.css';
 
 
 
