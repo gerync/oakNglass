@@ -44,19 +44,19 @@ export default async function LoginController(req, res) {
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: config.backend.host.includes('localhost') ? false : true,
+            secure: false,
             sameSite: 'lax',
             maxAge: config.security.tokenExpiry.refresh * 1.5
         });
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
-            secure: config.backend.host.includes('localhost') ? false : true,
+            secure: false,
             sameSite: 'lax',
             maxAge: config.security.tokenExpiry.access * 1.5
         });
         res.cookie('loggedIn', 'true', {
             httpOnly: false,
-            secure: config.backend.host.includes('localhost') ? false : true,
+            secure: false,
             sameSite: 'lax',
             maxAge: config.security.tokenExpiry.refresh * 1.5
         });

@@ -65,7 +65,7 @@ export default async function ProtectMiddleware(req, res, next) {
 
     res.cookie('accessToken', newAccessToken, {
         httpOnly: true,
-        secure: config.backend.host.includes('localhost') ? false : true,
+        secure: false,
         sameSite: 'lax',
         maxAge: accessMs
     });
