@@ -1,0 +1,21 @@
+h2 {
+  text-align: center;
+  font-family: 'Texturina', serif !important;
+}
+
+.btn-submit {
+  background-color: #800020 !important;
+  color: light-dark(#FBE6E9, #D4AF37);
+  font-family: 'Texturina', serif !important;
+}
+
+.form-check-input:checked {
+  background-color: #800020 !important;
+  color: #800020 !important;
+  border-color: #800020 !important;
+}
+.form-check-input:focus {
+    border-color: #800020;
+    outline: 0;
+    box-shadow: 0 0 0 .25rem rgba(128, 0, 32, .25);
+}
