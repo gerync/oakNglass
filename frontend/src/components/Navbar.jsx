@@ -13,11 +13,13 @@ import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/GlobalContext";
 import { ENDPOINTS } from "../api/endpoints";
 import { toast } from "react-toastify";
+import { CartContext } from "../contexts/CartContext";
 
 
 function NavbarComponent() {
   const { isLoggedIn, setIsLoggedIn } = useContext(GlobalContext);
   const [showLogReg, setShowLogReg] = useState(false);
+  const { getCartContent, cart  } = useContext(CartContext);
 
   const [isLight, setIsLight] = useState(() => {
     const savedTheme = localStorage.getItem('user-theme');
@@ -35,11 +37,9 @@ function NavbarComponent() {
     document.documentElement.setAttribute('data-theme', initialTheme);
     return !prefersDark;
   });
-
   const toggleLogReg = () => {
     setShowLogReg((prev) => !prev);
   };
-
   const toggleTheme = () => {
     const newIsLight = !isLight;
     const newTheme = newIsLight ? 'light' : 'dark';
@@ -61,6 +61,7 @@ function NavbarComponent() {
 
       if (res.ok) {
         setIsLoggedIn(false);
+        localStorage.clear();
         toast.success('Sikeres kijelentkezés.');
 
       } else {
@@ -117,7 +118,6 @@ function NavbarComponent() {
             <Nav.Link className="nav-link-custom" as={NavLink} to='/'>Kezdőlap</Nav.Link>
             <Nav.Link className="nav-link-custom" as={NavLink} to='/termekek'>Termékek</Nav.Link>
             <Nav.Link className="nav-link-custom" as={NavLink} to='/rolunk'>Rólunk</Nav.Link>
-            {showLogReg}
           </Nav>
           <Nav className="ms-auto">
             {
@@ -134,7 +134,8 @@ function NavbarComponent() {
                   className="nav-dropdown-custom "
                   drop="start"
                 >
-                  <NavDropdown.Item>Rendelések</NavDropdown.Item>
+                  <NavDropdown.Item as={NavLink} to='/kosar'>Kosár ({getCartContent()})</NavDropdown.Item>
+                  <NavDropdown.Item as={NavLink} to='/rendelesek'>Rendelések</NavDropdown.Item>
                   <NavDropdown.Item onClick={handleLogout} >Kijelentkezés</NavDropdown.Item>
                 </NavDropdown>
               ) : null

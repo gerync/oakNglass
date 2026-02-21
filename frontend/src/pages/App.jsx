@@ -6,17 +6,12 @@ import { ToastContainer } from 'react-toastify';
 import Home from "../pages/Home";
 import Products from "../pages/Products";
 import AboutUs from '../pages/AboutUs';
-import { useContext } from 'react';
-import { GlobalContext } from '../contexts/GlobalContext';
-import { Spinner } from 'react-bootstrap';
+import Cart from './Cart';
+import Orders from './Orders';
 
 
 function App() {
-  const { isCookieLoaded } = useContext(GlobalContext)
 
-  if (!isCookieLoaded) return (
-    <Spinner animation='border' />
-  )
   return (
     <>
       <ToastContainer
@@ -34,6 +29,8 @@ function App() {
           <Route path="/" exact activeClassName="active" element={<Home />} />
           <Route path="/termekek" exact activeClassName="active" element={<Products />} />
           <Route path="/rolunk" exact activeClassName="active" element={<AboutUs />} />
+          <Route path="/kosar" exact activeClassName="active" element={<Cart />} />
+          <Route path="/rendelesek" exact activeClassName="active" element={<Orders />} />
         </Routes>
       </BrowserRouter>
     </>
