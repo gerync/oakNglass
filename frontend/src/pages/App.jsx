@@ -8,12 +8,15 @@ import Products from "../pages/Products";
 import AboutUs from '../pages/AboutUs';
 import { useContext } from 'react';
 import { GlobalContext } from '../contexts/GlobalContext';
+import { Spinner } from 'react-bootstrap';
 
 
 function App() {
   const { isCookieLoaded } = useContext(GlobalContext)
 
-  if (!isCookieLoaded) return null;
+  if (!isCookieLoaded) return (
+    <Spinner animation='border' />
+  )
   return (
     <>
       <ToastContainer
