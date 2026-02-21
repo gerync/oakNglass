@@ -19,7 +19,7 @@ import { CartContext } from "../contexts/CartContext";
 function NavbarComponent() {
   const { isLoggedIn, setIsLoggedIn } = useContext(GlobalContext);
   const [showLogReg, setShowLogReg] = useState(false);
-  const { getCartContent, cart  } = useContext(CartContext);
+  const { getCartContent  } = useContext(CartContext);
 
   const [isLight, setIsLight] = useState(() => {
     const savedTheme = localStorage.getItem('user-theme');

@@ -1,0 +1,6 @@
+.content-bg {
+  background-color: #FFF3F3;
+  background-color: var(--content-bg) !important;
+  width: 100% !important;
+  align-items: center;
+}

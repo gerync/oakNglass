@@ -51,7 +51,6 @@ export const CartProvider = ({ children }) => {
 
   const getCartContent = () => {
     if (cart.length === 0) return 0;
-    console.log(cart)
     let sum = 0;
     cart.forEach(item => {
       sum += item.count;
@@ -61,10 +60,30 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart])
+  }, [cart]);
+
+  const updateItemCount = (prodId, newCount) => {
+    const count = parseInt(newCount);
+
+    if (isNaN(count) || count < 0) return;
+
+    setCart((prev) =>
+      prev.map((item) =>
+        item.ProdId === prodId
+          ? { ...item, count: count }
+          : item
+      )
+    );
+  };
+
+  const handleBlur = (prodId, value) => {
+    if (value === "" || parseInt(value) === 0) {
+      setCart(prev => prev.filter(item => item.ProdId !== prodId));
+    }
+  };
 
   return (
-    <CartContext.Provider value={{ cart, setCart, addItemToCart, getCartContent, removeItemFromCart, emptyCart }}>
+    <CartContext.Provider value={{ cart, setCart, addItemToCart, getCartContent, removeItemFromCart, emptyCart, updateItemCount, handleBlur }}>
       {children}
     </CartContext.Provider>
   )
