@@ -3,7 +3,9 @@ import { NavLink } from "react-router-dom";
 import '../style/Navbar.css';
 
 import LogRegModal from '../components/LogReg';
-import logo from '../assets/LogoBLACK.svg';
+import logo from '../assets/LogoBlack.svg';
+import moon from '../assets/moon.svg';
+import sun from '../assets/sun.svg';
 
 import MetallicPaint from "../style/metallicpaint/MetallicPaint";
 
@@ -139,7 +141,12 @@ function NavbarComponent() {
             }
           </Nav>
           <Button onClick={toggleTheme} className="btn-theme">
-            <Image src={isLight ? "src/assets/moon.svg" : "src/assets/sun.svg"} height='30px' />
+            {isLight ? (
+              <Image src={moon} height='30px' />
+            ) : (
+              <Image src={sun} height='30px' ></Image>
+            )}
+
           </Button>
         </Navbar.Collapse>
       </Navbar>
