@@ -6,10 +6,14 @@ import { ToastContainer } from 'react-toastify';
 import Home from "../pages/Home";
 import Products from "../pages/Products";
 import AboutUs from '../pages/AboutUs';
+import { useContext } from 'react';
+import { GlobalContext } from '../contexts/GlobalContext';
 
 
 function App() {
+  const { isCookieLoaded } = useContext(GlobalContext)
 
+  if (!isCookieLoaded) return null;
   return (
     <>
       <ToastContainer
