@@ -3,14 +3,15 @@ import './style/index.css';
 import App from './pages/App';
 import { GlobalProvider } from './contexts/GlobalContext';
 import { ConfigProvider } from 'antd';
+import { CartProvider } from './contexts/CartContext';
 
 
 
 createRoot(document.getElementById('root')).render(
   <GlobalProvider>
     <ConfigProvider theme={{
-      components:{
-        Slider:{
+      components: {
+        Slider: {
           trackBg: '#800020',
           handleColor: '#800020',
           handleActiveColor: '#800020',
@@ -23,7 +24,9 @@ createRoot(document.getElementById('root')).render(
         }
       }
     }}>
-      <App />
+      <CartProvider>
+        <App />
+      </CartProvider>
     </ConfigProvider>
   </GlobalProvider>
 )
