@@ -11,7 +11,7 @@ export const ENDPOINTS = {
     GET_ALL: '/products/', //get
     UPLOAD: '/products/', //post
   },
-  PROMOTY: {
+  PROMOTE: {
     JOURNALIST: '/promote/journalist', //post
     ADMIN: '/promote/admin', //post
   }
