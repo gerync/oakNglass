@@ -28,6 +28,7 @@ function Home() {
       </Button> <br />
       <Button onClick={() => {
         Cookies.set('loggedIn', 'false');
+        localStorage.clear();
       }}>
         Logout
       </Button><br />
