@@ -27,21 +27,25 @@ export default {
         host: config.backend.host,
         port: config.backend.port,
             domain: function() {
-            if (!this.host.includes('localhost')) {
-                return `https://${this.host}`;
+            const raw = (this.host || '').toString();
+            const host = raw.replace(/^https?:\/\//, '').replace(/\/$/, '');
+            if (host.includes('localhost')) {
+                return `http://${host}:${this.port}`;
             }
-            return `http://${this.host}:${this.port}`;
+            return `https://${host}`;
         }
     },
     frontend: {
         host: config.frontend.host,
         port: config.frontend.port,
         domain: function() {
-            if (!this.host.includes('localhost')) {
-                return `https://${this.host}`;
+            const raw = (this.host || '').toString();
+            const host = raw.replace(/^https?:\/\//, '').replace(/\/$/, '');
+            if (host.includes('localhost')) {
+                return `http://${host}:${this.port}`;
             }
-            return `http://${this.host}:${this.port}`;
-        }   
+            return `https://${host}`;
+        }
     },
     database: {
         host: config.database.host,
