@@ -60,6 +60,7 @@ function Products() {
 
 
   useEffect(() => {
+    let ignore = false;
     const fetchProducts = async () => {
       setLoading(true);
       try {
@@ -67,21 +68,29 @@ function Products() {
         const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.PRODUCTS.GET_ALL}?page=${currentPage}&limit=${limit}${filterList ? filterList : ''}`);
         const data = await res.json();
 
-        if (res.ok) {
+        if (res.ok && !ignore) {
           setProducts(data.products);
           setTotalPages(data.pagination.totalPages);
           setSearchParams({ page: 1 });
         }
       }
       catch {
-        toast.error('Hiba történt az adatok betöltése közben!');
+        if(!ignore){
+          toast.error('Hiba történt az adatok betöltése közben!');
+        }
       }
       finally {
-        setLoading(false);
+        if(!ignore){
+          setLoading(false);
+        }
       }
     };
 
     fetchProducts();
+
+  return () => {
+    ignore = true;
+  }
   }, [currentPage, filters, setSearchParams]);
 
   const handlePageChange = (pageNumber) => {
