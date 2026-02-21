@@ -9,10 +9,12 @@ import MetallicPaint from "../style/metallicpaint/MetallicPaint";
 
 import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/GlobalContext";
+import { ENDPOINTS } from "../api/endpoints";
+import { toast } from "react-toastify";
 
 
 function NavbarComponent() {
-  const { isLoggedIn } = useContext(GlobalContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(GlobalContext);
   const [showLogReg, setShowLogReg] = useState(false);
 
   const [isLight, setIsLight] = useState(() => {
@@ -45,6 +47,28 @@ function NavbarComponent() {
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('user-theme', newTheme);
   };
+  const handleLogout = async () => {
+    try {
+      const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.AUTH.LOGOUT}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+
+      if (res.ok) {
+        setIsLoggedIn(false);
+        toast.success('Sikeres kijelentkezés.');
+
+      } else {
+        toast.error('Hiba történt.')
+      }
+    } catch (error) {
+      toast.error('Hiba történt.');
+      console.error(error)
+    }
+  }
 
 
   return (
@@ -109,7 +133,7 @@ function NavbarComponent() {
                   drop="start"
                 >
                   <NavDropdown.Item>Rendelések</NavDropdown.Item>
-                  <NavDropdown.Item >Kijelentkezés</NavDropdown.Item>
+                  <NavDropdown.Item onClick={handleLogout} >Kijelentkezés</NavDropdown.Item>
                 </NavDropdown>
               ) : null
             }

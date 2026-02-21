@@ -7,11 +7,18 @@ export const GlobalContext = createContext();
 export const GlobalProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const loggedIn = Cookies.get('loggedIn');
+    console.log(Cookies.get())
     return loggedIn === 'true'
   });
 
+  const [cart, setCart] = useState(() => {
+    const temp = localStorage.getItem('cart');
+    if (temp) return temp;
+    else return [];
+  })
+
   return (
-    <GlobalContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+    <GlobalContext.Provider value={{ isLoggedIn, setIsLoggedIn, cart, setCart }}>
       {children}
     </GlobalContext.Provider>
   )
