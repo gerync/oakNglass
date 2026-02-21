@@ -9,3 +9,4 @@ docker-compose.override.yaml
 docker-compose.*.yaml
 config.json
 config.*.json
+dist/

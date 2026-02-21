@@ -66,7 +66,7 @@ export default async function ProtectMiddleware(req, res, next) {
     res.cookie('accessToken', newAccessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'none',
+        sameSite: 'lax',
         maxAge: accessMs
     });
     // #endregion

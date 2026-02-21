@@ -45,19 +45,19 @@ export default async function LoginController(req, res) {
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true,
-            sameSite: 'none',
+            sameSite: 'lax',
             maxAge: config.security.tokenExpiry.refresh * 1.5
         });
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
             secure: true,
-            sameSite: 'none',
+            sameSite: 'lax',
             maxAge: config.security.tokenExpiry.access * 1.5
         });
         res.cookie('loggedIn', 'true', {
             httpOnly: false,
             secure: true,
-            sameSite: 'none',
+            sameSite: 'lax',
             maxAge: config.security.tokenExpiry.refresh * 1.5
         });
         return res.status(200).json({ message: 'Sikeres bejelentkezés' });
