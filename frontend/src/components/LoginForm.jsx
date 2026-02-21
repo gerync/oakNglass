@@ -22,8 +22,8 @@ function LoginForm({ setShow }) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          identifier: e.target.identifier.value,
-          password: e.target.password.value,
+          identifier: e.target.identifier.value.trim(),
+          password: e.target.password.value.trim(),
         })
       });
 
