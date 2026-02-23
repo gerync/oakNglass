@@ -18,46 +18,46 @@ export default async function listProductsController(req, res, next) {
         const values = [];
         let paramIndex = 1;
         if (minprice !== undefined) {
-            whereClauses.push(`pricehuf >= $${paramIndex++}`);
+            whereClauses.push(`PriceHUF >= $${paramIndex++}`);
             values.push(minprice);
         }
         if (maxprice !== undefined) {
-            whereClauses.push(`pricehuf <= $${paramIndex++}`);
+            whereClauses.push(`PriceHUF <= $${paramIndex++}`);
             values.push(maxprice);
         }
         if (minstock !== undefined) {
-            whereClauses.push(`stock >= $${paramIndex++}`);
+            whereClauses.push(`Stock >= $${paramIndex++}`);
             values.push(minstock);
         }
         if (maxstock !== undefined) {
-            whereClauses.push(`stock <= $${paramIndex++}`);
+            whereClauses.push(`Stock <= $${paramIndex++}`);
             values.push(maxstock);
         }
         if (minalcohol !== undefined) {
-            whereClauses.push(`alcoholpercent >= $${paramIndex++}`);
+            whereClauses.push(`AlcoholPercent >= $${paramIndex++}`);
             values.push(minalcohol);
         }
         if (maxalcohol !== undefined) {
-            whereClauses.push(`alcoholpercent <= $${paramIndex++}`);
+            whereClauses.push(`AlcoholPercent <= $${paramIndex++}`);
             values.push(maxalcohol);
         }
         if (mincontent !== undefined) {
-            whereClauses.push(`contentml >= $${paramIndex++}`);
+            whereClauses.push(`ContentML >= $${paramIndex++}`);
             values.push(mincontent);
         }
         if (maxcontent !== undefined) {
-            whereClauses.push(`contentml <= $${paramIndex++}`);
+            whereClauses.push(`ContentML <= $${paramIndex++}`);
             values.push(maxcontent);
         }
         if (search !== undefined && String(search).trim() !== '') {
-            whereClauses.push(`name ILIKE $${paramIndex++}`);
+            whereClauses.push(`Name ILIKE $${paramIndex++}`);
             values.push(`%${search}%`);
         }
 
         const whereClause = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
 
         // total count
-        const countQuery = `SELECT COUNT(*)::int AS count FROM products ${whereClause}`;
+        const countQuery = `SELECT COUNT(*)::int AS count FROM Products ${whereClause}`;
         const [countRows] = await query(countQuery, values);
         const totalItems = parseInt(countRows[0]?.count ?? '0', 10);
         const totalPages = limit > 0 ? Math.ceil(totalItems / limit) : 0;
@@ -66,12 +66,12 @@ export default async function listProductsController(req, res, next) {
         }
 
         // Aggregate images into one row per product
-        const dataQuery = `SELECT p.prodid, p.name, p.alcoholpercent, p.contentml, p.pricehuf, p.stock, p.createdat,
-            COALESCE(json_agg(pi.id) FILTER (WHERE pi.id IS NOT NULL), '[]') AS images
-            FROM products p
-            LEFT JOIN productimages pi ON p.prodid = pi.prodid
+        const dataQuery = `SELECT p.ProdID, p.Name, p.AlcoholPercent, p.ContentML, p.PriceHUF, p.Stock, p.CreatedAt,
+            COALESCE(json_agg(pi.ID) FILTER (WHERE pi.ID IS NOT NULL), '[]') AS images
+            FROM Products p
+            LEFT JOIN ProductImages pi ON p.ProdID = pi.ProdID
             ${whereClause}
-            GROUP BY p.prodid
+            GROUP BY p.ProdID
             ORDER BY ${sortby} ${sortorder}
             LIMIT $${paramIndex++} OFFSET $${paramIndex++}`;
 
@@ -96,7 +96,7 @@ export default async function listProductsController(req, res, next) {
                     body: JSON.stringify({ fileIds: uniqueIds })
                 });
                 const data = await resp.json();
-                if (resp.ok && data && data.ok && Array.isArray(data.files)) {
+                if (resp.ok && data && Array.isArray(data.files)) {
                     for (const f of data.files) {
                         const id = String(f.id ?? f.fileId ?? f.fileID ?? f.ImageID ?? f.imageid ?? '');
                         const url = f.cdnUrl ?? f.cdn_url ?? f.url ?? null;
@@ -111,13 +111,15 @@ export default async function listProductsController(req, res, next) {
         const products = rows.map(r => {
             const imgs = Array.isArray(r.images) ? r.images : [];
             const imageUrls = imgs.map(id => fileMap.get(String(id))).filter(Boolean);
-            const first = imageUrls[0];
             return {
                 ProdID: r.prodid,
                 name: r.name,
+                alcoholPercent: r.alcoholpercent,
+                contentML: r.contentml,
                 priceHUF: r.pricehuf,
                 stock: r.stock,
-                images: first ? [first] : []
+                createdAt: r.createdat,
+                images: imageUrls
             };
         });
 
@@ -143,12 +145,12 @@ export default async function listProductsController(req, res, next) {
 export async function getProductDetailsController(req, res, next) {
     const id = req.productID;
     try {
-        const queryStr = `SELECT p.prodid, p.name, p.description, p.alcoholpercent, p.contentml, p.pricehuf, p.stock, p.createdat,
-            COALESCE(json_agg(pi.id) FILTER (WHERE pi.id IS NOT NULL), '[]') AS images
-            FROM products p
-            LEFT JOIN productimages pi ON p.prodid = pi.prodid
-            WHERE p.prodid = $1
-            GROUP BY p.prodid`;
+        const queryStr = `SELECT p.ProdID, p.Name, p.AlcoholPercent, p.ContentML, p.PriceHUF, p.Stock, p.CreatedAt,
+            COALESCE(json_agg(pi.ID) FILTER (WHERE pi.ID IS NOT NULL), '[]') AS images
+            FROM Products p
+            LEFT JOIN ProductImages pi ON p.ProdID = pi.ProdID
+            WHERE p.ProdID = $1
+            GROUP BY p.ProdID`;
         const [rows] = await query(queryStr, [id]);
         if (rows.length === 0) {
             return next(new HttpError('A termék nem található', 404));
@@ -179,7 +181,6 @@ export async function getProductDetailsController(req, res, next) {
         res.json({
             id: product.prodid,
             name: product.name,
-            description: product.description,
             alcoholPercent: product.alcoholpercent,
             contentML: product.contentml,
             priceHUF: product.pricehuf,

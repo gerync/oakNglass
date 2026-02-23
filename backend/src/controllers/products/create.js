@@ -13,14 +13,13 @@ export default async function createProductController(req, res) {
         const imageIDs = [];
         for (const image of images) {
             try {
+                const fd = new FormData();
+                const blob = new Blob([image.buffer], { type: image.mimetype });
+                fd.append('files', blob, image.originalname);
+
                 const response = await fetch(cdnUrl, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                    body: {
-                        files: image.buffer
-                    }
+                    body: fd
                 });
                 const data = await response.json();
                 if (!response.ok || !data.ok) {
@@ -34,7 +33,7 @@ export default async function createProductController(req, res) {
         }
         
         const insertProductQuery = `
-            INSERT INTO products (name, alcohol_perc, content_ml, price_huf, stock)
+            INSERT INTO products (Name, AlcoholPercent, ContentML, PriceHUF, Stock)
             VALUES ($1, $2, $3, $4, $5) RETURNING ProdID`;
         const result = await conn.query(insertProductQuery, [name, alcoholPerc, contentML, priceHUF, Stock]);
         if (result.rowCount === 0) {

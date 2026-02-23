@@ -9,11 +9,11 @@ export default async function PatchProductController(req, res, next) {
             await conn.query('BEGIN');
             const query = `UPDATE products p
             SET name = COALESCE($2, p.name),
-                alcoholperc = COALESCE($3, p.alcoholperc),
+                alcoholpercent = COALESCE($3, p.alcoholpercent),
                 contentml = COALESCE($4, p.contentml),
                 pricehuf = COALESCE($5, p.pricehuf),
                 stock = COALESCE($6, p.stock)
-            WHERE p.id = $1
+            WHERE p.prodid = $1
             RETURNING *;`;
         const values = [id, name, alcoholperc, contentml, pricehuf, stock];
             const result = await conn.query(query, values);

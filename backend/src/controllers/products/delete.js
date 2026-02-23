@@ -6,7 +6,7 @@ export default async function DeleteProductController(req, res, next) {
     const conn = await pool.connect();
     try {
         await conn.query('BEGIN');
-        const result = await conn.query('DELETE FROM products WHERE id = $1 RETURNING *;', [id]);
+        const result = await conn.query('DELETE FROM Products WHERE ProdID = $1 RETURNING *;', [id]);
         if (result.rowCount === 0) {
             await conn.query('ROLLBACK');
             return next(new HttpError('Nincs ilyen azonosítójú termék', 404));
