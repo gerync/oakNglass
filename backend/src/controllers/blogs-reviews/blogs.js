@@ -32,7 +32,10 @@ export async function ListBlogsController(req, res, next) {
     try {
         const result = await conn.query('SELECT b.blogid AS id, b.title, b.content, u.fullnameenc AS journalistEncrypted FROM blogs b JOIN users u ON b.journalistuuid = u.uuid');
         for (const row of result.rows) {
-            row.journalist = decryptData(row.journalistEncrypted);
+            row.id = row.id;
+            row.title = row.title;
+            row.content = row.content;
+            row.journalistname = decryptData(row.journalistEncrypted);
             delete row.journalistEncrypted;
         }
         res.json({ blogs: result.rows });
