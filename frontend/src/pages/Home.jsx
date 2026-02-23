@@ -25,7 +25,7 @@ function Home() {
         Cookies.set('loggedIn', 'true');
       }}>
         Login
-      </Button> <br />
+      </Button>
       <Button onClick={() => {
         Cookies.set('loggedIn', 'false');
         localStorage.clear();
@@ -36,7 +36,7 @@ function Home() {
         addItemToCart({ ProdId: 1 })
       }}>
         Item1 +
-      </Button><br />
+      </Button>
       <Button onClick={() => {
         addItemToCart({ ProdId: 2 })
       }}>
@@ -46,7 +46,7 @@ function Home() {
         removeItemFromCart({ ProdId: 1 })
       }}>
         Item1 -
-      </Button><br />
+      </Button>
       <Button onClick={() => {
         removeItemFromCart({ ProdId: 2 })
       }}>
@@ -56,9 +56,10 @@ function Home() {
         emptyCart();
       }}>
         empty
+      </Button>
+      <Button onClick={() => console.log(cart)}>
+        Show cart
       </Button><br />
-
-      <a onClick={() => console.log(cart)}>show</a>
       <Container>
         <HomeCarousel />
         <Row>
