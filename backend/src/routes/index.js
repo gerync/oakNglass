@@ -3,7 +3,7 @@ import promoteRoutes from './promote.js';
 import products from './products.js';
 import fauvourites from './favourites.js';
 import order from './order.js';
-import { blogrouter } from './blogs-reviews.js';
+import blog from './blog-review.js';
 
 export default {
     auth: authroutes,
@@ -11,5 +11,5 @@ export default {
     products: products,
     favourites: fauvourites,
     order: order,
-    blogs: blogrouter
+    blogs: blog.blogrouter
 }
