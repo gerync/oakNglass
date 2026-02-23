@@ -26,8 +26,9 @@
   background: linear-gradient(
     135deg, 
     rgba(255, 255, 255, 0.6) 0%, 
-    rgba(99, 8, 8, 0.2) 50%, 
-    rgba(99, 8, 8, 0.1) 100%
+    rgba(128, 0, 32, 0.2) 50%, 
+    rgba(128, 0, 32, 0.1) 100%
+
   );
   
   backdrop-filter: blur(15px) saturate(160%);

@@ -16,7 +16,7 @@ export default async function LoginController(req, res) {
     try {
         await client.query('BEGIN');
         const userRes = await client.query(
-            'SELECT uuid, hashedpassword, role FROM users WHERE hashedemail = $1 OR hashedmobile = $2',
+            'SELECT uuid, hashedpassword, role FROM users WHERE hashedemail = $1 OR hashedmobilenumber = $2',
             [hashedIdentifier, hashedIdentifier]
         );
         if (userRes.rows.length === 0) {
@@ -44,20 +44,20 @@ export default async function LoginController(req, res) {
 
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: config.backend.host.includes('localhost') ? false : true,
-            sameSite: 'strict',
+            secure: true,
+            sameSite: 'lax',
             maxAge: config.security.tokenExpiry.refresh * 1.5
         });
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
-            secure: config.backend.host.includes('localhost') ? false : true,
-            sameSite: 'strict',
+            secure: true,
+            sameSite: 'lax',
             maxAge: config.security.tokenExpiry.access * 1.5
         });
         res.cookie('loggedIn', 'true', {
             httpOnly: false,
-            secure: config.backend.host.includes('localhost') ? false : true,
-            sameSite: 'strict',
+            secure: true,
+            sameSite: 'lax',
             maxAge: config.security.tokenExpiry.refresh * 1.5
         });
         return res.status(200).json({ message: 'Sikeres bejelentkezés' });

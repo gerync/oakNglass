@@ -36,7 +36,7 @@ export default async function RegisterController(req, res) {
             req.emailSubscribe
         );
         if (newUser.hashedMobile) {
-            const exists = await client.query('SELECT uuid FROM users WHERE hashedemail = $1 OR hashedmobile = $2', [newUser.hashedEmail, newUser.hashedMobile]);
+            const exists = await client.query('SELECT uuid FROM users WHERE hashedemail = $1 OR hashedmobilenumber = $2', [newUser.hashedEmail, newUser.hashedMobile]);
             if (exists.rows.length) {
                 throw new HttpError('Telefon szám vagy email cím már használatban van', 409);
             }
@@ -49,13 +49,13 @@ export default async function RegisterController(req, res) {
 
         await client.query('BEGIN');
         const insertQuery = `
-            INSERT INTO users (HashedFullName, FullNameEnc, EmailEnc, HashedEmail, MobileEnc, HashedMobile, HashedPassword, Birthdate, AddressEnc, Role, EmailSubscribed)
+            INSERT INTO users (FullNameEnc, HashedFullName, EmailEnc, HashedEmail, MobileNumberEnc, HashedMobileNumber, HashedPassword, BirthDate, AddressEnc, Role, EmailSubscribed)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
             RETURNING uuid
         `;
         const insertValues = [
-            newUser.hashedFullName,
             newUser.fullNameEnc,
+            newUser.hashedFullName,
             newUser.emailEnc,
             newUser.hashedEmail,
             newUser.mobileEnc,

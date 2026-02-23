@@ -1,0 +1,93 @@
+/*Modal*/
+.modal-header {
+  border-bottom: none !important;
+  padding-top: 2rem !important;
+  background-color: var(--main-bg);
+}
+.modal-header .btn-close {
+  margin: 0; 
+  position: absolute;
+  right: 1.5rem;
+  top: 1.5rem;
+  filter: invert(1) grayscale(100%) brightness(0%) !important;
+}
+[data-theme="dark"] .modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%) !important;
+}
+.modal-body {
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--main-bg);
+  color: var(--text-color);
+}
+
+/*Sliding switch*/
+.switch-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 10px;
+}
+
+.nav-pill-wrapper {
+  position: relative;
+  display: flex;
+  background-color: var(--content-bg);
+  padding: 4px;
+  border-radius: 50px;
+  width: fit-content;
+}
+
+.nav-pill-btn {
+  position: relative;
+  z-index: 2;
+  border: none!important;
+  background: none!important;
+  padding: 8px 20px;
+  font-weight: 600;
+  transition: color 0.3 ease;
+  color: rgb(138, 15, 15);
+  color: var(--text-color);
+}
+
+.nav-pill-btn.active {
+  color: rgb(255, 243, 243);
+  text-decoration: none!important;
+}
+
+.sliding-pill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: calc(50% - 4px);
+  background-color: rgb(138, 15, 15);
+  border-radius: 60px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+.sliding-pill.left {
+  left: 4px;
+}
+
+.sliding-pill.right {
+  left: 50%;
+}
+
+/* Sliding form*/
+
+.form-slider{
+  display: flex;
+  width: 200%;
+  transition: transform 0.5s ease-in-out;
+}
+.form-pane{
+  width: 50%;
+  padding: 0 20px;
+}
+.showLogin {
+  transform: translateX(0);
+}
+.show-register{
+  transform: translateX(-50%);
+}
