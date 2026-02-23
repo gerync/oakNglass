@@ -16,6 +16,8 @@ const app = express();
 // Configure CORS to allow the configured frontend domain and common dev origins
 const allowedOrigins = [
     config.frontend.domain(),
+    // include frontend domain with explicit dev port if present
+    `${config.frontend.domain()}:${config.frontend.port}`,
     'http://localhost:5173',
     'https://localhost:5173'
 ];
@@ -39,6 +41,7 @@ app.use('/api/promote', routes.promote);
 app.use('/api/products', routes.products);
 app.use('/api/favourites', routes.favourites);
 app.use('/api/order', routes.order);
+app.use('/api/blogs', routes.blogs);
 
 app.get('/api/health', (req, res) => {
     return res.status(200).json({ status: 'ok' });

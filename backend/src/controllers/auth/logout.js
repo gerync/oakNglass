@@ -6,7 +6,7 @@ export default async function logoutMiddleware(req, res, next) {
 
     const conn = await pool.connect();
     try {
-        await conn.query('UPDATE refreshtokens SET revoked = true WHERE tokenuserid = $1', [user.uuid]);
+        await conn.query('UPDATE refreshtokens SET revoked = true WHERE userid = $1', [user.uuid]);
         res.clearCookie('accessToken');
         res.clearCookie('refreshToken');
         res.clearCookie('loggedIn');

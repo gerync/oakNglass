@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import '../style/Navbar.css';
 
 import LogRegModal from '../components/LogReg';
-import logo from '../assets/LogoBLACK.svg';
+import logo from '../assets/LogoBlack.svg';
 
 import MetallicPaint from "../style/metallicpaint/MetallicPaint";
 

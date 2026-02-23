@@ -7,7 +7,15 @@ export default async function ProtectMiddleware(req, res, next) {
   // #region extract tokens
   const accessToken = req.cookies.accessToken;
   const refreshToken = req.cookies.refreshToken;
-  if (!accessToken && !refreshToken) invalid('Érvénytelen munkamenet', 401);
+    // helper that can clear cookies using `res` in scope
+    function invalid(message, status) {
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+        res.clearCookie('loggedIn');
+        throw new HttpError(message || 'Érvénytelen munkamenet', status || 401);
+    }
+
+    if (!accessToken && !refreshToken) invalid('Érvénytelen munkamenet', 401);
 
   let client;
   try {
@@ -43,7 +51,7 @@ export default async function ProtectMiddleware(req, res, next) {
     if (!tokenId) invalid('Érvénytelen refresh token (tokenid hiányzik)', 401);
 
     const { rows } = await client.query(
-        'SELECT tokenuserid AS userid, accessversion, expiresat, revoked FROM refreshtokens WHERE tokenid = $1 LIMIT 1',
+        'SELECT userid AS userid, accessversion AS accessversion, expiresat AS expiresat, revoked FROM refreshtokens WHERE tokenid = $1 LIMIT 1',
         [tokenId]
     );
     if (rows.length === 0) invalid('Munkamenet nincs az adatbázisban', 401);
@@ -65,8 +73,8 @@ export default async function ProtectMiddleware(req, res, next) {
 
     res.cookie('accessToken', newAccessToken, {
         httpOnly: true,
-        secure: config.backend.host.includes('localhost') ? false : true,
-        sameSite: 'strict',
+        secure: true,
+        sameSite: 'lax',
         maxAge: accessMs
     });
     // #endregion
@@ -80,15 +88,8 @@ export default async function ProtectMiddleware(req, res, next) {
         throw httpErr;
     }
     finally {
-        if (client) client.release();
+            if (client) client.release();
     }
-}
-
-function invalid(message, status) {
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
-    res.clearCookie('loggedIn');
-    throw new HttpError(message || 'Érvénytelen munkamenet', status || 401);
 }
 
 
