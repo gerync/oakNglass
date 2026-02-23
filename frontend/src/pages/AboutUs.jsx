@@ -1,5 +1,6 @@
 import { Container, Row, Col, Card } from "react-bootstrap";
 import '../style/AboutUs.css';
+import image from '../assets/Manface.webp'
 
 function AboutUs() {
   const Date1 = new Date('2007/03/19');
@@ -49,7 +50,7 @@ function AboutUs() {
         <Row>
           <Col md="6" lg="6">
             <Card className="mb-2">
-              <Card.Img variant='top' src="src/assets/Manface.webp" />
+              <Card.Img variant='top' src={image} />
               <Card.Title>
                 Szücs Gergely
                 <br />
@@ -62,7 +63,7 @@ function AboutUs() {
           </Col>
           <Col md="6" lg="6">
             <Card>
-              <Card.Img variant='top' src="src/assets/Manface.webp" />
+              <Card.Img variant='top' src={image} />
               <Card.Title>
                 Katona Zalán
                 <br />

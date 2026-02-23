@@ -4,6 +4,8 @@ import '../style/Navbar.css';
 
 import LogRegModal from '../components/LogReg';
 import logo from '../assets/LogoBlack.svg';
+import moon from '../assets/moon.svg';
+import sun from '../assets/sun.svg';
 
 import MetallicPaint from "../style/metallicpaint/MetallicPaint";
 
@@ -11,42 +13,19 @@ import { useContext, useState } from "react";
 import { GlobalContext } from "../contexts/GlobalContext";
 import { ENDPOINTS } from "../api/endpoints";
 import { toast } from "react-toastify";
+import { CartContext } from "../contexts/CartContext";
 
 
 function NavbarComponent() {
-  const { isLoggedIn, setIsLoggedIn } = useContext(GlobalContext);
+  const { isLoggedIn, setIsLoggedIn, isAdmin, toggleTheme, isLight } = useContext(GlobalContext);
   const [showLogReg, setShowLogReg] = useState(false);
+  const { getCartContent } = useContext(CartContext);
 
-  const [isLight, setIsLight] = useState(() => {
-    const savedTheme = localStorage.getItem('user-theme');
-
-    if (savedTheme) {
-      document.documentElement.style.colorScheme = savedTheme;
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      return savedTheme === 'light';
-    }
-
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initialTheme = prefersDark ? 'dark' : 'light';
-
-    document.documentElement.style.colorScheme = initialTheme;
-    document.documentElement.setAttribute('data-theme', initialTheme);
-    return !prefersDark;
-  });
 
   const toggleLogReg = () => {
     setShowLogReg((prev) => !prev);
   };
 
-  const toggleTheme = () => {
-    const newIsLight = !isLight;
-    const newTheme = newIsLight ? 'light' : 'dark';
-
-    setIsLight(newIsLight);
-    document.documentElement.style.colorScheme = newTheme;
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('user-theme', newTheme);
-  };
   const handleLogout = async () => {
     try {
       const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.AUTH.LOGOUT}`, {
@@ -59,6 +38,7 @@ function NavbarComponent() {
 
       if (res.ok) {
         setIsLoggedIn(false);
+        localStorage.clear();
         toast.success('Sikeres kijelentkezés.');
 
       } else {
@@ -115,34 +95,45 @@ function NavbarComponent() {
             <Nav.Link className="nav-link-custom" as={NavLink} to='/'>Kezdőlap</Nav.Link>
             <Nav.Link className="nav-link-custom" as={NavLink} to='/termekek'>Termékek</Nav.Link>
             <Nav.Link className="nav-link-custom" as={NavLink} to='/rolunk'>Rólunk</Nav.Link>
-            {showLogReg}
           </Nav>
           <Nav className="ms-auto">
-            {
-              !isLoggedIn ? (
-                <Nav.Link className="nav-link-custom" onClick={() => toggleLogReg()}>Bejelentkezés</Nav.Link>
-              ) : null
-            }
+            {!isLoggedIn && (
+              <Nav.Link className="nav-link-custom" onClick={() => toggleLogReg()}>Bejelentkezés</Nav.Link>
+            )}
 
-            {
-              isLoggedIn ? (
-                <NavDropdown
-                  title="Fiók"
-                  id="basic-nav-dropdown"
-                  className="nav-dropdown-custom "
-                  drop="start"
-                >
-                  <NavDropdown.Item>Rendelések</NavDropdown.Item>
-                  <NavDropdown.Item onClick={handleLogout} >Kijelentkezés</NavDropdown.Item>
-                </NavDropdown>
-              ) : null
-            }
+            {isLoggedIn && isAdmin && (
+              <NavDropdown
+                title="Admin"
+                id="basic-nav-dropdown"
+                className="nav-dropdown-custom "
+                drop="start"
+              >
+                <NavDropdown.Item as={NavLink} to='/feltoltes'>Termék feltöltés</NavDropdown.Item>
+              </NavDropdown>
+            )}
+            {isLoggedIn && (
+              < NavDropdown
+                title="Fiók"
+                id="basic-nav-dropdown"
+                className="nav-dropdown-custom "
+                drop="start"
+              >
+                <NavDropdown.Item as={NavLink} to='/kosar'>Kosár ({getCartContent()})</NavDropdown.Item>
+                <NavDropdown.Item as={NavLink} to='/rendelesek'>Rendelések</NavDropdown.Item>
+                <NavDropdown.Item onClick={handleLogout} >Kijelentkezés</NavDropdown.Item>
+              </NavDropdown>
+            )}
           </Nav>
           <Button onClick={toggleTheme} className="btn-theme">
-            <Image src={isLight ? "src/assets/moon.svg" : "src/assets/sun.svg"} height='30px' />
+            {isLight ? (
+              <Image src={moon} height='30px' />
+            ) : (
+              <Image src={sun} height='30px' ></Image>
+            )}
+
           </Button>
         </Navbar.Collapse>
-      </Navbar>
+      </Navbar >
     </>
   )
 

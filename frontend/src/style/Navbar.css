@@ -32,6 +32,10 @@
 .dropdown-menu {
   background-color: #800020 !important;
 }
+.dropdown-item.active{
+  background-color: transparent;
+
+}
 
 .active {
   font-weight: bolder!important;

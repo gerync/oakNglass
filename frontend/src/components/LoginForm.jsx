@@ -1,4 +1,4 @@
-import { Container, Form, Button, Row, Col, Spinner } from 'react-bootstrap';
+import { Container, Form, Button, Spinner } from 'react-bootstrap';
 import '../style/Login.css';
 import { useContext, useState } from 'react';
 import { GlobalContext } from '../contexts/GlobalContext';

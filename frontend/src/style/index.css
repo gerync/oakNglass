@@ -20,7 +20,6 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: light-dark(#FBE6E9, #1A1614) !important;
-  
 }
 
 :root {
@@ -35,15 +34,20 @@ body {
 
   --toastify-color-success: light-dark(#FFF3F3, #25201E);
   --toastify-text-color-success: light-dark(#000000, #E0D5C1);
-
   --toastify-color-error: #800020;
 }
 
-body, .content-bg, .card, h1, p, .btn-close, .background {
+body,
+.content-bg,
+.card,
+h1,
+p,
+.btn-close,
+.background {
   transition: var(--theme-transition);
 }
 
-html{
+html {
   scrollbar-width: thin;
 }
 
