@@ -14,6 +14,9 @@ export const ENDPOINTS = {
   PROMOTE: {
     JOURNALIST: '/promote/journalist', //post
     ADMIN: '/promote/admin', //post
+  },
+  BLOGS: {
+    GET_ALL: '/blogs', //get
   }
 
 };
