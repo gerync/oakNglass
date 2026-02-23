@@ -2,15 +2,16 @@ import { UserTemp } from '../../models/user.js';
 import HttpError from '../../models/httpError.js';
 
 export default function RegisterMiddleware(req, res, next) {
+    const normalizedFullName = req.body.fullName ?? req.body.fullname ?? req.body.name ?? null;
     let user = new UserTemp(
-        req.body.fullName,
+        normalizedFullName,
         req.body.email,
         req.body.mobile || null,
         req.body.password,
         req.body.birthdate,
         req.body.address || null
     );
-    let emailSubscribe = req.body.emailSubscribe || true;
+    let emailSubscribe = (req.body.emailSubscribe === undefined) ? true : req.body.emailSubscribe;
     if (!user.fullName) throw new HttpError('Név megadása kötelező', 400);
     if (!user.email) throw new HttpError('Email cím megadása kötelező', 400);
     if (!user.password) throw new HttpError('Jelszó megadása kötelező', 400);
@@ -23,8 +24,8 @@ export default function RegisterMiddleware(req, res, next) {
         lowercase: /[a-z]/,
         uppercase: /[A-Z]/,
         digit: /[0-9]/,
-        special: /[!@#$%^&*(),.?":{}|<>]/
-    }
+        special: /[!@#$%^&*(),.?":{}|<>_\-]/
+    };
     if (!emailRegex.test(user.email)) throw new HttpError('Érvénytelen email formátum', 400);
     if (user.mobile && !mobileRegex.test(user.mobile)) throw new HttpError('Érvénytelen telefonszám formátum', 400);
     if (!passwordRegex.length.test(user.password)) throw new HttpError('A jelszónak legalább 8 karakter hosszúnak kell lennie', 400);

@@ -8,7 +8,8 @@ import config from './config.js';
 
 import routes from './routes/index.js';
 import ErrorHandlerMiddleware from './middlewares/general/error.js';
-import mountSwagger from './swagger.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swagger.js';
 
 // #endregion
 
@@ -48,8 +49,9 @@ app.get('/api/health', (req, res) => {
     return res.status(200).json({ status: 'ok' });
 });
 
-// mount swagger UI for API discovery
-mountSwagger(app);
+// Serve API docs
+app.use('/api/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api/api-docs.json', (req, res) => res.json(swaggerSpec));
 
 // #endregion
 

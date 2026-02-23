@@ -10,7 +10,12 @@ function hashData(data) {
 
 function compareHash(data, hash) {
     const dataHash = hashData(data);
-    return crypto.timingSafeEqual(Buffer.from(dataHash), Buffer.from(hash));
+    const hashBuffer = Buffer.from(hash);
+    const dataHashBuffer = Buffer.from(dataHash);
+    if (dataHashBuffer.length !== hashBuffer.length) {
+        return false;
+    }
+    return crypto.timingSafeEqual(dataHashBuffer, hashBuffer);
 }
 
 async function hashPassword(password) {

@@ -29,7 +29,7 @@ export default async function PromoteToJournalistController(req, res) {
         let matched = null;
         for (const row of result.rows) {
             try {
-                const ok = await hash.verifyPassword(providedCode, row.hashedcode);
+                const ok = hash.compareHash(providedCode, row.hashedcode);
                 if (ok) {
                     matched = row;
                     break;

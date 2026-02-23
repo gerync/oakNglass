@@ -20,7 +20,7 @@
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^7.0.13",
     "pg": "^8.18.0",
+    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.3"
   }
 }
-

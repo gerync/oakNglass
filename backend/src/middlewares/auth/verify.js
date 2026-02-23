@@ -9,7 +9,8 @@ export default function VerifyAccountMiddleware(req, res, next) {
     }
 
     if (typedCode) {
-        req.verification = { code: typedCode };
+        const email = urlUriEncodedEmail ? decodeURIComponent(urlUriEncodedEmail) : null;
+        req.verification = { code: typedCode, email };
     } else {
         const email = decodeURIComponent(urlUriEncodedEmail);
         req.verification = { code: urlCode, email };

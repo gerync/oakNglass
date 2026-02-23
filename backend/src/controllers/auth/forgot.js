@@ -53,7 +53,7 @@ export default async function ResetPassController(req, res) {
                 await sendcode('reset', uuid);
                 throw new HttpError('A kód lejárt, email címére küldtünk egy új kódot.', 400);
             }
-            const codeMatch = await hash.compare(code, hashedcode);
+            const codeMatch = hash.compareHash(code, hashedcode);
             if (!codeMatch) {
                 throw new HttpError('Érvénytelen vagy lejárt kód', 400);
             }

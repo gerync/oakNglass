@@ -1,6 +1,7 @@
 import { pool } from "../../db/pool.js";
 import code from "../../utils/code.js";
 import { decryptData } from "../../utils/security/encrypt.js";
+import { hashData } from "../../utils/security/hash.js";
 import HttpError from '../../models/httpError.js';
 
 export default async function VerifyController(req, res) {
@@ -12,7 +13,7 @@ export default async function VerifyController(req, res) {
         await client.query('BEGIN');
         const codeRes = await client.query(
             'SELECT userid, expiresat FROM emailcodes WHERE hashedcode = $1 AND type = $2',
-            [verificationCode, 'verification']
+            [hashData(verificationCode), 'verification']
         );
         if (codeRes.rows.length === 0) {
             throw new HttpError('Érvénytelen kód', 400);

@@ -1,7 +1,7 @@
 // #region Imports
 import postgre from '../db/pool.js';
 import { decryptData } from './security/encrypt.js';
-import { hashPassword } from './security/hash.js';
+import { hashData } from './security/hash.js';
 import { Coloredlog } from '@gerync/utils2';
 import config from '../config.js';
 
@@ -35,7 +35,7 @@ export default async function handleEmailCode(type, userId) {
     );
     await client.query(
       'INSERT INTO emailcodes (userid, hashedcode, type, expiresat) VALUES ($1, $2, $3, $4)',
-      [userId, await hashPassword(code), type, expiry]
+      [userId, hashData(code), type, expiry]
     );
     await client.query('COMMIT');
     // #endregion
