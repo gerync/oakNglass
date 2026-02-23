@@ -79,8 +79,31 @@ const swaggerDefinition = {
             ProductListResponse: {
                 type: 'object',
                 properties: {
-                    results: { type: 'array', items: { type: 'object' } },
-                    pagination: { type: 'object' }
+                    products: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                ProdID: { type: 'integer' },
+                                name: { type: 'string' },
+                                alcoholPercent: { type: 'number' },
+                                contentML: { type: 'integer' },
+                                priceHUF: { type: 'integer' },
+                                stock: { type: 'integer' },
+                                createdAt: { type: 'string', format: 'date-time' },
+                                images: { type: 'array', items: { type: 'string' } }
+                            }
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'integer' },
+                            totalPages: { type: 'integer' },
+                            currentPage: { type: 'integer' },
+                            itemsPerPage: { type: 'integer' }
+                        }
+                    }
                 }
             },
 
@@ -227,6 +250,12 @@ const swaggerDefinition = {
                     { in: 'query', name: 'sortorder', schema: { type: 'string' }, description: 'asc|desc' },
                     { in: 'query', name: 'minprice', schema: { type: 'number' } },
                     { in: 'query', name: 'maxprice', schema: { type: 'number' } },
+                    { in: 'query', name: 'minstock', schema: { type: 'integer' } },
+                    { in: 'query', name: 'maxstock', schema: { type: 'integer' } },
+                    { in: 'query', name: 'minalcohol', schema: { type: 'number' } },
+                    { in: 'query', name: 'maxalcohol', schema: { type: 'number' } },
+                    { in: 'query', name: 'mincontent', schema: { type: 'integer' } },
+                    { in: 'query', name: 'maxcontent', schema: { type: 'integer' } },
                     { in: 'query', name: 'search', schema: { type: 'string' } }
                 ],
                 responses: { 200: { description: 'Product list', content: { 'application/json': { schema: { $ref: '#/components/schemas/ProductListResponse' } } } } }

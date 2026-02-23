@@ -54,6 +54,14 @@ export default async function LoginController(req, res) {
             sameSite: 'lax',
             maxAge: config.security.tokenExpiry.access * 1.5
         });
+        if (role === 'admin') {
+            res.cookie('isAdmin', 'true', {
+                httpOnly: false,
+                secure: true,
+                sameSite: 'lax',
+                maxAge: config.security.tokenExpiry.refresh * 1.5
+            });
+        }
         res.cookie('loggedIn', 'true', {
             httpOnly: false,
             secure: true,
