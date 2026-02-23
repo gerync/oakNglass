@@ -14,7 +14,7 @@ export async function CreateBlogController(req, res, next) {
         if (isJournalist.rows[0].role.toLowerCase() !== 'journalist') {
             throw new HttpError('Csak újságírók hozhatnak létre blogot', 403);
         }
-        const result = await conn.query('INSERT INTO blogs (title, content, journalistuuid) VALUES ($1, $2, $3) RETURNING *', [title, content, userid]);
+        const result = await conn.query('INSERT INTO blogs (title, content, journalistuuid) VALUES ($1, $2, $3) RETURNING blogid AS id, title, content, journalistuuid, createdat', [title, content, userid]);
         await conn.query('COMMIT');
         res.status(201).json({ blog: result.rows[0] });
     }
@@ -30,7 +30,7 @@ export async function CreateBlogController(req, res, next) {
 export async function ListBlogsController(req, res, next) {
     const conn = await pool.connect();
     try {
-        const result = await conn.query('SELECT b.id, b.title, b.content, u.fullnameenc AS journalistEncrypted FROM blogs b JOIN users u ON b.journalistuuid = u.uuid');
+        const result = await conn.query('SELECT b.blogid AS id, b.title, b.content, u.fullnameenc AS journalistEncrypted FROM blogs b JOIN users u ON b.journalistuuid = u.uuid');
         for (const row of result.rows) {
             row.id = row.id;
             row.title = row.title;
@@ -56,7 +56,7 @@ export async function UpdateBlogController(req, res, next) {
     const userid = req.user.uuid;
     try {
         await conn.query('BEGIN');
-        const isJournalist = await conn.query('SELECT journalistuuid FROM blogs WHERE id = $1', [id]);
+        const isJournalist = await conn.query('SELECT journalistuuid FROM blogs WHERE blogid = $1', [id]);
 
         if (isJournalist.rows.length === 0) {
             throw new HttpError('Nincs ilyen blog', 404);
@@ -64,7 +64,7 @@ export async function UpdateBlogController(req, res, next) {
         if (isJournalist.rows[0].journalistuuid !== userid) {
             throw new HttpError('Csak a blog írója módosíthatja a blogot', 403);
         }
-        const result = await conn.query('UPDATE blogs SET title = $1, content = $2 WHERE id = $3 RETURNING *', [title, content, id]);
+        const result = await conn.query('UPDATE blogs SET title = $1, content = $2 WHERE blogid = $3 RETURNING blogid AS id, title, content, journalistuuid, createdat', [title, content, id]);
         await conn.query('COMMIT');
         res.json({ blog: result.rows[0] });
     }
@@ -83,7 +83,7 @@ export async function DeleteBlogController(req, res, next) {
     const userid = req.user.uuid;
     try {
         await conn.query('BEGIN');
-        const isJournalist = await conn.query('SELECT journalistuuid FROM blogs WHERE id = $1', [id]);
+        const isJournalist = await conn.query('SELECT journalistuuid FROM blogs WHERE blogid = $1', [id]);
         
         if (isJournalist.rows.length === 0) {
             throw new HttpError('Nincs ilyen blog', 404);
@@ -91,7 +91,7 @@ export async function DeleteBlogController(req, res, next) {
         if (isJournalist.rows[0].journalistuuid !== userid) {
             throw new HttpError('Csak a blog írója törölheti a blogot', 403);
         }
-        const result = await conn.query('DELETE FROM blogs WHERE id = $1 RETURNING *', [id]);
+        const result = await conn.query('DELETE FROM blogs WHERE blogid = $1 RETURNING blogid AS id, title, content, journalistuuid, createdat', [id]);
         await conn.query('COMMIT');
         res.json({ blog: result.rows[0] });
     }
