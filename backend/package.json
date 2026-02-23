@@ -1,0 +1,27 @@
+{
+  "name": "oaknglassbackend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/index.js",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "gerync, zaln",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@gerync/utils2": "^1.2.0",
+    "argon2": "^0.44.0",
+    "busboy": "^1.6.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "nodemailer": "^7.0.13",
+    "pg": "^8.18.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^4.6.3"
+  }
+}
