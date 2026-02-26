@@ -9,6 +9,7 @@ import AboutUs from '../pages/AboutUs';
 import Cart from './Cart';
 import Orders from './Orders';
 import VerifyEmail from './VerifyEmail';
+import ResetPassword from './ResetPassword';
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path="/kosar" exact activeClassName="active" element={<Cart />} />
           <Route path="/rendelesek" exact activeClassName="active" element={<Orders />} />
           <Route path="/verify-email" exact element={<VerifyEmail />} />
+          <Route path="/reset-password" exact element={<ResetPassword/>}/>
         </Routes>
       </BrowserRouter>
     </>
