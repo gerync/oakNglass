@@ -91,3 +91,10 @@
 .show-register{
   transform: translateX(-50%);
 }
+
+.pw-reset-modal {
+  border-bottom: none !important;
+  padding-top: 2rem !important;
+  background-color: var(--main-bg);
+  backdrop-filter: invert(50%)!important;
+}

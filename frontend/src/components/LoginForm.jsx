@@ -5,7 +5,7 @@ import { GlobalContext } from '../contexts/GlobalContext';
 import { ENDPOINTS } from '../api/endpoints';
 import { toast } from 'react-toastify';
 
-function LoginForm({ setShow }) {
+function LoginForm({ setShow, toggleShowPasswordReset }) {
   const [loading, setLoading] = useState(false);
   const { setIsLoggedIn } = useContext(GlobalContext);
 
@@ -32,8 +32,8 @@ function LoginForm({ setShow }) {
         toast.success('Sikeres bejelentkezés');
         setShow(false);
 
-      }else{
-        if(res.status == 401) toast.error('Helytelen bejelentkezési adatok.');
+      } else {
+        if (res.status == 401) toast.error('Helytelen bejelentkezési adatok.');
       }
     } catch {
       toast.error('Hiba történt a bejelentkezés során!');
@@ -73,13 +73,12 @@ function LoginForm({ setShow }) {
                 ) : ('Bejelentkezés')
               }
 
-            </Button>
+            </Button><br />
+            <a className="pw-reset" onClick={() => { toggleShowPasswordReset(); setShow() }}>Elfelejtett jelszó?</a>
           </div>
         </Form>
       </div>
     </Container>
-
-
   )
 };
 
