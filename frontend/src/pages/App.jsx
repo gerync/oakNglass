@@ -8,6 +8,7 @@ import Products from "../pages/Products";
 import AboutUs from '../pages/AboutUs';
 import Cart from './Cart';
 import Orders from './Orders';
+import VerifyEmail from './VerifyEmail';
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
           <Route path="/rolunk" exact activeClassName="active" element={<AboutUs />} />
           <Route path="/kosar" exact activeClassName="active" element={<Cart />} />
           <Route path="/rendelesek" exact activeClassName="active" element={<Orders />} />
+          <Route path="/verify-email" exact element={<VerifyEmail />} />
         </Routes>
       </BrowserRouter>
     </>
