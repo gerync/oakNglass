@@ -2,6 +2,7 @@ import { Navbar, Nav, NavDropdown, Image, Button } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import '../style/Navbar.css';
 
+import  PasswordResetModal from '../components/PasswordResetModal';
 import LogRegModal from '../components/LogReg';
 import logo from '../assets/LogoBlack.svg';
 import moon from '../assets/moon.svg';
@@ -20,10 +21,14 @@ function NavbarComponent() {
   const { isLoggedIn, setIsLoggedIn, isAdmin, toggleTheme, isLight } = useContext(GlobalContext);
   const [showLogReg, setShowLogReg] = useState(false);
   const { getCartContent } = useContext(CartContext);
-
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
 
   const toggleLogReg = () => {
     setShowLogReg((prev) => !prev);
+  };
+
+  const toggleShowPasswordReset = () => {
+    setShowPasswordReset((prev) => !prev);
   };
 
   const handleLogout = async () => {
@@ -53,7 +58,8 @@ function NavbarComponent() {
 
   return (
     <>
-      <LogRegModal show={showLogReg} setShow={toggleLogReg} />
+      <LogRegModal show={showLogReg} setShow={toggleLogReg} toggleShowPasswordReset={toggleShowPasswordReset} />
+      <PasswordResetModal show={showPasswordReset} setShow={toggleShowPasswordReset} />
       <Navbar expand="md" fixed="top" className="custom-navbar">
         <Navbar.Toggle aria-controls="basic-navbar-nav" className="custom-toggle ms-auto" />
         <Navbar.Collapse className="nav-inner">

@@ -5,7 +5,7 @@ import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import { useState } from 'react';
 
-function LogRegModal({ show, setShow }) {
+function LogRegModal({ show, setShow, toggleShowPasswordReset }) {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
@@ -24,10 +24,10 @@ function LogRegModal({ show, setShow }) {
       <Modal.Body className='overflow-hidden'>
         <div className={`form-slider ${isLogin ? 'show-login' : 'show-register'}`}>
           <div className='form-pane'>
-            <LoginForm setShow={setShow}/>
+            <LoginForm setShow={setShow} toggleShowPasswordReset={toggleShowPasswordReset} />
           </div>
           <div className='form-pane'>
-            <RegisterForm setShow={setShow} setIsLogin={setIsLogin}/>
+            <RegisterForm setShow={setShow} setIsLogin={setIsLogin} />
           </div>
         </div>
       </Modal.Body>
