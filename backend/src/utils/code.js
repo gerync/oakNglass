@@ -11,7 +11,26 @@ import sendEmail from '../email/index.js';
 export default async function handleEmailCode(type, userId) {
   // Get a client from the pool for transaction
   const client = await postgre.pool.connect();
-  try {
+    try {
+    // normalize type to DB-allowed canonical values
+    function resolveType(t) {
+      if (!t) return null;
+      const asIs = String(t);
+      const lowered = asIs.toLowerCase();
+      if (['verification','reset','cancel-order','delete-account','admin-invite','journalist-invite'].includes(asIs)) return asIs;
+      if (['verification'].includes(lowered)) return 'verification';
+      if (lowered.includes('reset')) return 'reset';
+      if (lowered.includes('cancel') && lowered.includes('order')) return 'cancel-order';
+      if (lowered.includes('delete') && lowered.includes('account')) return 'delete-account';
+      if (lowered.includes('admin') && lowered.includes('invite')) return 'admin-invite';
+      if (lowered.includes('journalist') && lowered.includes('invite')) return 'journalist-invite';
+      // order confirmation variants are not stored in EmailCodes table
+      // (they use direct sendEmail calls), so do not map to a DB type here
+      return null;
+    }
+
+    const ctype = resolveType(type);
+    if (!ctype) throw new Error('Ismeretlen email típus');
     // start transaction
     await client.query('BEGIN');
 
@@ -31,11 +50,11 @@ export default async function handleEmailCode(type, userId) {
     // #region Persist code
     await client.query(
       'DELETE FROM emailcodes WHERE userid = $1 AND type = $2',
-      [userId, type]
+      [userId, ctype]
     );
     await client.query(
       'INSERT INTO emailcodes (userid, hashedcode, type, expiresat) VALUES ($1, $2, $3, $4)',
-      [userId, hashData(code), type, expiry]
+      [userId, hashData(code), ctype, expiry]
     );
     await client.query('COMMIT');
     // #endregion
@@ -45,30 +64,33 @@ export default async function handleEmailCode(type, userId) {
     // #endregion
     // #region Build action link
     let link = '';
-    if (type === 'verification') {
-        link = `${config.frontend.domain()}/verify-email?code=${code}&email=${encodeURIComponent(email)}`;
+    if (ctype === 'verification') {
+      link = `${config.frontend.domain()}/verify-email?code=${code}&email=${encodeURIComponent(email)}`;
     }
-    else if (type === 'reset') {
-        link = `${config.frontend.domain()}/reset-password?code=${code}&email=${encodeURIComponent(email)}`;
+    else if (ctype === 'reset') {
+      link = `${config.frontend.domain()}/reset-password?code=${code}&email=${encodeURIComponent(email)}`;
     }
-    else if (type === 'cancel-order') {
-        link = `${config.frontend.domain()}/cancel-order?code=${code}&email=${encodeURIComponent(email)}`;
+    else if (ctype === 'cancel-order') {
+      link = `${config.frontend.domain()}/cancel-order?code=${code}&email=${encodeURIComponent(email)}`;
     }
-    else if (type === 'delete-account') {
-        link = `${config.frontend.domain()}/delete-account?code=${code}&email=${encodeURIComponent(email)}`;
+    else if (ctype === 'delete-account') {
+      link = `${config.frontend.domain()}/delete-account?code=${code}&email=${encodeURIComponent(email)}`;
     }
-    else if (type === 'admin-invite') {
-        link = `${config.frontend.domain()}/admin-invite?code=${code}&email=${encodeURIComponent(email)}`;
+    else if (ctype === 'admin-invite') {
+      link = `${config.frontend.domain()}/admin-invite?code=${code}&email=${encodeURIComponent(email)}`;
     }
-    else if (type === 'journalist-invite') {
-        link = `${config.frontend.domain()}/journalist-invite?code=${code}&email=${encodeURIComponent(email)}`;
+    else if (ctype === 'journalist-invite') {
+      link = `${config.frontend.domain()}/journalist-invite?code=${code}&email=${encodeURIComponent(email)}`;
+    }
+    else if (ctype === 'orderConfirmation') {
+      link = `${config.frontend.domain()}/orders/${userId}?code=${code}&email=${encodeURIComponent(email)}`;
     }
     else {
-        throw new Error('Ismeretlen email típus');
+      throw new Error('Ismeretlen email típus');
     }
     // #endregion
     // #region Send email
-    await sendEmail(email, code, type, link, fullName);
+    await sendEmail(email, code, ctype, link, fullName);
     // #endregion
     return { code, fullName, email };
   } catch (err) {

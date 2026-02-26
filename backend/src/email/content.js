@@ -154,7 +154,30 @@ const EmailContent = {
  Returns an object with `{ subject, html }` ready to send.
  */
 export function buildEmail(templateKey, { code = '', link = '', fullName = '' } = {}) {
-    const tpl = EmailContent[templateKey];
+    // Resolve common variants (kebab-case, hyphenated, suffixes) to actual template keys
+    function resolveKey(key) {
+        if (!key) return null;
+        if (EmailContent[key]) return key;
+        const noHyphen = key.replace(/-/g, '');
+        if (EmailContent[noHyphen]) return noHyphen;
+        const camel = key.replace(/-([a-z])/g, (m, c) => c.toUpperCase());
+        if (EmailContent[camel]) return camel;
+        // try lower-cased comparison (handles e.g. CancelOrder vs cancelorder)
+        const lowerNoHyphen = noHyphen.toLowerCase();
+        for (const k of Object.keys(EmailContent)) {
+            if (k.toLowerCase() === lowerNoHyphen) return k;
+        }
+        // handle common special cases
+        if (key.includes('reset')) return 'reset';
+        if (key.includes('cancel')) return 'cancelorder';
+        if (key.includes('delete') && key.includes('account')) return 'deleteaccount';
+        if (key.includes('admin') && key.includes('invite')) return 'adminInvite';
+        if (key.includes('journalist') && key.includes('invite')) return 'journalistInvite';
+        return null;
+    }
+
+    const resolved = resolveKey(templateKey);
+    const tpl = resolved ? EmailContent[resolved] : null;
     if (!tpl) throw new Error(`Unknown email template: ${templateKey}`);
     const subject = tpl.subject || '';
     let html;
