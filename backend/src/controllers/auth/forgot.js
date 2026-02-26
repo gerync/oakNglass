@@ -13,16 +13,16 @@ export default async function ResetPassController(req, res) {
         try {
             let userRes;
             if (typeof email !== 'undefined') {
-                userRes = await conn.query('SELECT uuid FROM users WHERE emailenc = $1', [encrypt(email)]);
+                 userRes = await conn.query('SELECT uuid FROM users WHERE emailenc = $1', [encrypt.encryptData(email)]);
             }
             else {
-                userRes = await conn.query('SELECT uuid FROM users WHERE mobileenc = $1', [encrypt(mobile)]);
+                 userRes = await conn.query('SELECT uuid FROM users WHERE mobileenc = $1', [encrypt.encryptData(mobile)]);
             }
             if (userRes.rows.length === 0) {
                 throw new HttpError('Ha van ilyen email cím vagy telefonszám, akkor a levelezésében találja a kódot.', 200);
             }
             const userId = userRes.rows[0].uuid;
-            await sendcode('reset', userId);
+            await sendcode('reset-password', userId);
             throw new HttpError('Ha van ilyen email cím vagy telefonszám, akkor a levelezésében találja a kódot.', 200);
         }
         catch (err) {
@@ -42,7 +42,7 @@ export default async function ResetPassController(req, res) {
                 SELECT users.uuid, emailcodes.hashedcode, emailcodes.expiresat
                 FROM emailcodes INNER JOIN users ON emailcodes.userid = users.uuid
                 WHERE users.emailenc = $1 AND emailcodes.type = $2`,
-                [encrypt(email), 'reset']);
+                    [encrypt.encryptData(email), 'reset-password']);
             if (result.rows.length === 0) {
                 throw new HttpError('Érvénytelen vagy lejárt kód', 400);
             }

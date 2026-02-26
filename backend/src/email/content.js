@@ -88,7 +88,7 @@ const EmailContent = {
             fullName
         ),
     },
-    resetPassword: {
+    reset: {
         subject: "Jelszó visszaállítási kód - Oak N Glass",
         html: (code, link, fullName) => wrapHtml(
             'Jelszó visszaállítása',
@@ -97,7 +97,7 @@ const EmailContent = {
             fullName
         ),
     },
-    cancelOrder: {
+    cancelorder: {
         subject: "Rendelés lemondási kód - Oak N Glass",
         html: (code, link, fullName) => wrapHtml(
             'Rendelés lemondása',
@@ -106,7 +106,7 @@ const EmailContent = {
             fullName
         ),
     },
-    deleteAccount: {
+    deleteaccount: {
         subject: "Fiók törlési kód - Oak N Glass",
         html: (code, link, fullName) => wrapHtml(
             'Fiók törlése',
