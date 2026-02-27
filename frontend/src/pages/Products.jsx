@@ -1,12 +1,14 @@
 import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
 import { Slider } from "antd";
 import '../style/Products.css';
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { ENDPOINTS } from "../api/endpoints";
 import { useSearchParams } from "react-router-dom";
 import PaginationComponent from "../components/PaginationComponent";
 import ProductCarousel from "../components/ProductCarousel";
+import ProductModal from "../components/ProductModal";
+import { GlobalContext } from "../contexts/Contexts";
 
 const MAX = {
   ALCOHOL: 70,
@@ -16,6 +18,8 @@ const MAX = {
 }
 
 function Products() {
+  const { loggedIn } = useContext(GlobalContext);
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,9 +58,6 @@ function Products() {
     });
   };
 
-  const openDetails = () => {
-    console.log('open');
-  }
 
   const handleParamChange = (newParamsObject) => {
     setSearchParams((prev) => {
@@ -112,8 +113,22 @@ function Products() {
     window.scrollTo(0, 0);
   };
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selected, setSelected] = useState({ contentML: 0, alcoholPercent: 0, stock: 0, priceHUF: 0, images: [] });
+  const toggleModal = () => {
+    setModalOpen((prev) => (!prev));
+  }
+  const openDetails = () => {
+    if (loggedIn) {
+      toggleModal()
+    } else {
+      toast.error('Vásárláshoz fiók szükséges!')
+    }
+  }
+
   return (
     <>
+      <ProductModal show={modalOpen} setShow={toggleModal} selected={selected} />
       <Container fluid className="content-bg mt-3">
         <Row>
           <Col md='3' className='pt-3 col-sort'>
@@ -181,17 +196,20 @@ function Products() {
                         {
                           products.map((item, idx) => (
                             <Col md={4} key={idx}>
-                              <Card className="mb-2 custom-card" onClick={openDetails}>
-                                <ProductCarousel images={item.images} />
-                                <Card.Title>{item.name}</Card.Title>
-                                <Card.Body>
-                                  <Card.Text>
-                                    Kiszerelés: {item.contentML} ml<br />
-                                    Alkoholtartalom: {item.alcoholPercent}%<br />
-                                    Raktáron: {item.stock} db<br />
-                                    Ár: {item.priceHUF.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} Forint<br />
-                                  </Card.Text>
-                                </Card.Body>
+                              <Card className="mb-2 custom-card" >
+                                <ProductCarousel images={item.images} ImageMaxHeight={270} />
+                                <div onClick={() => { setSelected(item); openDetails() }}>
+                                  <Card.Title>{item.name}</Card.Title>
+                                  <Card.Body >
+                                    <Card.Text>
+                                      Kiszerelés: {item.contentML} ml<br />
+                                      Alkoholtartalom: {item.alcoholPercent}%<br />
+                                      Raktáron: {item.stock} db<br />
+                                      Ár: {item.priceHUF.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} Forint<br />
+                                    </Card.Text>
+                                  </Card.Body>
+                                </div>
+
                               </Card>
                             </Col>
                           ))
