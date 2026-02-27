@@ -1,8 +1,8 @@
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { CartContext } from "./Contexts";
 
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const CartContext = createContext();
+
 
 export const CartProvider = ({ children }) => {
 

@@ -9,7 +9,7 @@ import 'react-calendar/dist/Calendar.css';
 import '../style/Calendar.css';
 
 import Cookies from "js-cookie";
-import { CartContext } from "../contexts/CartContext";
+import { CartContext } from "../contexts/Contexts";
 
 
 

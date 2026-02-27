@@ -1,13 +1,13 @@
 import { createRoot } from 'react-dom/client';
 import './style/index.css';
 import App from './pages/App';
-import { GlobalContext, GlobalProvider } from './contexts/GlobalContext';
+import { GlobalProvider } from './contexts/GlobalProvider';
 import { ConfigProvider, theme } from 'antd';
-import { CartProvider } from './contexts/CartContext';
+import { CartProvider } from './contexts/CartProvider';
+import { GlobalContext } from './contexts/Contexts';
 import { useContext } from 'react';
 
 const { defaultAlgorithm, darkAlgorithm } = theme;
-
 
 // eslint-disable-next-line react-refresh/only-export-components
 function ThemedApp() {

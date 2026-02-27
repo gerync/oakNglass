@@ -1,7 +1,7 @@
 import { Container, Form, Button, Spinner } from 'react-bootstrap';
 import '../style/Login.css';
 import { useContext, useState } from 'react';
-import { GlobalContext } from '../contexts/GlobalContext';
+import { GlobalContext } from '../contexts/Contexts';
 import { ENDPOINTS } from '../api/endpoints';
 import { toast } from 'react-toastify';
 
