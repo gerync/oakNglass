@@ -20,8 +20,7 @@ export const ENDPOINTS = {
   },
   FAVOURITES: {
     GET: '/favourites', //get
-    POST: '/favourites', //post
-    DELETE: '/favourites', //delete
+    POST_DELETE: '/favourites/', //post, delete
   },
 
 };
