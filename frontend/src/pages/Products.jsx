@@ -51,7 +51,7 @@ function Products() {
   const toggleFav = async (item) => {
     const isFav = fav.some(f => f.ProdID === item.ProdID);
     try {
-      const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.FAVOURITES.POST}productid=${item.ProdID}`, {
+      const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.FAVOURITES.POST}?productid=${item.ProdID}`, {
         method: isFav ? 'DELETE' : 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
