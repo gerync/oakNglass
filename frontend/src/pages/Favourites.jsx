@@ -15,14 +15,16 @@ function Favourites() {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.FAVOURITES.GET}`);
+        const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.FAVOURITES.GET}`,
+          {credentials: 'include'}
+        );
         const data = await res.json();
 
         if (res.ok && !ignore) {
-          setProducts(data.products);
+          setProducts(data);
         }
       } catch {
-        if (!ignore) toast.error('Hiba történt az adatok betöltése közben!');
+        if (!ignore) toast.error('Hiba történt a kedvencek betöltése közben!');
       } finally {
         if (!ignore) setLoading(false);
       }
@@ -46,17 +48,17 @@ function Favourites() {
               (
                 <Row >
                   {
-                    products.map((item, idx) => (
-                      <Col xs={12} sm={6} md={6} lg={4} key={idx}>
+                    products.map((item) => (
+                      <Col xs={12} sm={6} md={6} lg={4} key={item.ProdID}>
                         <Card className="mb-2 custom-card h-100" >
-                          <ProductCarousel images={item.images} ImageMaxHeight={270} />
+                          <ProductCarousel images={item.images ?? ''} ImageMaxHeight={270} />
                           <Card.Title>{item.name}</Card.Title>
                           <Card.Body className="d-flex flex-column">
                             <Card.Text>
-                              Kiszerelés: {item.contentML} ml<br />
-                              Alkoholtartalom: {item.alcoholPercent}%<br />
-                              Raktáron: {item.stock} db<br />
-                              Ár: {item.priceHUF.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} Forint<br />
+                              Kiszerelés: {item.contentML ?? 0} ml<br />
+                              Alkoholtartalom: {item.alcoholPercent ?? 0}%<br />
+                              Raktáron: {item.stock ?? 0} db<br />
+                              Ár: {item.priceHUF? item.priceHUF.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") : 0} Forint<br />
                             </Card.Text>
                           </Card.Body>
                         </Card>
