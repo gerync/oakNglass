@@ -4,13 +4,11 @@ import Cookies from "js-cookie";
 
 export const GlobalProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    //return Cookies.get('loggedIn') === 'true';
-    return true;
+    return Cookies.get('loggedIn') === 'true';
   });
 
   const [isAdmin, setIsAdmin] = useState(() => {
-    //return Cookies.get('isAdmin') === 'true';
-    return true;
+    return Cookies.get('isAdmin') === 'true';
   });
 
   const [isLight, setIsLight] = useState(() => {

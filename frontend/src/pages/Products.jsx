@@ -38,7 +38,7 @@ function Products() {
     try {
       const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.FAVOURITES.GET}`, { credentials: 'include' });
       const data = await res.json();
-      if (res.ok) setFav(data.products);
+      if (res.ok) setFav(data);
     } catch {
       toast.error('Hiba történt a kedvencek betöltése közben!');
     }
@@ -257,7 +257,7 @@ function Products() {
               />
             </div>
             <div className="d-flex align-items-end gap-2 mb-3 w-100">
-              <div className="custom-dropdown-container flex-grow-1" style={{minWidth: 0}}>
+              <div className="custom-dropdown-container flex-grow-1" style={{ minWidth: 0 }}>
                 <label className="dropdown-label">Rendezés</label>
 
                 <Dropdown
