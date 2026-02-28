@@ -35,6 +35,11 @@ body {
   --toastify-color-success: light-dark(#FFF3F3, #25201E);
   --toastify-text-color-success: light-dark(#000000, #E0D5C1);
   --toastify-color-error: #800020;
+
+}
+
+.Toastify__progress-bar--success {
+  background-color: #800020 !important;
 }
 
 body,
@@ -53,4 +58,35 @@ html {
 
 ::-webkit-scrollbar {
   transition: var(--theme-transition);
+}
+
+.bg-content {
+  background-color: var(--content-bg) !important;
+  transition: var(--theme-transition);
+}
+
+.text-custom {
+  color: var(--text-color) !important;
+  transition: var(--theme-transition)!important;
+}
+.button-custom{
+  transition: var(--theme-transition)!important;
+  outline: 1 solid !important;
+  color: var(--text-color)!important;
+}
+
+/* A muted/szürke szöveg dark módban legyen kicsit világosabb */
+.text-muted-custom {
+  color: light-dark(#6c757d, #a09686) !important;
+}
+
+/* A gombok színe dark módban */
+.btn-outline-custom {
+  color: var(--text-color) !important;
+  border-color: var(--text-color) !important;
+}
+
+.btn-outline-custom:hover {
+  background-color: var(--text-color);
+  color: var(--content-bg) !important;
 }

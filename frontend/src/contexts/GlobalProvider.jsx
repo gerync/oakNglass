@@ -1,16 +1,16 @@
-import { createContext, useState } from "react";
+import { GlobalContext } from "./Contexts";
+import { useState } from "react";
 import Cookies from "js-cookie";
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return Cookies.get('loggedIn') === 'true';
+    //return Cookies.get('loggedIn') === 'true';
+    return true;
   });
 
   const [isAdmin, setIsAdmin] = useState(() => {
-    return Cookies.get('isAdmin') === 'true';
+    //return Cookies.get('isAdmin') === 'true';
+    return true;
   });
 
   const [isLight, setIsLight] = useState(() => {
@@ -39,9 +39,16 @@ export const GlobalProvider = ({ children }) => {
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('user-theme', newTheme);
   };
+  const logoutHandler = () => {
+    setIsAdmin(false);
+    setIsLoggedIn(false);
+    localStorage.clear();
+    Cookies.remove('loggedIn');
+    Cookies.remove('isAdmin');
+  }
 
   return (
-    <GlobalContext.Provider value={{ isLoggedIn, setIsLoggedIn, isAdmin, isLight, toggleTheme}}>
+    <GlobalContext.Provider value={{ isLoggedIn, setIsLoggedIn, isAdmin, isLight, toggleTheme, setIsAdmin, logoutHandler }}>
       {children}
     </GlobalContext.Provider>
   )

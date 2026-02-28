@@ -1,6 +1,6 @@
 import { Pagination } from "react-bootstrap";
 
-function PaginationComponent({totalPages, handlePageChange, currentPage}) {
+function PaginationComponent({ totalPages, handlePageChange, currentPage }) {
   const paginationItems = (current, total, onClick) => {
     let items = [];
 
@@ -8,7 +8,7 @@ function PaginationComponent({totalPages, handlePageChange, currentPage}) {
     items.push(
       <Pagination.Item
         key={1}
-        active={1 === current}
+        active={current == 1}
         onClick={() => onClick(1)}
       >
         {1}
@@ -25,7 +25,7 @@ function PaginationComponent({totalPages, handlePageChange, currentPage}) {
       items.push(
         <Pagination.Item
           key={number}
-          active={number === current}
+          active={number == current}
           onClick={() => onClick(number)}
         >
           {number}
@@ -41,7 +41,7 @@ function PaginationComponent({totalPages, handlePageChange, currentPage}) {
     // utolsó oldal
     if (total > 1) {
       items.push(
-        <Pagination.Item key={total} active={total === current} onClick={() => onClick(total)}>
+        <Pagination.Item key={total} active={total == current} onClick={() => onClick(total)}>
           {total}
         </Pagination.Item>
       );
@@ -51,11 +51,11 @@ function PaginationComponent({totalPages, handlePageChange, currentPage}) {
   return (
     <div className="d-flex justify-content-center mt-4">
       <Pagination >
-        <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
-        <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+        <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage == 1} />
+        <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage == 1} />
         {paginationItems(currentPage, totalPages, handlePageChange)}
-        <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-        <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
+        <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage == totalPages} />
+        <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage == totalPages} />
       </Pagination>
     </div>
   )

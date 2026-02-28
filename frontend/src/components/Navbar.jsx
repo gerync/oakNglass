@@ -11,16 +11,15 @@ import sun from '../assets/sun.svg';
 import MetallicPaint from "../style/metallicpaint/MetallicPaint";
 
 import { useContext, useState } from "react";
-import { GlobalContext } from "../contexts/GlobalContext";
+import { GlobalContext, CartContext } from "../contexts/Contexts";
 import { ENDPOINTS } from "../api/endpoints";
 import { toast } from "react-toastify";
-import { CartContext } from "../contexts/CartContext";
 
 
 function NavbarComponent() {
-  const { isLoggedIn, setIsLoggedIn, isAdmin, toggleTheme, isLight } = useContext(GlobalContext);
+  const { isLoggedIn, isAdmin, toggleTheme, isLight, logoutHandler } = useContext(GlobalContext);
   const [showLogReg, setShowLogReg] = useState(false);
-  const { getCartContent } = useContext(CartContext);
+  const { cartCount } = useContext(CartContext);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
 
   const toggleLogReg = () => {
@@ -42,8 +41,7 @@ function NavbarComponent() {
       });
 
       if (res.ok) {
-        setIsLoggedIn(false);
-        localStorage.clear();
+        logoutHandler();
         toast.success('Sikeres kijelentkezés.');
 
       } else {
@@ -124,7 +122,9 @@ function NavbarComponent() {
                 className="nav-dropdown-custom "
                 drop="start"
               >
-                <NavDropdown.Item as={NavLink} to='/kosar'>Kosár ({getCartContent()})</NavDropdown.Item>
+                <NavDropdown.Item as={NavLink} to='/profil'>Profil</NavDropdown.Item>
+                <NavDropdown.Item as={NavLink} to='/kedvenc'>Kedvencek</NavDropdown.Item>
+                <NavDropdown.Item as={NavLink} to='/kosar'>Kosár ({cartCount})</NavDropdown.Item>
                 <NavDropdown.Item as={NavLink} to='/rendelesek'>Rendelések</NavDropdown.Item>
                 <NavDropdown.Item onClick={handleLogout} >Kijelentkezés</NavDropdown.Item>
               </NavDropdown>
