@@ -38,7 +38,7 @@ function Products() {
     try {
       const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.FAVOURITES.GET}`, { credentials: 'include' });
       const data = await res.json();
-      if (res.ok) setFav(data);
+      if (res.ok) setFav(data.favourites);
     } catch {
       toast.error('Hiba történt a kedvencek betöltése közben!');
     }
