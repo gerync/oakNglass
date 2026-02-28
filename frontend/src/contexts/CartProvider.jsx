@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CartContext } from "./Contexts";
-
+import { toast } from "react-toastify";
 
 
 
@@ -11,79 +11,87 @@ export const CartProvider = ({ children }) => {
     return temp ? JSON.parse(temp) : [];
   })
 
-  const addItemToCart = (newItem) => {
+  const cartRef = useRef(cart);
+  useEffect(() => { cartRef.current = cart; }, [cart]);
+
+  const addItemToCart = useCallback((newItem) => {
+    const prev = cartRef.current;
+    const index = prev.findIndex(item => item.ProdID === newItem.ProdID);
+
+    if (index !== -1) {
+      if (prev[index].count >= prev[index].stock) {
+        toast.error('A termékből nem lehet többet rendelni.');
+        return;
+      }
+      toast.success('Sikeresen kosárba helyezve.');
+      setCart(prev.map((item, idx) =>
+        idx === index ? { ...item, count: item.count + 1 } : item
+      ));
+      return;
+    }
+
+    toast.success('Sikeresen kosárba helyezve.');
+    setCart([...prev, { ...newItem, count: 1 }]);
+  }, []);
+
+
+
+  const removeItemFromCart = useCallback((targetItem) => {
     setCart((prev) => {
-      const index = prev.findIndex(item => item.ProdId === newItem.ProdId);
-
-      if (index !== -1) {
-        return prev.map((item, idx) =>
-          idx === index
-            ? { ...item, count: item.count + 1 }
-            : item
-        )
-      };
-
-      return [...prev, { ...newItem, count: 1 }];
-    });
-  }
-
-  const removeItemFromCart = (targetItem) => {
-    setCart((prev) => {
-      const existingItem = prev.find(item => item.ProdId === targetItem.ProdId);
+      const existingItem = prev.find(item => item.ProdID === targetItem.ProdID);
 
       if (!existingItem) return prev;
 
       if (existingItem.count === 1) {
-        return prev.filter(item => item.ProdId !== targetItem.ProdId);
+        return prev.filter(item => item.ProdID !== targetItem.ProdID);
       }
 
       return prev.map((item) =>
-        item.ProdId === targetItem.ProdId
+        item.ProdID === targetItem.ProdID
           ? { ...item, count: item.count - 1 }
           : item
       );
     });
-  };
-  const emptyCart = () => {
+  }, []);
+
+  const deleteItemFromCart = useCallback((ProdID) => {
+    console.log('lofasz')
+    setCart((prev) => prev.filter(item => item.ProdID !== ProdID));
+  }, []);
+
+  const emptyCart = useCallback(() => {
     setCart([]);
-  }
+  }, []);
 
 
-  const getCartContent = () => {
-    if (cart.length === 0) return 0;
-    let sum = 0;
-    cart.forEach(item => {
-      sum += item.count;
-    });
-    return sum;
-  }
+  const cartCount = useMemo(() => cart.reduce((sum, item) => sum + item.count, 0), [cart]);
 
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  const updateItemCount = (prodId, newCount) => {
+  const updateItemCount = useCallback((item, newCount) => {
     const count = parseInt(newCount);
 
     if (isNaN(count) || count < 0) return;
+    if (count > item.stock) return;
 
     setCart((prev) =>
-      prev.map((item) =>
-        item.ProdId === prodId
-          ? { ...item, count: count }
-          : item
-      )
-    );
-  };
+      prev.map((c) =>
+        c.ProdID === item.ProdID
+          ? { ...c, count: count }
+          : c
+      ));
+  }, []);
 
-  const handleBlur = (prodId, value) => {
+  const handleBlur = useCallback((ProdID, value) => {
     if (value === "" || parseInt(value) === 0) {
-      setCart(prev => prev.filter(item => item.ProdId !== prodId));
+      setCart(prev => prev.filter(item => item.ProdID !== ProdID));
     }
-  };
+  }, []);
 
   return (
-    <CartContext.Provider value={{ cart, setCart, addItemToCart, getCartContent, removeItemFromCart, emptyCart, updateItemCount, handleBlur }}>
+    <CartContext.Provider value={{ cart, setCart, addItemToCart, cartCount, removeItemFromCart, deleteItemFromCart, emptyCart, updateItemCount, handleBlur }}>
       {children}
     </CartContext.Provider>
   )

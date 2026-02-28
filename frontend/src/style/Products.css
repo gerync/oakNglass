@@ -59,3 +59,23 @@ body {
 .limit-select:focus {
   outline: none;
 }
+
+
+.btn-primary {
+  background-color: #800020;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+  color: light-dark(#FBE6E9, #D4AF37) !important;
+}
+
+.btn-primary:hover {
+  background-color: #800020;
+  transform: scale(1.05);
+}
+
+.btn-primary:active {
+  background-color: #800020f2!important;
+}
+.btn-primary:disabled{
+   background-color: #800020f2!important;
+}

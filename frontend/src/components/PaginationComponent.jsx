@@ -8,7 +8,7 @@ function PaginationComponent({totalPages, handlePageChange, currentPage}) {
     items.push(
       <Pagination.Item
         key={1}
-        active={1 === current}
+        active={current == 1}
         onClick={() => onClick(1)}
       >
         {1}
@@ -25,7 +25,7 @@ function PaginationComponent({totalPages, handlePageChange, currentPage}) {
       items.push(
         <Pagination.Item
           key={number}
-          active={number === current}
+          active={number == current}
           onClick={() => onClick(number)}
         >
           {number}
@@ -41,7 +41,7 @@ function PaginationComponent({totalPages, handlePageChange, currentPage}) {
     // utolsó oldal
     if (total > 1) {
       items.push(
-        <Pagination.Item key={total} active={total === current} onClick={() => onClick(total)}>
+        <Pagination.Item key={total} active={total == current} onClick={() => onClick(total)}>
           {total}
         </Pagination.Item>
       );

@@ -19,7 +19,7 @@ function AboutUs() {
 
         <Row className="justify-content-center g-4">
           <Col xs={12} lg={4} className="text-center">
-            <p className="px-3 m-auto">
+            <p className="px-3 m-auto about-us-p">
               Öt generáció óta őrizzük a receptjeinket és az érlelés titkait;
               minden üveg egy-egy pillanat a múltból, amit gondosan továbbörökítünk.
             </p>
@@ -27,7 +27,7 @@ function AboutUs() {
 
 
           <Col xs={12} lg={4} className="text-center text-md-end text-lg-center">
-            <p className="px-3 m-auto">
+            <p className="px-3 m-auto about-us-p">
               Hisszük, hogy a minőség nem véletlen: a szőlő, a gyümölcs és a hordók
               találkozása adja azt az egyedi karaktert, ami a Kárpát-medencében
               híressé tett minket. Ha tőlünk rendel, nem csak italt kap, hanem
@@ -36,7 +36,7 @@ function AboutUs() {
           </Col>
 
           <Col xs={12} lg={4} className="text-center m-aut">
-            <p className="px-3 m-auto">
+            <p className="px-3 m-auto about-us-p">
               Ma a webshopon keresztül hozzuk el ezt a hagyományt a világba:
               válogatott borok, kézműves pálinkák és fahordós whiskey-különlegességek
               várják azokat, akik értékelik a kézi munkát és a helyi ízeket.

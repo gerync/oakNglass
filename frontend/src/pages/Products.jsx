@@ -1,4 +1,4 @@
-import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
+import { Container, Row, Col, Card, Spinner, Button } from "react-bootstrap";
 import { Slider } from "antd";
 import '../style/Products.css';
 import { useContext, useEffect, useState } from "react";
@@ -7,8 +7,7 @@ import { ENDPOINTS } from "../api/endpoints";
 import { useSearchParams } from "react-router-dom";
 import PaginationComponent from "../components/PaginationComponent";
 import ProductCarousel from "../components/ProductCarousel";
-import ProductModal from "../components/ProductModal";
-import { GlobalContext } from "../contexts/Contexts";
+import { GlobalContext, CartContext } from "../contexts/Contexts";
 
 const MAX = {
   ALCOHOL: 70,
@@ -18,7 +17,8 @@ const MAX = {
 }
 
 function Products() {
-  const { loggedIn } = useContext(GlobalContext);
+  const { isLoggedIn } = useContext(GlobalContext);
+  const { addItemToCart, cart } = useContext(CartContext);
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -113,22 +113,42 @@ function Products() {
     window.scrollTo(0, 0);
   };
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selected, setSelected] = useState({ contentML: 0, alcoholPercent: 0, stock: 0, priceHUF: 0, images: [] });
-  const toggleModal = () => {
-    setModalOpen((prev) => (!prev));
+
+  const [maxInCart, _setMaxInCart] = useState({});
+
+  const setMaxInCart = (id, value) => {
+    _setMaxInCart((prev) => {
+      return { ...prev, [id]: value };
+    })
   }
-  const openDetails = () => {
-    if (loggedIn) {
-      toggleModal()
-    } else {
-      toast.error('Vásárláshoz fiók szükséges!')
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      cart.forEach((item) => {
+        const found = cart.find(c => c.ProdID === item.ProdID);
+        if (found && found.count >= item.stock) {
+          setMaxInCart(item.ProdID, true);
+        }
+      }
+      )
+    }
+  }, [isLoggedIn, cart, addItemToCart])
+
+
+
+  const handleAddToCart = (item) => {
+    if (isLoggedIn) {
+      const found = cart.find(c => c.ProdID === item.ProdID);
+      if (!found || found.count < item.stock) {
+        addItemToCart(item)
+      } else {
+        setMaxInCart(item.ProdID, true);
+      }
     }
   }
 
   return (
     <>
-      <ProductModal show={modalOpen} setShow={toggleModal} selected={selected} />
       <Container fluid className="content-bg mt-3">
         <Row>
           <Col md='3' className='pt-3 col-sort'>
@@ -185,7 +205,10 @@ function Products() {
             </div>
           </Col>
           <Col md='9' className='pt-3 col-product'>
-            <h3 className="sort-header mb-2">Termékek</h3>
+            <div className="sort-header mb-2">
+              <h3 >Termékek</h3>
+              <p className="text-muted fs-6">A részletek bejelentkezés után a termékre kattintással tekinthetők meg.</p>
+            </div>
             {
               loading
                 ? (<Spinner animation='border' />)
@@ -195,21 +218,28 @@ function Products() {
                       <Row >
                         {
                           products.map((item, idx) => (
-                            <Col md={4} key={idx}>
-                              <Card className="mb-2 custom-card" >
+                            <Col xs={12} sm={6} md={6} lg={4} key={idx}>
+                              <Card className="mb-2 custom-card h-100" >
                                 <ProductCarousel images={item.images} ImageMaxHeight={270} />
-                                <div onClick={() => { setSelected(item); openDetails() }}>
-                                  <Card.Title>{item.name}</Card.Title>
-                                  <Card.Body >
-                                    <Card.Text>
-                                      Kiszerelés: {item.contentML} ml<br />
-                                      Alkoholtartalom: {item.alcoholPercent}%<br />
-                                      Raktáron: {item.stock} db<br />
-                                      Ár: {item.priceHUF.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} Forint<br />
-                                    </Card.Text>
-                                  </Card.Body>
-                                </div>
-
+                                <Card.Title>{item.name}</Card.Title>
+                                <Card.Body className="d-flex flex-column">
+                                  <Card.Text>
+                                    Kiszerelés: {item.contentML} ml<br />
+                                    Alkoholtartalom: {item.alcoholPercent}%<br />
+                                    Raktáron: {item.stock} db<br />
+                                    Ár: {item.priceHUF.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} Forint<br />
+                                  </Card.Text>
+                                  <Button
+                                    size="lg"
+                                    className="mt-auto text-truncate"
+                                    disabled={item.stock == 0 || !isLoggedIn || maxInCart[item.ProdID]}
+                                    onClick={() =>
+                                      handleAddToCart(item)
+                                    }
+                                  >
+                                    Kosárba helyezés
+                                  </Button>
+                                </Card.Body>
                               </Card>
                             </Col>
                           ))
