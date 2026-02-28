@@ -324,7 +324,7 @@ function Products() {
                                   {isLoggedIn && (
                                     <button
                                       onClick={() => toggleFav(item)}
-                                      title={fav.some(f => f.ProdID === item.ProdID) ? 'Eltávolítás a kedvencekből' : 'Hozzáadás a kedvencekhez'}
+                                      title={(fav || []).some(f => f?.ProdID === item?.ProdID) ? 'Eltávolítás a kedvencekből' : 'Hozzáadás a kedvencekhez'}
                                       style={{
                                         position: 'absolute', top: 8, right: 8,
                                         background: 'rgba(255,255,255,0.85)', border: 'none',
