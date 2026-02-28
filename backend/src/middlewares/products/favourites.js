@@ -18,7 +18,7 @@ export function addFavouritesMiddleware(req, res, next) {
 
 
 export function removeFavouritesMiddleware(req, res, next) {
-    const productID = req.params.productID;
+    const productID = req.params.productid;
     const user = req.user;
 
     if (!productID) {

@@ -7,8 +7,8 @@ import ProtectMiddleware from '../middlewares/general/protect.js';
 
 const router = express.Router();
 
-router.post('/:productID', ProtectMiddleware, addFavouritesMiddleware, AddfavouritesController);
-router.delete('/:productID', ProtectMiddleware, removeFavouritesMiddleware, RemovefavouritesController);
+router.post('/:productid', ProtectMiddleware, addFavouritesMiddleware, AddfavouritesController);
+router.delete('/:productid', ProtectMiddleware, removeFavouritesMiddleware, RemovefavouritesController);
 router.get('/', ProtectMiddleware, getFavouritesMiddleware, GetfavouritesController);
 
 export default router;
