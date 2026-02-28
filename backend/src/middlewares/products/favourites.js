@@ -1,7 +1,7 @@
 import HttpError from '../../models/httpError.js';
 
 export function addFavouritesMiddleware(req, res, next) {
-    const productID = req.params.productID;
+    const productID = req.params.productid;
     const user = req.user;
 
     if (!productID) {
