@@ -10,9 +10,16 @@ import Cart from './Cart';
 import Orders from './Orders';
 import VerifyEmail from './VerifyEmail';
 import ResetPassword from './ResetPassword';
+import Profil from './Profil';
+import Favourites from './Favourites'
+
+
+import { useContext } from 'react';
+import { GlobalContext } from '../contexts/Contexts';
 
 
 function App() {
+  const { isLoggedIn, isAdmin } = useContext(GlobalContext);
 
   return (
     <>
@@ -31,10 +38,12 @@ function App() {
           <Route path="/" exact activeClassName="active" element={<Home />} />
           <Route path="/termekek" exact activeClassName="active" element={<Products />} />
           <Route path="/rolunk" exact activeClassName="active" element={<AboutUs />} />
-          <Route path="/kosar" exact activeClassName="active" element={<Cart />} />
-          <Route path="/rendelesek" exact activeClassName="active" element={<Orders />} />
+          <Route path="/profil" exact activeClassName="active" element={isLoggedIn ? (<Profil />) : (<Home />)} />
+          <Route path="/kedvenc" exact activeClassName="active" element={isLoggedIn ? (<Favourites />) : (<Home />)} />
+          <Route path="/kosar" exact activeClassName="active" element={isLoggedIn ? (<Cart />) : (<Home />)} />
+          <Route path="/rendelesek" exact activeClassName="active" element={isLoggedIn ? (<Orders />) : (<Home />)} />
           <Route path="/verify-email" exact element={<VerifyEmail />} />
-          <Route path="/reset-password" exact element={<ResetPassword/>}/>
+          <Route path="/reset-password" exact element={<ResetPassword />} />
         </Routes>
       </BrowserRouter>
     </>

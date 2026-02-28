@@ -122,6 +122,8 @@ function NavbarComponent() {
                 className="nav-dropdown-custom "
                 drop="start"
               >
+                <NavDropdown.Item as={NavLink} to='/profil'>Profil</NavDropdown.Item>
+                <NavDropdown.Item as={NavLink} to='/kedvenc'>Kedvencek</NavDropdown.Item>
                 <NavDropdown.Item as={NavLink} to='/kosar'>Kosár ({cartCount})</NavDropdown.Item>
                 <NavDropdown.Item as={NavLink} to='/rendelesek'>Rendelések</NavDropdown.Item>
                 <NavDropdown.Item onClick={handleLogout} >Kijelentkezés</NavDropdown.Item>
