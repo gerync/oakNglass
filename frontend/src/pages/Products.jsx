@@ -1,5 +1,5 @@
-import { Container, Row, Col, Card, Spinner, Button } from "react-bootstrap";
-import { Slider } from "antd";
+import { Container, Row, Col, Card, Spinner, Button, FloatingLabel, Form, Dropdown } from "react-bootstrap";
+import { Slider, Select } from "antd";
 import '../style/Products.css';
 import { useCallback, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -29,7 +29,7 @@ function Products() {
 
   const [totalPages, setTotalPages] = useState(0);
   const [limit, setLimit] = useState(() => {
-    return parseInt(localStorage.getItem('limit') || 6);
+    return localStorage.getItem('limit') || 6;
   });
 
   const [fav, setFav] = useState([]);
@@ -70,7 +70,22 @@ function Products() {
     }
   };
 
-  //const [sortBy, setSortBy] = useState('');
+  const [sortBy, setSortBy] = useState(() => {
+    return localStorage.getItem('sortby') || '';
+  });
+  const [sortOrder, setSortOrder] = useState(() => {
+    return localStorage.getItem('sortorder') || '';
+  })
+
+  const toggleSortOrder = () => {
+    const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    setSortOrder(newOrder)
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('sortorder', newOrder);
+      return next;
+    });
+  };
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -120,7 +135,7 @@ function Products() {
         }
       });
 
-      if (!newParamsObject.page) nextParams.set('page', '1');
+      if (!newParamsObject.page) nextParams.set('page', 1);
       return nextParams;
     });
   };
@@ -241,14 +256,58 @@ function Products() {
                 onChangeComplete={handleSliderChange('price')}
               />
             </div>
-            <div>
+            <div className="d-flex align-items-end gap-2 mb-3 w-100">
+              <div className="custom-dropdown-container flex-grow-1" style={{minWidth: 0}}>
+                <label className="dropdown-label">Rendezés</label>
+
+                <Dropdown
+                  className="w-100"
+                  onSelect={(val) => {
+                    localStorage.setItem('sortby', val);
+                    setSearchParams(prev => {
+                      const next = new URLSearchParams(prev);
+                      next.set('sortby', val);
+                      return next;
+                    });
+                    setSortBy(val);
+                  }}
+                >
+                  <Dropdown.Toggle
+                    variant="outline-secondary"
+                    className="custom-select bg-content text-custom border-secondary shadow-sm w-100 d-flex justify-content-between align-items-center"
+                    style={{ height: '58px' }}
+                  >
+                    {sortBy === 'alphabetical' ? 'A-Z' :
+                      sortBy === 'price' ? 'Ár' :
+                        sortBy === 'newest' ? 'Legújabb' :
+                          sortBy === 'alcoholperc' ? 'Alkohol százalék' :
+                            sortBy === 'contentml' ? 'Kiszerelés' :
+                              sortBy === 'stock' ? 'Elérhető mennyiség' : 'Rendezés'}
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu className="bg-content border-secondary shadow-lg products">
+                    <Dropdown.Item className="products" eventKey="alphabetical" active={sortBy === 'alphabetical'}>A-Z</Dropdown.Item>
+                    <Dropdown.Item className="products" eventKey="price" active={sortBy === 'price'}>Ár</Dropdown.Item>
+                    <Dropdown.Item className="products" eventKey="newest" active={sortBy === 'newest'}>Legújabb</Dropdown.Item>
+                    <Dropdown.Item className="products" eventKey="alcoholperc" active={sortBy === 'alcoholperc'}>Alkohol százalék</Dropdown.Item>
+                    <Dropdown.Item className="products" eventKey="contentml" active={sortBy === 'contentml'}>Kiszerelés</Dropdown.Item>
+                    <Dropdown.Item className="products" eventKey="stock" active={sortBy === 'stock'}>Elérhető mennyiség</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+              <Button
+                variant="outline-secondary"
+                onClick={toggleSortOrder}
+                className="bg-content border-secondary shadow-sm d-flex align-items-center justify-content-center"
+                style={{ height: '58px', width: '58px', borderRadius: '8px' }}
+                title={sortOrder === 'asc' ? 'Növekvő' : 'Csökkenő'}
+              >
+                <i className={`bi bi-sort-alpha-${sortOrder === 'asc' ? 'down' : 'up-alt'} text-custom fs-4`}></i>
+              </Button>
             </div>
           </Col>
           <Col md='9' className='pt-3 col-product'>
-            <div className="sort-header mb-2">
-              <h3 >Termékek</h3>
-              <p className="text-muted fs-6">A részletek bejelentkezés után a termékre kattintással tekinthetők meg.</p>
-            </div>
+            <h3 className="sort-header mb-2">Termékek</h3>
             {
               loading
                 ? (<Spinner animation='border' />)
