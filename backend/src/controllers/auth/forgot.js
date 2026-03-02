@@ -60,11 +60,16 @@ export default async function ResetPassController(req, res) {
             if (!req.newPassword) {
                 throw new HttpError('Hiányzó jelszó', 400);
             }
+            const userCheck = await conn.query('SELECT uuid FROM users WHERE uuid = $1', [uuid]);
+            if (userCheck.rows.length === 0) {
+                await conn.query('ROLLBACK');
+                throw new HttpError('Felhasználó nem található', 400);
+            }
             const passhash = await hash.hashPassword(req.newPassword);
             await conn.query('UPDATE users SET hashedpassword = $1 WHERE uuid = $2', [passhash, uuid]);
             await conn.query('DELETE FROM emailcodes WHERE userid = $1 AND type = $2', [uuid, 'reset']);
             await conn.query('COMMIT');
-            res.json({ message: 'Kód érvényes, folytathatja a jelszó visszaállítását.' });
+            res.json({ message: 'Kód érvényes, a jelszó sikeresen megváltozott.' });
         }
         catch (err) {
             await conn.query('ROLLBACK');
