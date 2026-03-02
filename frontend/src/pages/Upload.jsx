@@ -74,10 +74,6 @@ function Upload() {
     }
   }
 
-
-
-
-
   return (
     <Container className="my-5" >
       <Card className="shadow-sm border-0 bg-content">

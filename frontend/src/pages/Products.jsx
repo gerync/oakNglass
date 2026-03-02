@@ -112,7 +112,7 @@ function Products() {
     searchParams.set('page', 1)
   }
 
-  const handleParamChange = (newParamsObject) => {
+  const handleParamChange = useCallback((newParamsObject) => {
     setSearchParams((prev) => {
       const nextParams = new URLSearchParams(prev);
 
@@ -135,7 +135,7 @@ function Products() {
       if (!newParamsObject.page) nextParams.set('page', 1);
       return nextParams;
     });
-  };
+  }, [setSearchParams]);
 
   useEffect(() => {
     let ignore = false;
@@ -201,7 +201,21 @@ function Products() {
   });
   const [sortOrder, setSortOrder] = useState(() => {
     return searchParams.get('sortorder') || '';
-  })
+  });
+  const [searchBy, setSearchBy] = useState(() => {
+    return searchParams.get('search') || '';
+  });
+
+  const handleInputChange = (e) => {
+    setSearchBy(e.target.value);
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleParamChange({ search: searchBy || null });
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchBy, handleParamChange]);
 
   return (
     <>
@@ -209,6 +223,20 @@ function Products() {
         <Row>
           <Col md='3' className='pt-3 col-sort'>
             <h3 className="sort-header">Szűrés</h3>
+            <div>
+              Keresés
+              <Form>
+                <Form.Group className="mb-3" controlId="search">
+                  <Form.Control
+                    type="text"
+                    placeholder="Keresés"
+                    name='search'
+                    value={searchBy}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
+              </Form>
+            </div>
             <div>
               Alkoholtartalom (%)
               <Slider
