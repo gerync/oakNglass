@@ -33,6 +33,14 @@ export async function OrderProductsController(req, res, next) {
                     'SELECT PriceHUF, Name FROM Products WHERE ProdID = $1',
                     [product.productId]
                 );
+                const updateResult = await conn.query(
+                    'UPDATE Products SET Stock = Stock - $1 WHERE ProdID = $2 AND Stock >= $1',
+                    [product.quantity, product.productId]
+                );
+                if (updateResult.rowCount === 0) {
+                    await conn.query('ROLLBACK');
+                    return next(new HttpError('Nincs elég készleten a termékből.', 400));
+                }
                 if (priceResult.rows.length === 0) {
                     await conn.query('ROLLBACK');
                     return next(new HttpError('Termék nem található.', 404));
