@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Card, Container, Form, Row, Col, Image, Button } from 'react-bootstrap';
 import '../style/Upload.css';
 import { ENDPOINTS } from '../api/endpoints';
