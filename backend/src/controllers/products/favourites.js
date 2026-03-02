@@ -98,9 +98,9 @@ export async function GetfavouritesController(req, res) {
                 .map(id => imageMap.get(String(id)))
                 .filter(Boolean)[0];
             return {
-                id: r.product_id,
+                ProdID: r.product_id,
                 name: r.name,
-                price: r.price,
+                price: r.pricehuf,
                 images: firstImage ? [firstImage] : []
             };
         });
