@@ -13,6 +13,7 @@ import ResetPassword from './ResetPassword';
 import Profil from './Profil';
 import Favourites from './Favourites'
 import Upload from './Upload';
+import NewBlog from './NewBlog';
 
 import { useContext } from 'react';
 import { GlobalContext } from '../contexts/Contexts';
@@ -38,11 +39,15 @@ function App() {
           <Route path="/" exact activeClassName="active" element={<Home />} />
           <Route path="/termekek" exact activeClassName="active" element={<Products />} />
           <Route path="/rolunk" exact activeClassName="active" element={<AboutUs />} />
+
           <Route path="/profil" exact activeClassName="active" element={isLoggedIn ? (<Profil />) : (<Home />)} />
           <Route path="/kedvenc" exact activeClassName="active" element={isLoggedIn ? (<Favourites />) : (<Home />)} />
           <Route path="/kosar" exact activeClassName="active" element={isLoggedIn ? (<Cart />) : (<Home />)} />
           <Route path="/rendelesek" exact activeClassName="active" element={isLoggedIn ? (<Orders />) : (<Home />)} />
+
           <Route path="/feltoltes" exact activeClassName="active" element={isAdmin ? (<Upload />) : (<Home />)} />
+          <Route path='/blog' exact activeClassName="active" element={isAdmin ? (<NewBlog />) : (<Home />)} />
+
           <Route path="/verify-email" exact element={<VerifyEmail />} />
           <Route path="/reset-password" exact element={<ResetPassword />} />
         </Routes>

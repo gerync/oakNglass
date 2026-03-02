@@ -86,128 +86,126 @@ function Upload() {
 
 
   return (
-    <>
-      <Container className="my-5" >
-        <Card className="shadow-sm border-0 bg-content">
-          <Card.Header className="bg-content py-3">
-            <h4 className="mb-0">Termék feltöltése</h4>
-          </Card.Header>
+    <Container className="my-5" >
+      <Card className="shadow-sm border-0 bg-content">
+        <Card.Header className="bg-content py-3">
+          <h4 className="mb-0">Termék feltöltése</h4>
+        </Card.Header>
 
-          <Card.Body>
-            <Form onSubmit={handleSubmit}>
-              <Row>
-                <Col md={3}>
-                  <Form.Group>
-                    <Form.Label>Temék neve</Form.Label>
-                    <Form.Control
-                      type='text'
-                      required
-                      placeholder='Név'
-                      name='name'
-                    />
-                  </Form.Group>
-                </Col>
+        <Card.Body>
+          <Form onSubmit={handleSubmit}>
+            <Row>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Temék neve</Form.Label>
+                  <Form.Control
+                    type='text'
+                    required
+                    placeholder='Név'
+                    name='name'
+                  />
+                </Form.Group>
+              </Col>
 
-                <Col md={3}>
-                  <Form.Group>
-                    <Form.Label>Ár forintban</Form.Label>
-                    <Form.Control
-                      type='number'
-                      required
-                      placeholder='5000'
-                      name='priceHUF'
-                    />
-                  </Form.Group>
-                </Col>
+              <Col md={3}>
+                <Form.Group>
+                  <Form.Label>Ár forintban</Form.Label>
+                  <Form.Control
+                    type='number'
+                    required
+                    placeholder='5000'
+                    name='priceHUF'
+                  />
+                </Form.Group>
+              </Col>
 
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>Alkohol százalék</Form.Label>
-                    <Form.Control
-                      type='number'
-                      required
-                      placeholder='0-100'
-                      min={0}
-                      max={100}
-                      name='alcoholPerc'
-                    />
-                  </Form.Group>
-                </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Alkohol százalék</Form.Label>
+                  <Form.Control
+                    type='number'
+                    required
+                    placeholder='0-100'
+                    min={0}
+                    max={100}
+                    name='alcoholPerc'
+                  />
+                </Form.Group>
+              </Col>
 
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>Kiszerelés milliliterben</Form.Label>
-                    <Form.Control
-                      type='number'
-                      required
-                      placeholder='500'
-                      name='contentML'
-                    />
-                  </Form.Group>
-                </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Kiszerelés milliliterben</Form.Label>
+                  <Form.Control
+                    type='number'
+                    required
+                    placeholder='500'
+                    name='contentML'
+                  />
+                </Form.Group>
+              </Col>
 
 
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>Elérhető mennyiség</Form.Label>
-                    <Form.Control
-                      type='number'
-                      required
-                      placeholder='50'
-                      name='Stock'
-                    />
-                  </Form.Group>
-                </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Elérhető mennyiség</Form.Label>
+                  <Form.Control
+                    type='number'
+                    required
+                    placeholder='50'
+                    name='Stock'
+                  />
+                </Form.Group>
+              </Col>
 
-                <Col md={12}>
-                  <Row className="align-items-start">
-                    <Col md={12}>
-                      <Form.Group controlId="formFileMultiple" className="mb-3">
-                        <Form.Label>Képek</Form.Label>
-                        <Form.Control
-                          type="file"
-                          multiple
-                          onChange={handleFileChange}
-                          accept="image/*"
+              <Col md={12}>
+                <Row className="align-items-start">
+                  <Col md={12}>
+                    <Form.Group controlId="formFileMultiple" className="mb-3">
+                      <Form.Label>Képek</Form.Label>
+                      <Form.Control
+                        type="file"
+                        multiple
+                        onChange={handleFileChange}
+                        accept="image/*"
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={12} className="mt-3 d-flex flex-wrap gap-2">
+                    {previews.map((url, index) => (
+                      <div
+                        key={url}
+                        className="position-relative"
+                        onMouseEnter={() => setHoverIndex(index)}
+                        onMouseLeave={() => setHoverIndex(null)}
+                        style={{ width: '100px', height: '100px', cursor: 'pointer' }}
+                        onClick={() => handleRemove(index)}
+                      >
+                        <Image
+                          src={url}
+                          thumbnail
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
-                      </Form.Group>
-                    </Col>
-                    <Col md={12} className="mt-3 d-flex flex-wrap gap-2">
-                      {previews.map((url, index) => (
-                        <div
-                          key={url}
-                          className="position-relative"
-                          onMouseEnter={() => setHoverIndex(index)}
-                          onMouseLeave={() => setHoverIndex(null)}
-                          style={{ width: '100px', height: '100px', cursor: 'pointer' }}
-                          onClick={() => handleRemove(index)}
-                        >
-                          <Image
-                            src={url}
-                            thumbnail
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          />
 
-                          {hoverIndex === index && (
-                            <div
-                              className="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
-                              style={{ backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: '0.25rem' }}
-                            >
-                              <span style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold' }}>×</span>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-              <Button type='submit'>Feltöltés</Button>
-            </Form>
-          </Card.Body>
-        </Card>
-      </Container >
-    </>
+                        {hoverIndex === index && (
+                          <div
+                            className="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+                            style={{ backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: '0.25rem' }}
+                          >
+                            <span style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold' }}>×</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            <Button type='submit'>Feltöltés</Button>
+          </Form>
+        </Card.Body>
+      </Card>
+    </Container >
   )
 
 }

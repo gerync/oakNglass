@@ -113,6 +113,7 @@ function NavbarComponent() {
                 drop="start"
               >
                 <NavDropdown.Item as={NavLink} to='/feltoltes'>Termék feltöltés</NavDropdown.Item>
+                <NavDropdown.Item as={NavLink} to='/blog'>Új blog</NavDropdown.Item>
               </NavDropdown>
             )}
             {isLoggedIn && (

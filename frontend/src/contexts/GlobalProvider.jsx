@@ -5,7 +5,6 @@ import Cookies from "js-cookie";
 export const GlobalProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return Cookies.get('loggedIn') === 'true';
-
   });
 
   const [isAdmin, setIsAdmin] = useState(() => {

@@ -17,6 +17,7 @@ export const ENDPOINTS = {
   },
   BLOGS: {
     GET_ALL: '/blogs', //get
+    POST: '/blogs',
   },
   FAVOURITES: {
     GET: '/favourites', //get

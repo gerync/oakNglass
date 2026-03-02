@@ -5,10 +5,11 @@ import { GlobalContext } from '../contexts/Contexts';
 import { ENDPOINTS } from '../api/endpoints';
 import { toast } from 'react-toastify';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import Cookies from 'js-cookie';
 
 function LoginForm({ setShow, toggleShowPasswordReset }) {
   const [loading, setLoading] = useState(false);
-  const { setIsLoggedIn } = useContext(GlobalContext);
+  const { setIsLoggedIn, setIsAdmin } = useContext(GlobalContext);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -33,6 +34,7 @@ function LoginForm({ setShow, toggleShowPasswordReset }) {
         setIsLoggedIn(true);
         toast.success('Sikeres bejelentkezés');
         setShow(false);
+        if (Cookies.get('isAdmin')) setIsAdmin(true);
 
       } else {
         if (res.status == 401) toast.error('Helytelen bejelentkezési adatok.');
