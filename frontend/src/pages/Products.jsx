@@ -49,7 +49,7 @@ function Products() {
   }, [isLoggedIn, fetchFav]);
 
   const toggleFav = async (item) => {
-    const isFav = fav.some(f => f.id === item.ProdID);
+    const isFav = fav.some(f => f.ProdID === item.ProdID);
     try {
       const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.FAVOURITES.POST_DELETE}${item.ProdID}`, {
         method: isFav ? 'DELETE' : 'POST',
@@ -57,10 +57,12 @@ function Products() {
         headers: { 'Content-Type': 'application/json' },
       });
       if (res.ok) {
-        setFav(prev =>
+        setFav((prev) => (
           isFav
-            ? prev.filter(f => f.id !== item.ProdID)
+            ? prev.filter(f => f.ProdID !== item.ProdID)
             : [...prev, item]
+
+        )
         );
       } else {
         toast.error('Hiba történt a kedvenc módosítása közben!');
@@ -326,18 +328,18 @@ function Products() {
                                   {isLoggedIn && (
                                     <button
                                       onClick={() => toggleFav(item)}
-                                      title={(fav || []).some(f => f?.id === item?.ProdID) ? 'Eltávolítás a kedvencekből' : 'Hozzáadás a kedvencekhez'}
+                                      title={(fav || []).some(f => f?.ProdID === item?.ProdID) ? 'Eltávolítás a kedvencekből' : 'Hozzáadás a kedvencekhez'}
                                       style={{
                                         position: 'absolute', top: 8, right: 8,
                                         background: 'rgba(255,255,255,0.85)', border: 'none',
                                         borderRadius: '50%', width: 36, height: 36,
                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                                         cursor: 'pointer', zIndex: 10, fontSize: 18,
-                                        color: fav.some(f => f.id === item.ProdID) ? '#f5a623' : '#999',
+                                        color: fav.some(f => f.ProdID === item.ProdID) ? '#f5a623' : '#999',
                                         boxShadow: '0 1px 4px rgba(0,0,0,0.2)'
                                       }}
                                     >
-                                      {fav.some(f => f.id === item.ProdID)
+                                      {fav.some(f => f.ProdID === item.ProdID)
                                         ? <FaStar />
                                         : <FaRegStar />}
                                     </button>

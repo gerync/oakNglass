@@ -43,23 +43,16 @@ function Upload() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const body = {
-      name: e.target.name.value,
-      alccoholPerc: e.target.alcoholPerc.value,
-      contentML: e.target.contentML.value,
-      priceHUF: e.target.priceHUF.value,
-      Stock: e.target.Stock.value,
-      images: selectedFiles
-    }
+    const formData = new FormData(e.target);
 
     try {
       const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.PRODUCTS.UPLOAD}`, {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'multipart/form-data'
         },
-        body: JSON.stringify(body),
+        body: formData
       });
 
       if (res.ok) {
@@ -166,6 +159,7 @@ function Upload() {
                       <Form.Control
                         type="file"
                         multiple
+                        name='images'
                         onChange={handleFileChange}
                         accept="image/*"
                       />
