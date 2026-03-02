@@ -23,5 +23,8 @@ export const ENDPOINTS = {
     GET: '/favourites', //get
     POST_DELETE: '/favourites/', //post, delete
   },
+  ORDERS: {
+    GET_ALL: '/order/my-orders',
+  }
 
 };

@@ -23,14 +23,12 @@ export const CartProvider = ({ children }) => {
         toast.error('A termékből nem lehet többet rendelni.');
         return;
       }
-      toast.success('Sikeresen kosárba helyezve.');
       setCart(prev.map((item, idx) =>
         idx === index ? { ...item, count: item.count + 1 } : item
       ));
       return;
     }
 
-    toast.success('Sikeresen kosárba helyezve.');
     setCart([...prev, { ...newItem, count: 1 }]);
   }, []);
 
