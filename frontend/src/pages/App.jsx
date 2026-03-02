@@ -12,7 +12,7 @@ import VerifyEmail from './VerifyEmail';
 import ResetPassword from './ResetPassword';
 import Profil from './Profil';
 import Favourites from './Favourites'
-
+import Upload from './Upload';
 
 import { useContext } from 'react';
 import { GlobalContext } from '../contexts/Contexts';
@@ -42,6 +42,7 @@ function App() {
           <Route path="/kedvenc" exact activeClassName="active" element={isLoggedIn ? (<Favourites />) : (<Home />)} />
           <Route path="/kosar" exact activeClassName="active" element={isLoggedIn ? (<Cart />) : (<Home />)} />
           <Route path="/rendelesek" exact activeClassName="active" element={isLoggedIn ? (<Orders />) : (<Home />)} />
+          <Route path="/feltoltes" exact activeClassName="active" element={isAdmin ? (<Upload />) : (<Home />)} />
           <Route path="/verify-email" exact element={<VerifyEmail />} />
           <Route path="/reset-password" exact element={<ResetPassword />} />
         </Routes>

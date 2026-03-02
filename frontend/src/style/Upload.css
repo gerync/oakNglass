@@ -1,0 +1,15 @@
+.delete-button {
+  position: absolute;
+  left: 50%;
+  background: transparent;
+  color: black!important;
+  outline: none!important;
+  border: none!important;
+}
+
+.delete-button:hover{
+  background: rgba(126, 125, 125, 0.445)!important;
+}
+.delete-button:active{
+  background: rgba(126, 125, 125, 0.603)!important;
+}

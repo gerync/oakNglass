@@ -12,7 +12,6 @@ function RegisterForm({ setIsLogin }) {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showRetypePassword, setShowRetypePassword] = useState(false);
-  const [retypeError, setRetypeError] = useState("");
 
 
   async function handleSubmit(e) {
