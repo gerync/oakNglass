@@ -1,19 +1,25 @@
-import { Container, Form, Button, Row, Col, Spinner } from 'react-bootstrap';
+import { Container, Form, Button, Row, Col, Spinner, InputGroup } from 'react-bootstrap';
 import { ENDPOINTS } from '../api/endpoints';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import '../style/Login.css';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 function RegisterForm({ setIsLogin }) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [pw, setPw] = useState('');
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRetypePassword, setShowRetypePassword] = useState(false);
+  const [retypeError, setRetypeError] = useState("");
 
 
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
     validate(e);
-    if(e.target.password.value !== e.target.password2.value) setErrors(prev => ({ ...prev, 'password2': 'A jelszavak nem egyeznek' }));
+    if (e.target.password.value !== e.target.password2.value) setErrors(prev => ({ ...prev, 'password2': 'A jelszavak nem egyeznek' }));
     try {
       const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.AUTH.REGISTER}`, {
         method: 'POST',
@@ -46,6 +52,8 @@ function RegisterForm({ setIsLogin }) {
     }
   }
 
+
+
   const validate = (name, value) => {
     let error = null;
 
@@ -71,6 +79,8 @@ function RegisterForm({ setIsLogin }) {
       if (!passwordRegex.digit.test(value)) error = 'A jelszónak tartalmaznia kell legalább egy számjegyet'
       if (!passwordRegex.lowercase.test(value)) error = 'A jelszónak tartalmaznia kell legalább egy kisbetűt'
       if (!passwordRegex.uppercase.test(value)) error = 'A jelszónak tartalmaznia kell legalább egy nagybetűt'
+
+      if (error === null) setPw(value);
     }
     if (name === 'birthDate') {
       try {
@@ -89,6 +99,9 @@ function RegisterForm({ setIsLogin }) {
       } catch {
         error = 'Érvénytelen születési dátum formátum';
       }
+    }
+    if (name === 'password2') {
+      if (pw !== value) error = 'A jelszavak nem egyeznek!';
     }
 
 
@@ -114,6 +127,7 @@ function RegisterForm({ setIsLogin }) {
                   isInvalid={!!errors.fullName}
                   onChange={(e) => validate(e.target.name, e.target.value)}
                 />
+
                 <Form.Control.Feedback type='invalid'>
                   {errors.fullName}
                 </Form.Control.Feedback>
@@ -153,35 +167,58 @@ function RegisterForm({ setIsLogin }) {
 
           <Row>
             <Col md={6}>
+
               <Form.Group className="mb-3">
                 <Form.Label>Jelszó<span style={{ color: '#800020' }} title='Kötelező'>*</span></Form.Label>
-                <Form.Control
-                  name='password'
-                  required
-                  type="password"
-                  placeholder="******"
-                  isInvalid={!!errors.password}
-                  onChange={(e) => validate(e.target.name, e.target.value)}
-                />
-                <Form.Control.Feedback type='invalid'>
-                  {errors.password}
-                </Form.Control.Feedback>
+                <InputGroup hasValidation>
+                  <Form.Control
+                    required
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="*******"
+                    className="border-end-0"
+                    isInvalid={!!errors.password}
+                    onChange={(e) => validate(e.target.name, e.target.value)}
+                  />
+                  <InputGroup.Text
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="border-left border-start-0 text-muted"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </InputGroup.Text>
+                  <Form.Control.Feedback type='invalid'>
+                    {errors.password}
+                  </Form.Control.Feedback>
+                </InputGroup>
               </Form.Group>
+
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Jelszó megerősítése<span style={{ color: '#800020' }} title='Kötelező'>*</span></Form.Label>
-                <Form.Control
-                  name='password2'
-                  required
-                  type="password"
-                  placeholder="******"
-                  isInvalid={!!errors.password2}
-                  onChange={(e) => validate(e.target.name, e.target.value)}
-                />
-                <Form.Control.Feedback type='invalid'>
-                  {errors.password2}
-                </Form.Control.Feedback>
+                <InputGroup hasValidation>
+                  <Form.Control
+                    required
+                    type={showRetypePassword ? "text" : "password"}
+                    name="password2"
+                    placeholder="*******"
+                    className="border-end-0"
+                    isInvalid={!!errors.password2}
+                    onChange={(e) => validate(e.target.name, e.target.value)}
+                  />
+                  <InputGroup.Text
+                    onClick={() => setShowRetypePassword(!showRetypePassword)}
+                    className="border-left border-start-0 text-muted"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {showRetypePassword ? <FaEyeSlash /> : <FaEye />}
+                  </InputGroup.Text>
+                  <Form.Control.Feedback type='invalid'>
+                    {errors.password2}
+                  </Form.Control.Feedback>
+                </InputGroup>
+
               </Form.Group>
             </Col>
           </Row>
