@@ -33,7 +33,7 @@ function Favourites() {
   }, []);
 
   const toggleFav = async (item) => {
-    const isFav = fav.some(f => f.id === item.ProdID);
+    const isFav = fav.some(f => f.id === item.id);
     try {
       const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.FAVOURITES.POST_DELETE}${item.id}`, {
         method: 'DELETE',
@@ -43,7 +43,7 @@ function Favourites() {
       if (res.ok) {
         setFav(prev =>
           isFav
-            ? prev.filter(f => f.id !== item.ProdID)
+            ? prev.filter(f => f.id !== item.id)
             : [...prev, item]
         );
       } else {

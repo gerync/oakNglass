@@ -66,6 +66,7 @@ body {
   border-radius: 8px;
   transition: transform 0.2s ease;
   color: light-dark(#FBE6E9, #D4AF37) !important;
+  border: #800020!important;
 }
 
 .btn-primary:hover {
