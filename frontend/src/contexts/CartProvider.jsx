@@ -55,7 +55,6 @@ export const CartProvider = ({ children }) => {
   }, []);
 
   const deleteItemFromCart = useCallback((ProdID) => {
-    console.log('lofasz')
     setCart((prev) => prev.filter(item => item.ProdID !== ProdID));
   }, []);
 

@@ -17,11 +17,11 @@ export const ENDPOINTS = {
   },
   BLOGS: {
     GET_ALL: '/blogs', //get
+    POST: '/blogs',
   },
   FAVOURITES: {
     GET: '/favourites', //get
-    POST: '/favourites', //post
-    DELETE: '/favourites', //delete
+    POST_DELETE: '/favourites/', //post, delete
   },
 
 };

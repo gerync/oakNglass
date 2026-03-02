@@ -1,14 +1,17 @@
-import { Container, Form, Button, Spinner } from 'react-bootstrap';
+import { Container, Form, Button, Spinner, InputGroup } from 'react-bootstrap';
 import '../style/Login.css';
 import { useContext, useState } from 'react';
 import { GlobalContext } from '../contexts/Contexts';
 import { ENDPOINTS } from '../api/endpoints';
 import { toast } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import Cookies from 'js-cookie';
 
 function LoginForm({ setShow, toggleShowPasswordReset }) {
   const [loading, setLoading] = useState(false);
-  const { setIsLoggedIn } = useContext(GlobalContext);
+  const { setIsLoggedIn, setIsAdmin } = useContext(GlobalContext);
 
+  const [showPassword, setShowPassword] = useState(false);
 
 
   async function handleSubmit(e) {
@@ -31,6 +34,7 @@ function LoginForm({ setShow, toggleShowPasswordReset }) {
         setIsLoggedIn(true);
         toast.success('Sikeres bejelentkezés');
         setShow(false);
+        if (Cookies.get('isAdmin')) setIsAdmin(true);
 
       } else {
         if (res.status == 401) toast.error('Helytelen bejelentkezési adatok.');
@@ -56,10 +60,28 @@ function LoginForm({ setShow, toggleShowPasswordReset }) {
           </Form.Group>
 
 
+
+
           <Form.Group className="mb-3">
             <Form.Label>Jelszó</Form.Label>
-            <Form.Control required type="password" name='password' placeholder="******" />
+            <InputGroup hasValidation>
+              <Form.Control
+                required
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="*******"
+                className="border-end-0"
+              />
+              <InputGroup.Text
+                onClick={() => setShowPassword(!showPassword)}
+                className="border-left border-start-0 text-muted"
+                style={{ cursor: 'pointer' }}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </InputGroup.Text>
+            </InputGroup>
           </Form.Group>
+
 
 
           <div className="text-center mt-4">
