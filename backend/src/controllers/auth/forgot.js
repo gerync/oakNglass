@@ -6,7 +6,7 @@ import HttpError from "../../models/httpError.js";
 
 export default async function ResetPassController(req, res) {
     
-    if (req.body.email || req.body.mobile) {
+    if ((req.body.email && !req.body.mobile) || (!req.body.email && req.body.mobile)) {
         const email = req.body.email;
         const mobile = req.body.mobile;
         const conn = await pool.connect();
