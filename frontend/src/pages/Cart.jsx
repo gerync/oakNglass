@@ -1,10 +1,15 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { Container, Row, Col, Button, Card, ListGroup, InputGroup, FormControl } from "react-bootstrap";
 import { CartContext } from "../contexts/Contexts";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 function Cart() {
   const { cart, addItemToCart, removeItemFromCart, emptyCart, handleBlur, updateItemCount, deleteItemFromCart, cartCount } = useContext(CartContext);
+
+  const priceSum = useMemo(() => {
+    return cart.reduce((partialSum, item) => partialSum + item.count * item.priceHUF, 0);
+  }, [cart]);
+
   return (
 
 
@@ -43,7 +48,7 @@ function Cart() {
                         onChange={(e) => updateItemCount(item, e.target.value)}
                         onBlur={(e) => handleBlur(item.ProdID, e.target.value)}
                       />
-                      <Button variant="outline-secondary" size="sm" disabled={item.count== item.stock} onClick={() => addItemToCart(item)}>+</Button>
+                      <Button variant="outline-secondary" size="sm" disabled={item.count == item.stock} onClick={() => addItemToCart(item)}>+</Button>
                     </InputGroup>
 
                     <Button
@@ -73,6 +78,9 @@ function Cart() {
             >
               Kosár kiürítése
             </Button>
+            <div>
+              Összesen: <span className="fw-bold mt-2 text-danger">{priceSum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} Ft</span>
+            </div>
             <Button
               style={{ backgroundColor: '#7a0019', borderColor: '#7a0019' }}
               className="px-5 py-2 shadow"
