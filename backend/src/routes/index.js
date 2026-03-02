@@ -4,6 +4,7 @@ import products from './products.js';
 import fauvourites from './favourites.js';
 import order from './order.js';
 import blog from './blog-review.js';
+import profile from './profile.js';
 
 export default {
     auth: authroutes,
@@ -11,5 +12,6 @@ export default {
     products: products,
     favourites: fauvourites,
     order: order,
-    blogs: blog.blogrouter
+    blogs: blog.blogrouter,
+    profile: profile
 }
