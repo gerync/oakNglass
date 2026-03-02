@@ -1,11 +1,19 @@
 import { Card, Container, Button, Form } from 'react-bootstrap';
 import { ENDPOINTS } from '../api/endpoints';
 import { toast } from 'react-toastify';
+import { useState } from 'react';
 
 function NewBlog() {
 
+  const [contentLength, setContentLength] = useState(0);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(contentLength>600) {
+      toast.error('A szövegrész túl hosszú!');
+      return;
+    }
 
     const body = {
       title: e.target.title.value,
@@ -64,12 +72,19 @@ function NewBlog() {
                 rows={10}
                 placeholder="Írja ide a bejegyzést..."
                 name='content'
+                onChange={(e) => setContentLength(e.target.value.length)}
                 required
               />
             </Form.Group>
 
             <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-              <Button variant="primary" type="submit" className="px-5">
+              <p style={{color: contentLength>600?'red':'black'}}>{contentLength}/600</p>
+              <Button 
+              variant="primary" 
+              type="submit" 
+              className="px-5"
+              disabled={contentLength>600}
+              >
                 Közzététel
               </Button>
             </div>
