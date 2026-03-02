@@ -70,12 +70,7 @@ function Products() {
     }
   };
 
-  const [sortBy, setSortBy] = useState(() => {
-    return localStorage.getItem('sortby') || '';
-  });
-  const [sortOrder, setSortOrder] = useState(() => {
-    return localStorage.getItem('sortorder') || '';
-  })
+
 
   const toggleSortOrder = () => {
     const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
@@ -198,6 +193,13 @@ function Products() {
       }
     }
   }
+
+  const [sortBy, setSortBy] = useState(() => {
+    return searchParams.get('sortby') /*|| localStorage.getItem('sortby')*/ || '';
+  });
+  const [sortOrder, setSortOrder] = useState(() => {
+    return searchParams.get('sortorder') /*|| localStorage.getItem('sortorder')*/ || '';
+  })
 
   return (
     <>

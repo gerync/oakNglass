@@ -15,7 +15,6 @@ function Cart() {
         </Card.Header>
 
         <ListGroup variant="flush">
-          {/* Példa egy elemre - ezt érdemes map-elni a cartItems-en */}
           {cart.length > 0 ? (cart.map(item => (
             <div key={item.ProdID}>
               <ListGroup.Item className="py-4 bg-content">
@@ -44,7 +43,7 @@ function Cart() {
                         onChange={(e) => updateItemCount(item, e.target.value)}
                         onBlur={(e) => handleBlur(item.ProdID, e.target.value)}
                       />
-                      <Button variant="outline-secondary" size="sm" onClick={() => addItemToCart(item)}>+</Button>
+                      <Button variant="outline-secondary" size="sm" disabled={item.count== item.stock} onClick={() => addItemToCart(item)}>+</Button>
                     </InputGroup>
 
                     <Button
@@ -62,7 +61,6 @@ function Cart() {
           }
         </ListGroup>
 
-        {/* Alsó gombok */}
         <Card.Footer className="bg-content py-4">
           <div
             className="d-flex flex-column flex-md-row justify-content-between gap-3"
