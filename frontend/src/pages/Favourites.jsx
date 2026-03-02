@@ -11,7 +11,6 @@ function Favourites() {
 
 
   useEffect(() => {
-    let ignore = false;
     const fetchProducts = async () => {
       setLoading(true);
       try {
@@ -20,17 +19,16 @@ function Favourites() {
         );
         const data = await res.json();
 
-        if (res.ok && !ignore) {
-          setProducts(data);
+        if (res.ok) {
+          setProducts(data.favourites);
         }
       } catch {
-        if (!ignore) toast.error('Hiba történt a kedvencek betöltése közben!');
+        toast.error('Hiba történt a kedvencek betöltése közben!');
       } finally {
-        if (!ignore) setLoading(false);
+        setLoading(false);
       }
     };
     fetchProducts();
-    return () => { ignore = true; }
   }, []);
 
 
