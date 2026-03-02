@@ -49,7 +49,7 @@ function Products() {
   }, [isLoggedIn, fetchFav]);
 
   const toggleFav = async (item) => {
-    const isFav = fav.some(f => f.ProdID === item.ProdID);
+    const isFav = fav.some(f => f.id === item.ProdID);
     try {
       const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.FAVOURITES.POST_DELETE}${item.ProdID}`, {
         method: isFav ? 'DELETE' : 'POST',
@@ -59,7 +59,7 @@ function Products() {
       if (res.ok) {
         setFav(prev =>
           isFav
-            ? prev.filter(f => f.ProdID !== item.ProdID)
+            ? prev.filter(f => f.id !== item.ProdID)
             : [...prev, item]
         );
       } else {
@@ -195,10 +195,10 @@ function Products() {
   }
 
   const [sortBy, setSortBy] = useState(() => {
-    return searchParams.get('sortby') /*|| localStorage.getItem('sortby')*/ || '';
+    return searchParams.get('sortby') || '';
   });
   const [sortOrder, setSortOrder] = useState(() => {
-    return searchParams.get('sortorder') /*|| localStorage.getItem('sortorder')*/ || '';
+    return searchParams.get('sortorder') || '';
   })
 
   return (
