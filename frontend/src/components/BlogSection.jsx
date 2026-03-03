@@ -49,7 +49,7 @@ function BlogSection() {
             ? (
               <Row  >
                 {blogs.map((item, id) => (
-                  <Col key={id} className='custom-card mt-4 mb-4'>
+                  <Col key={id} md={4}className='custom-card mt-4 mb-4'>
                     <Card>
                       <Card.Body>
                         <Card.Title>
@@ -58,7 +58,7 @@ function BlogSection() {
                         <Card.Subtitle>{item.journalistname}</Card.Subtitle>
                         <hr />
                         <Card.Text>
-                          {item.content}
+                          {item.content.substring(0, 30)}
                         </Card.Text>
                       </Card.Body>
                     </Card>

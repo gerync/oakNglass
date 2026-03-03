@@ -52,7 +52,7 @@ function AboutUs() {
         <Row>
           <Col md="6" lg="6">
             <Card className="mb-2">
-              <Card.Img variant='top' src={GeryImage || image} />
+              <Card.Img variant='top' src={GeryImage} />
               <Card.Title>
                 Szücs Gergely
                 <br />
@@ -65,7 +65,7 @@ function AboutUs() {
           </Col>
           <Col md="6" lg="6">
             <Card>
-              <Card.Img variant='top' src={image2 || image} />
+              <Card.Img variant='top' src={image2} />
               <Card.Title>
                 Katona Zalán
                 <br />
