@@ -15,12 +15,21 @@ function encryptData(data) {
 }
 
 function decryptData(encryptedData) {
+    if (!encryptedData) {
+        throw new Error('Cannot decrypt null or undefined data');
+    }
+    
     // BYTEA columns come back from node-postgres as Buffers containing the
     // ASCII/UTF-8 bytes of the hex string we originally stored, so we must
     // convert with 'utf8' (not 'hex') to recover the original cipher-text.
     const encryptedHex = Buffer.isBuffer(encryptedData)
         ? encryptedData.toString('utf8')
         : String(encryptedData);
+
+    // Validate hex string length
+    if (encryptedHex.length % 2 !== 0) {
+        throw new Error(`Invalid encrypted data: hex string must have even length, got ${encryptedHex.length} characters: "${encryptedHex}"`);
+    }
 
     const key = deriveKey(config.security.secrets.encryption);
     const iv = Buffer.alloc(16, 0);
