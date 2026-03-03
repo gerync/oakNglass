@@ -19,7 +19,11 @@ export default async function getProfile(req, res, next) {
         user.email = decryptData(user.emailenc);
         user.fullname = decryptData(user.fullnameenc);
         user.address = decryptData(user.addressenc);
-        user.mobilenumber = decryptData(user.mobilenumberenc);
+        const mobileNumber = decryptData(user.mobilenumberenc);
+        user.mobilenumber = mobileNumber.length === 11 
+            ? mobileNumber.replace(/(\d{2})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')
+            : mobileNumber;
+        
         function formatDate(date) {
             const d = new Date(date);
             const year = d.getFullYear();
@@ -35,9 +39,7 @@ export default async function getProfile(req, res, next) {
             email: user.email,
             fullname: user.fullname,
             address: user.address,
-            mobile: function splitMobile(mobile) {
-                return mobile.replace(/^(\+\d{2})(\d{2})(\d{3})(\d{4})$/, '$1 $2 $3 $4');
-            },
+            mobile: user.mobilenumber,
             createdAt: user.createdat,
             birthdate: user.birthdate,
             role: user.role
