@@ -20,14 +20,24 @@ export default async function getProfile(req, res, next) {
         user.fullname = decryptData(user.fullnameenc);
         user.address = decryptData(user.addressenc);
         user.mobilenumber = decryptData(user.mobilenumberenc);
-
+        function formatDate(date) {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}. ${month}. ${day}.`;
+        }
+        user.birthdate = formatDate(user.birthdate);
+        user.createdat = formatDate(user.createdat);
         res.json({ 
             user: {
             uuid: user.uuid,
             email: user.email,
             fullname: user.fullname,
             address: user.address,
-            mobile: user.mobilenumber,
+            mobile: function splitMobile(mobile) {
+                return mobile.replace(/^(\+\d{2})(\d{2})(\d{3})(\d{4})$/, '$1 $2 $3 $4');
+            },
             createdAt: user.createdat,
             birthdate: user.birthdate,
             role: user.role
