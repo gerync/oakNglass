@@ -101,19 +101,22 @@ function Checkout() {
         {
           credentials: 'include',
         },
-      )
+      );
       if (res.ok && !ignore) {
-        const user = (await res.json()).user;
-        setUser(user);
-        handleBilling({ target: { name: 'name', value: user.fullname || null } });
-        handleBilling({ target: { name: 'email', value: user.email || null } });
-        handleBilling({ target: { name: 'phone', value: user.mobile || null } });
-        handleBilling({ target: { name: 'address', value: user.address || null } });
+        const userData = (await res.json()).user;
+        setUser(userData);
+        setBilling(prev => ({
+          ...prev,
+          name: userData.fullname || prev.name,
+          email: userData.email || prev.email,
+          phone: userData.mobile || prev.phone,
+          address: userData.address || prev.address,
+        }));
       }
     }
     fetchUserData();
-    return () => { ignore = true; }
-  });
+    return () => { ignore = true; };
+  }, []);
 
   return (
     <Container className="my-5">
@@ -143,7 +146,7 @@ function Checkout() {
                         required
                         className="bg-content text-custom border-secondary"
                         name="name"
-                        value={user.fullname || billing.name}
+                        value={billing.name}
                         onChange={handleBilling}
                         placeholder="pl. Kiss János"
                       />
@@ -159,7 +162,7 @@ function Checkout() {
                         type="email"
                         className="bg-content text-custom border-secondary"
                         name="email"
-                        value={user.email || billing.email}
+                        value={billing.email}
                         disabled={!!user.email}
                         onChange={handleBilling}
                         placeholder="pelda@email.com"
@@ -175,7 +178,7 @@ function Checkout() {
                         type="tel"
                         className="bg-content text-custom border-secondary"
                         name="phone"
-                        value={user.phone || billing.phone}
+                        value={billing.phone}
                         onChange={handleBilling}
                         placeholder="+36 30 123 4567"
                       />
@@ -190,7 +193,7 @@ function Checkout() {
                         required
                         className="bg-content text-custom border-secondary"
                         name="address"
-                        value={user.address || billing.address}
+                        value={billing.address}
                         onChange={handleBilling}
                         placeholder="1000 Város, Fő utca 12/A"
                       />
