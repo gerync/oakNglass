@@ -6,8 +6,6 @@ import crypto from "crypto";
 
 
 import config from "../../config.js";
-import path from "path";
-import { Domain } from "domain";
 
 export default async function LoginController(req, res) {
     const { identifier, password } = req.body;
@@ -18,11 +16,14 @@ export default async function LoginController(req, res) {
     try {
         await client.query('BEGIN');
         const userRes = await client.query(
-            'SELECT uuid, hashedpassword, role FROM users WHERE hashedemail = $1 OR hashedmobilenumber = $2',
+            'SELECT uuid, hashedpassword, role, verifiedemail FROM users WHERE hashedemail = $1 OR hashedmobilenumber = $2',
             [hashedIdentifier, hashedIdentifier]
         );
         if (userRes.rows.length === 0) {
             throw new HttpError('Hibás azonosító vagy jelszó', 401);
+        }
+        if (!userRes.rows[0].verifiedemail) {
+            throw new HttpError('Kérem erősítse meg az email címét a bejelentkezéshez', 403);
         }
         const { uuid, hashedpassword, role } = userRes.rows[0];
         const passwordMatch = await hash.verifyPassword(password, hashedpassword);
