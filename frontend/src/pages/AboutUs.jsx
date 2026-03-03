@@ -1,9 +1,8 @@
 import { Container, Row, Col, Card } from "react-bootstrap";
 import '../style/AboutUs.css';
-import image from '../assets/Manface.webp'
 
-import GeryImage from '../assets/IMG_20231118_195813.jpg';
-import image2 from '../assets/20250125_105135.jpg'
+import GeryImage from '../assets/compressed/IMG_20231118_195813.jpg';
+import image2 from '../assets/compressed/20250125_105135.jpg'
 
 function AboutUs() {
   const Date1 = new Date('2007/03/19');

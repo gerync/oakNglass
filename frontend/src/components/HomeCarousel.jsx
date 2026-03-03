@@ -1,9 +1,9 @@
 import { Carousel, Image } from 'react-bootstrap'
 import '../style/Carousel.css'
 
-import image1 from '../assets/1.png';
-import image2 from '../assets/2.png';
-import image3 from '../assets/3.png';
+import image1 from '../assets/compressed/1.png';
+import image2 from '../assets/compressed/2.png';
+import image3 from '../assets/compressed/3.png';
 
 function HomeCarousel() {
   return (
