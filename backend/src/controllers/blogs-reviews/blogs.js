@@ -11,7 +11,7 @@ export async function CreateBlogController(req, res, next) {
         await conn.query('BEGIN');
         const isJournalist = await conn.query('SELECT role FROM users WHERE uuid = $1', [userid]);
 
-        if (isJournalist.rows[0].role.toLowerCase() !== 'journalist') {
+        if (isJournalist.rows[0].role.toLowerCase() !== 'journalist' && isJournalist.rows[0].role.toLowerCase() !== 'admin') {
             throw new HttpError('Csak újságírók hozhatnak létre blogot', 403);
         }
         const result = await conn.query('INSERT INTO blogs (title, content, journalistuuid) VALUES ($1, $2, $3) RETURNING blogid AS id, title, content, journalistuuid, createdat', [title, content, userid]);
