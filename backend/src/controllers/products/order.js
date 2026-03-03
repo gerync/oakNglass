@@ -100,11 +100,12 @@ export async function GetMyOrders(req, res, next) {
     try {
         const userId = getUserIdFromRequest(req);
         const result = await pool.query(
-            'SELECT OrderID, TotalPriceHUF, ShipmentAddress, OrderDate FROM Orders WHERE UserID = $1',
+            'SELECT OrderID, TotalPriceHUF, ShipmentAddress, OrderTimeStamp FROM Orders WHERE UserID = $1',
             [userId]
         );
         res.json(result.rows);
     } catch (err) {
+        console.error('Error in GetMyOrders:', err);
         next(new HttpError('Hiba történt a rendelések lekérésekor.', 500));
     }    
 }
@@ -114,7 +115,7 @@ export async function GetOrderDetails(req, res, next) {
         const userId = getUserIdFromRequest(req);
         const orderId = req.params.orderId || req.params.id;
         const orderResult = await pool.query(
-            'SELECT OrderID, TotalPriceHUF, ShipmentAddress, OrderDate FROM Orders WHERE OrderID = $1 AND UserID = $2',
+            'SELECT OrderID, TotalPriceHUF, ShipmentAddress, OrderTimeStamp FROM Orders WHERE OrderID = $1 AND UserID = $2',
             [orderId, userId]
         );
         if (orderResult.rows.length === 0) {
@@ -129,6 +130,7 @@ export async function GetOrderDetails(req, res, next) {
         res.json(order);
     }
     catch (err) {
+        console.error('Error in GetOrderDetails:', err);
         next(new HttpError('Hiba történt a rendelés részleteinek lekérésekor.', 500));
     }
 }
