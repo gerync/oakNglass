@@ -5,8 +5,22 @@ import { decryptData } from '../../utils/security/encrypt.js';
 import config from '../../config.js';
 import { buildOrderHtml } from '../../email/content.js';
 
+function getUserIdFromRequest(req) {
+    const userId = req?.user?.uuid;
+    if (!userId) {
+        throw new HttpError('Nincs jogosultságod a művelet végrehajtásához', 401);
+    }
+    return userId;
+}
+
 export async function OrderProductsController(req, res, next) {
-    const userId = req.user.uuid;
+    let userId;
+    try {
+        userId = getUserIdFromRequest(req);
+    } catch (err) {
+        return next(err);
+    }
+
     const products = req.body.products;
     const conn = await pool.connect();
     try {
@@ -83,8 +97,8 @@ export async function OrderProductsController(req, res, next) {
 }
 
 export async function GetMyOrders(req, res, next) {
-    const userId = req.user.uuid;
     try {
+        const userId = getUserIdFromRequest(req);
         const result = await pool.query(
             'SELECT OrderID, TotalPriceHUF, ShipmentAddress, OrderDate FROM Orders WHERE UserID = $1',
             [userId]
@@ -96,9 +110,9 @@ export async function GetMyOrders(req, res, next) {
 }
 
 export async function GetOrderDetails(req, res, next) {
-    const userId = req.user.uuid;
-    const orderId = req.params.orderId;
     try {
+        const userId = getUserIdFromRequest(req);
+        const orderId = req.params.orderId || req.params.id;
         const orderResult = await pool.query(
             'SELECT OrderID, TotalPriceHUF, ShipmentAddress, OrderDate FROM Orders WHERE OrderID = $1 AND UserID = $2',
             [orderId, userId]
