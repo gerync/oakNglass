@@ -27,12 +27,17 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [totalPages, setTotalPages] = useState(0);
   const [limit, setLimit] = useState(() => {
     return localStorage.getItem('limit') || 6;
   });
 
   const [fav, setFav] = useState([]);
+  if (!searchParams.get('page')) {
+    searchParams.set('page', 1)
+  }
 
   const fetchFav = useCallback(async () => {
     try {
@@ -84,7 +89,7 @@ function Products() {
     });
   };
 
-  const [searchParams, setSearchParams] = useSearchParams();
+
 
   const getFiltersFromUrl = () => {
     return {
@@ -108,9 +113,7 @@ function Products() {
     });
   };
 
-  if (!searchParams.get('page')) {
-    searchParams.set('page', 1)
-  }
+
 
   const handleParamChange = useCallback((newParamsObject) => {
     setSearchParams((prev) => {

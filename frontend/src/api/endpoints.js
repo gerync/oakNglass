@@ -26,6 +26,9 @@ export const ENDPOINTS = {
   ORDERS: {
     GET_ALL: '/order/my-orders',
     POST: '/order',
+  },
+  USER: {
+    PROFILE: '/profile/profile',
   }
 
 };

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import {
   Container, Row, Col, Card, ListGroup, Form,
   Button, Badge,
@@ -92,6 +92,21 @@ function Checkout() {
 
   };
 
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    async function fetchUserData() {
+      const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.USER.PROFILE}`,
+        {
+          credentials: 'include',
+        }
+      )
+      const data = res.json();
+      setUser(data);
+    }
+    fetchUserData();
+  }, []);
+
   return (
     <Container className="my-5">
       <h3 className="mb-4 text-custom">
@@ -121,6 +136,7 @@ function Checkout() {
                         className="bg-content text-custom border-secondary"
                         name="name"
                         value={billing.name}
+                        defaultValue={user.fullname}
                         onChange={handleBilling}
                         placeholder="pl. Kiss János"
                       />
@@ -137,6 +153,8 @@ function Checkout() {
                         className="bg-content text-custom border-secondary"
                         name="email"
                         value={billing.email}
+                        defaultValue={user.email}
+                        disabled={!!user.email}
                         onChange={handleBilling}
                         placeholder="pelda@email.com"
                       />
@@ -152,6 +170,7 @@ function Checkout() {
                         className="bg-content text-custom border-secondary"
                         name="phone"
                         value={billing.phone}
+                        defaultValue={user.phone}
                         onChange={handleBilling}
                         placeholder="+36 30 123 4567"
                       />
@@ -168,6 +187,7 @@ function Checkout() {
                         name="address"
                         value={billing.address}
                         onChange={handleBilling}
+                        defaultValue={user.address}
                         placeholder="1000 Város, Fő utca 12/A"
                       />
                       <Form.Control.Feedback type="invalid">Kötelező mező.</Form.Control.Feedback>

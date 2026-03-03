@@ -2,6 +2,9 @@ import { Container, Row, Col, Card } from "react-bootstrap";
 import '../style/AboutUs.css';
 import image from '../assets/Manface.webp'
 
+import GeryImage from '../assets/IMG_20231118_195813.jpg';
+import image2 from '../assets/20250125_105135.jpg'
+
 function AboutUs() {
   const Date1 = new Date('2007/03/19');
   const Date2 = new Date('2006/08/16');
@@ -50,7 +53,7 @@ function AboutUs() {
         <Row>
           <Col md="6" lg="6">
             <Card className="mb-2">
-              <Card.Img variant='top' src={image} />
+              <Card.Img variant='top' src={GeryImage || image} />
               <Card.Title>
                 Szücs Gergely
                 <br />
@@ -63,7 +66,7 @@ function AboutUs() {
           </Col>
           <Col md="6" lg="6">
             <Card>
-              <Card.Img variant='top' src={image} />
+              <Card.Img variant='top' src={image2 || image} />
               <Card.Title>
                 Katona Zalán
                 <br />
