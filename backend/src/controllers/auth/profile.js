@@ -20,9 +20,13 @@ export default async function getProfile(req, res, next) {
         user.fullname = decryptData(user.fullnameenc);
         user.address = decryptData(user.addressenc);
         const mobileNumber = decryptData(user.mobilenumberenc);
-        user.mobilenumber = mobileNumber.length === 11 
-            ? mobileNumber.replace(/(\d{2})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')
-            : mobileNumber;
+            if (mobileNumber) {
+                user.mobilenumber = mobileNumber.length === 11
+                    ? mobileNumber.replace(/(\d{2})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4')
+                    : mobileNumber;
+            } else {
+                user.mobilenumber = null;
+            }
         
         function formatDate(date) {
             const d = new Date(date);
