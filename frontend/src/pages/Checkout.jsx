@@ -102,7 +102,7 @@ function Checkout() {
         }
       )
       const data = res.json();
-      setUser(data);
+      setUser(data.user);
     }
     fetchUserData();
   }, []);
