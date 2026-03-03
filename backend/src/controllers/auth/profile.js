@@ -10,7 +10,7 @@ export default async function getProfile(req, res, next) {
         client = await pool.connect();
         
         const { rows } = await client.query(
-            'SELECT uuid, emailenc, fullnameenc, addressenc, createdat, birthdate, role FROM users WHERE uuid = $1 LIMIT 1',
+            'SELECT uuid, emailenc, fullnameenc, addressenc, createdat, birthdate, mobilenumberenc, role FROM users WHERE uuid = $1 LIMIT 1',
             [userid]
         );
         if (rows.length === 0) throw new HttpError('Felhasználó nem található', 404);
@@ -19,12 +19,15 @@ export default async function getProfile(req, res, next) {
         user.email = decryptData(user.emailenc);
         user.fullname = decryptData(user.fullnameenc);
         user.address = decryptData(user.addressenc);
+        user.mobilenumber = decryptData(user.mobilenumberenc);
 
-        res.json({ user: {
+        res.json({ 
+            user: {
             uuid: user.uuid,
             email: user.email,
             fullname: user.fullname,
             address: user.address,
+            mobile: user.mobilenumber,
             createdAt: user.createdat,
             birthdate: user.birthdate,
             role: user.role
