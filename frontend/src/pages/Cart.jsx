@@ -2,10 +2,16 @@ import { useContext } from "react";
 import { Container, Row, Col, Button, Card, ListGroup, InputGroup, FormControl } from "react-bootstrap";
 import { CartContext } from "../contexts/Contexts";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useNavigate } from "react-router-dom";
 
 function Cart() {
-  const { cart, addItemToCart, removeItemFromCart, emptyCart, handleBlur, updateItemCount, deleteItemFromCart, cartCount } = useContext(CartContext);
+  const { cart, addItemToCart, cartCount, removeItemFromCart, emptyCart, handleBlur, updateItemCount, deleteItemFromCart, priceSum } = useContext(CartContext);
+
+  const navigate = useNavigate();
+
+
   return (
+
 
 
     <Container className="my-5" >
@@ -15,7 +21,7 @@ function Cart() {
         </Card.Header>
 
         <ListGroup variant="flush">
-          {cart.length > 0 ? (cart.map(item => (
+          {cartCount > 0 ? (cart.map(item => (
             <div key={item.ProdID}>
               <ListGroup.Item className="py-4 bg-content">
                 <Row className="align-items-center">
@@ -43,7 +49,7 @@ function Cart() {
                         onChange={(e) => updateItemCount(item, e.target.value)}
                         onBlur={(e) => handleBlur(item.ProdID, e.target.value)}
                       />
-                      <Button variant="outline-secondary" size="sm" disabled={item.count== item.stock} onClick={() => addItemToCart(item)}>+</Button>
+                      <Button variant="outline-secondary" size="sm" disabled={item.count == item.stock} onClick={() => addItemToCart(item)}>+</Button>
                     </InputGroup>
 
                     <Button
@@ -73,10 +79,14 @@ function Cart() {
             >
               Kosár kiürítése
             </Button>
+            <div>
+              Összesen: <span className="fw-bold mt-2 text-danger">{priceSum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} Ft</span>
+            </div>
             <Button
               style={{ backgroundColor: '#7a0019', borderColor: '#7a0019' }}
               className="px-5 py-2 shadow"
               disabled={cartCount < 1}
+              onClick={()=>navigate('/fizetes')}
             >
               Rendelés leadása
             </Button>

@@ -2,6 +2,9 @@ import { Container, Row, Col, Card } from "react-bootstrap";
 import '../style/AboutUs.css';
 import image from '../assets/Manface.webp'
 
+import GeryImage from '../assets/IMG_20231118_195813.jpg';
+import image2 from '../assets/20250125_105135.jpg'
+
 function AboutUs() {
   const Date1 = new Date('2007/03/19');
   const Date2 = new Date('2006/08/16');
@@ -50,27 +53,27 @@ function AboutUs() {
         <Row>
           <Col md="6" lg="6">
             <Card className="mb-2">
-              <Card.Img variant='top' src={image} />
+              <Card.Img variant='top' src={GeryImage || image} />
               <Card.Title>
                 Szücs Gergely
                 <br />
                 <span className="text-secondary">{((Today - Date1) / MILLISECONDS_IN_YEAR).toString().split('.')[0]}</span>
               </Card.Title>
               <Card.Body>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce suscipit, augue quis ullamcorper maximus, mauris tellus fringilla eros, sed dictum risus purus id tortor. Nullam facilisis, elit id placerat pulvinar, felis nulla semper orci, non egestas purus felis nec diam.
+                Elsődleges feladata a backend és az adatbázis elkészítése volt. Emelette magára vállalta a projekt futtatását.
               </Card.Body>
             </Card>
           </Col>
           <Col md="6" lg="6">
             <Card>
-              <Card.Img variant='top' src={image} />
+              <Card.Img variant='top' src={image2 || image} />
               <Card.Title>
                 Katona Zalán
                 <br />
                 <span className="text-secondary">{((Today - Date2) / MILLISECONDS_IN_YEAR).toString().split('.')[0]}</span>
               </Card.Title>
               <Card.Body>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce suscipit, augue quis ullamcorper maximus, mauris tellus fringilla eros, sed dictum risus purus id tortor. Nullam facilisis, elit id placerat pulvinar, felis nulla semper orci, non egestas purus felis nec diam.
+                A webshop dizájnjáért valamint logikai megvalósításáért felelt
               </Card.Body>
             </Card>
           </Col>

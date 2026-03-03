@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 
 function Upload() {
 
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [, setSelectedFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [hoverIndex, setHoverIndex] = useState(null);
 
@@ -73,10 +73,6 @@ function Upload() {
       toast.error('Hiba történt feltöltés során!');
     }
   }
-
-
-
-
 
   return (
     <Container className="my-5" >

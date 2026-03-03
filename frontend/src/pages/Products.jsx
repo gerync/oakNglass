@@ -27,12 +27,17 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [totalPages, setTotalPages] = useState(0);
   const [limit, setLimit] = useState(() => {
     return localStorage.getItem('limit') || 6;
   });
 
   const [fav, setFav] = useState([]);
+  if (!searchParams.get('page')) {
+    searchParams.set('page', 1)
+  }
 
   const fetchFav = useCallback(async () => {
     try {
@@ -84,7 +89,7 @@ function Products() {
     });
   };
 
-  const [searchParams, setSearchParams] = useSearchParams();
+
 
   const getFiltersFromUrl = () => {
     return {
@@ -108,11 +113,9 @@ function Products() {
     });
   };
 
-  if (searchParams.size === 0) {
-    searchParams.set('page', 1)
-  }
 
-  const handleParamChange = (newParamsObject) => {
+
+  const handleParamChange = useCallback((newParamsObject) => {
     setSearchParams((prev) => {
       const nextParams = new URLSearchParams(prev);
 
@@ -131,11 +134,9 @@ function Products() {
           nextParams.delete(key);
         }
       });
-
-      if (!newParamsObject.page) nextParams.set('page', 1);
       return nextParams;
     });
-  };
+  }, [setSearchParams]);
 
   useEffect(() => {
     let ignore = false;
@@ -160,7 +161,11 @@ function Products() {
   }, [searchParams, limit]);
 
   const handlePageChange = (pageNumber) => {
-    setSearchParams(prev => { const next = new URLSearchParams(prev); next.set('page', pageNumber); return next; });
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', pageNumber);
+      return next;
+    });
     window.scrollTo(0, 0);
   };
 
@@ -201,7 +206,21 @@ function Products() {
   });
   const [sortOrder, setSortOrder] = useState(() => {
     return searchParams.get('sortorder') || '';
-  })
+  });
+  const [searchBy, setSearchBy] = useState(() => {
+    return searchParams.get('search') || '';
+  });
+
+  const handleInputChange = (e) => {
+    setSearchBy(e.target.value);
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleParamChange({ search: searchBy || null });
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchBy, handleParamChange]);
 
   return (
     <>
@@ -209,6 +228,21 @@ function Products() {
         <Row>
           <Col md='3' className='pt-3 col-sort'>
             <h3 className="sort-header">Szűrés</h3>
+            <div>
+              Keresés
+              <Form>
+                <Form.Group className="mb-3" controlId="search">
+                  <Form.Control
+                    className="bg-content"
+                    type="text"
+                    placeholder="Keresés"
+                    name='search'
+                    value={searchBy}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
+              </Form>
+            </div>
             <div>
               Alkoholtartalom (%)
               <Slider

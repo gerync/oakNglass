@@ -2,7 +2,7 @@ import { Navbar, Nav, NavDropdown, Image, Button } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import '../style/Navbar.css';
 
-import  PasswordResetModal from '../components/PasswordResetModal';
+import PasswordResetModal from '../components/PasswordResetModal';
 import LogRegModal from '../components/LogReg';
 import logo from '../assets/LogoBlack.svg';
 import moon from '../assets/moon.svg';

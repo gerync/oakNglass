@@ -16,11 +16,13 @@ import Upload from './Upload';
 import NewBlog from './NewBlog';
 
 import { useContext } from 'react';
-import { GlobalContext } from '../contexts/Contexts';
+import { CartContext, GlobalContext } from '../contexts/Contexts';
+import Checkout from './Checkout';
 
 
 function App() {
   const { isLoggedIn, isAdmin } = useContext(GlobalContext);
+  const { cartCount } = useContext(CartContext)
 
   return (
     <>
@@ -44,6 +46,8 @@ function App() {
           <Route path="/kedvenc" exact activeClassName="active" element={isLoggedIn ? (<Favourites />) : (<Home />)} />
           <Route path="/kosar" exact activeClassName="active" element={isLoggedIn ? (<Cart />) : (<Home />)} />
           <Route path="/rendelesek" exact activeClassName="active" element={isLoggedIn ? (<Orders />) : (<Home />)} />
+
+          <Route path="/fizetes" exact activeClassName="active" element={isLoggedIn && cartCount > 0 ? (<Checkout />) : (<Home />)} />
 
           <Route path="/feltoltes" exact activeClassName="active" element={isAdmin ? (<Upload />) : (<Home />)} />
           <Route path='/blog' exact activeClassName="active" element={isAdmin ? (<NewBlog />) : (<Home />)} />
