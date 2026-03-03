@@ -101,15 +101,15 @@ function Checkout() {
           credentials: 'include',
         }
       )
-      const data = await res.json();
-      setUser(data.user);
-      handleBilling({ target: { name: 'name', value: user?.fullname || null } });
-      handleBilling({ target: { name: 'email', value: user?.email || null } });
-      handleBilling({ target: { name: 'phone', value: user?.mobile || null } });
-      handleBilling({ target: { name: 'address', value: user?.address || null } });
+      const user = (await res.json()).user;
+      setUser(user);
+      handleBilling({ target: { name: 'name', value: user.fullname || null } });
+      handleBilling({ target: { name: 'email', value: user.email || null } });
+      handleBilling({ target: { name: 'phone', value: user.mobile || null } });
+      handleBilling({ target: { name: 'address', value: user.address || null } });
     }
     fetchUserData();
-  });
+  }, [setUser, handleBilling]);
 
   return (
     <Container className="my-5">
