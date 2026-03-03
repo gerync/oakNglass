@@ -228,6 +228,7 @@ function Products() {
               <Form>
                 <Form.Group className="mb-3" controlId="search">
                   <Form.Control
+                    className="bg-content"
                     type="text"
                     placeholder="Keresés"
                     name='search'
