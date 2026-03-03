@@ -103,9 +103,13 @@ function Checkout() {
       )
       const data = await res.json();
       setUser(data.user);
+      handleBilling({ target: { name: 'name', value: user?.fullname || null } });
+      handleBilling({ target: { name: 'email', value: user?.email || null } });
+      handleBilling({ target: { name: 'phone', value: user?.mobile || null } });
+      handleBilling({ target: { name: 'address', value: user?.address || null } });
     }
     fetchUserData();
-  }, []);
+  });
 
   return (
     <Container className="my-5">
@@ -135,8 +139,7 @@ function Checkout() {
                         required
                         className="bg-content text-custom border-secondary"
                         name="name"
-                        value={billing.name}
-                        defaultValue={user.fullname}
+                        value={user.fullname || billing.name}
                         onChange={handleBilling}
                         placeholder="pl. Kiss János"
                       />
@@ -152,8 +155,7 @@ function Checkout() {
                         type="email"
                         className="bg-content text-custom border-secondary"
                         name="email"
-                        value={billing.email}
-                        defaultValue={user.email}
+                        value={user.email || billing.email}
                         disabled={!!user.email}
                         onChange={handleBilling}
                         placeholder="pelda@email.com"
@@ -169,8 +171,7 @@ function Checkout() {
                         type="tel"
                         className="bg-content text-custom border-secondary"
                         name="phone"
-                        value={billing.phone}
-                        defaultValue={user.phone}
+                        value={user.phone || billing.phone}
                         onChange={handleBilling}
                         placeholder="+36 30 123 4567"
                       />
@@ -185,9 +186,8 @@ function Checkout() {
                         required
                         className="bg-content text-custom border-secondary"
                         name="address"
-                        value={billing.address}
+                        value={user.address || billing.address}
                         onChange={handleBilling}
-                        defaultValue={user.address}
                         placeholder="1000 Város, Fő utca 12/A"
                       />
                       <Form.Control.Feedback type="invalid">Kötelező mező.</Form.Control.Feedback>
