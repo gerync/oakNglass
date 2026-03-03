@@ -27,12 +27,17 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [totalPages, setTotalPages] = useState(0);
   const [limit, setLimit] = useState(() => {
     return localStorage.getItem('limit') || 6;
   });
 
   const [fav, setFav] = useState([]);
+  if (!searchParams.get('page')) {
+    searchParams.set('page', 1)
+  }
 
   const fetchFav = useCallback(async () => {
     try {
@@ -49,7 +54,7 @@ function Products() {
   }, [isLoggedIn, fetchFav]);
 
   const toggleFav = async (item) => {
-    const isFav = fav.some(f => f.id === item.ProdID);
+    const isFav = fav.some(f => f.ProdID === item.ProdID);
     try {
       const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.FAVOURITES.POST_DELETE}${item.ProdID}`, {
         method: isFav ? 'DELETE' : 'POST',
@@ -57,10 +62,12 @@ function Products() {
         headers: { 'Content-Type': 'application/json' },
       });
       if (res.ok) {
-        setFav(prev =>
+        setFav((prev) => (
           isFav
-            ? prev.filter(f => f.id !== item.ProdID)
+            ? prev.filter(f => f.ProdID !== item.ProdID)
             : [...prev, item]
+
+        )
         );
       } else {
         toast.error('Hiba történt a kedvenc módosítása közben!');
@@ -82,7 +89,7 @@ function Products() {
     });
   };
 
-  const [searchParams, setSearchParams] = useSearchParams();
+
 
   const getFiltersFromUrl = () => {
     return {
@@ -106,11 +113,9 @@ function Products() {
     });
   };
 
-  if (searchParams.size === 0) {
-    searchParams.set('page', 1)
-  }
 
-  const handleParamChange = (newParamsObject) => {
+
+  const handleParamChange = useCallback((newParamsObject) => {
     setSearchParams((prev) => {
       const nextParams = new URLSearchParams(prev);
 
@@ -129,11 +134,9 @@ function Products() {
           nextParams.delete(key);
         }
       });
-
-      if (!newParamsObject.page) nextParams.set('page', 1);
       return nextParams;
     });
-  };
+  }, [setSearchParams]);
 
   useEffect(() => {
     let ignore = false;
@@ -158,7 +161,11 @@ function Products() {
   }, [searchParams, limit]);
 
   const handlePageChange = (pageNumber) => {
-    setSearchParams(prev => { const next = new URLSearchParams(prev); next.set('page', pageNumber); return next; });
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', pageNumber);
+      return next;
+    });
     window.scrollTo(0, 0);
   };
 
@@ -199,7 +206,21 @@ function Products() {
   });
   const [sortOrder, setSortOrder] = useState(() => {
     return searchParams.get('sortorder') || '';
-  })
+  });
+  const [searchBy, setSearchBy] = useState(() => {
+    return searchParams.get('search') || '';
+  });
+
+  const handleInputChange = (e) => {
+    setSearchBy(e.target.value);
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleParamChange({ search: searchBy || null });
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchBy, handleParamChange]);
 
   return (
     <>
@@ -207,6 +228,21 @@ function Products() {
         <Row>
           <Col md='3' className='pt-3 col-sort'>
             <h3 className="sort-header">Szűrés</h3>
+            <div>
+              Keresés
+              <Form>
+                <Form.Group className="mb-3" controlId="search">
+                  <Form.Control
+                    className="bg-content"
+                    type="text"
+                    placeholder="Keresés"
+                    name='search'
+                    value={searchBy}
+                    onChange={handleInputChange}
+                  />
+                </Form.Group>
+              </Form>
+            </div>
             <div>
               Alkoholtartalom (%)
               <Slider
@@ -378,7 +414,7 @@ function Products() {
                     <Row>
                       <Col md={12}>
                         <PaginationComponent
-                          currentPage={searchParams.get('page')}
+                          currentPage={parseInt(searchParams.get('page'))}
                           handlePageChange={handlePageChange}
                           totalPages={totalPages}
                         />

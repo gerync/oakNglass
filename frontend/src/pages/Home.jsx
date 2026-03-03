@@ -15,12 +15,14 @@ function Home() {
 
   return (
     <Container>
-      <HomeCarousel />
       <Row>
-        <Col md="3">
-          <Calendar value={today} />
+        <Col md="12">
+          <HomeCarousel />
         </Col>
-        <Col md="9">
+        <Col md="4">
+          <Calendar value={today} className='m-auto mb-3' />
+        </Col>
+        <Col md="8">
           <BlogSection />
         </Col>
       </Row>

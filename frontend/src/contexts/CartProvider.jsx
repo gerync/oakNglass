@@ -87,8 +87,12 @@ export const CartProvider = ({ children }) => {
     }
   }, []);
 
+  const priceSum = useMemo(() => {
+    return cart.reduce((partialSum, item) => partialSum + item.count * item.priceHUF, 0);
+  }, [cart]);
+
   return (
-    <CartContext.Provider value={{ cart, setCart, addItemToCart, cartCount, removeItemFromCart, deleteItemFromCart, emptyCart, updateItemCount, handleBlur }}>
+    <CartContext.Provider value={{ cart, setCart, addItemToCart, cartCount, removeItemFromCart, deleteItemFromCart, emptyCart, updateItemCount, handleBlur, priceSum }}>
       {children}
     </CartContext.Provider>
   )

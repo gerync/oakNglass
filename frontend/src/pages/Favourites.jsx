@@ -33,9 +33,9 @@ function Favourites() {
   }, []);
 
   const toggleFav = async (item) => {
-    const isFav = fav.some(f => f.id === item.ProdID);
+    const isFav = fav.some(f => f.ProdID === item.ProdID);
     try {
-      const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.FAVOURITES.POST_DELETE}${item.id}`, {
+      const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.FAVOURITES.POST_DELETE}${item.ProdID}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -43,7 +43,7 @@ function Favourites() {
       if (res.ok) {
         setFav(prev =>
           isFav
-            ? prev.filter(f => f.id !== item.ProdID)
+            ? prev.filter(f => f.ProdID !== item.ProdID)
             : [...prev, item]
         );
       } else {
@@ -72,7 +72,7 @@ function Favourites() {
                     <Row >
                       {
                         fav.map((item) => (
-                          <Col xs={12} sm={6} md={6} lg={4} key={item.id}>
+                          <Col xs={12} sm={6} md={6} lg={4} key={item.ProdID}>
                             <Card className="mb-2 h-100" >
                               <div style={{ position: 'relative' }}>
                                 <ProductCarousel images={item.images} ImageMaxHeight={270} />
