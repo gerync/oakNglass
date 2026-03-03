@@ -1,0 +1,33 @@
+name: "oakNglass"
+version: "1.0.0"
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "!!PORTNUMBER:PORTNUMBER!!"
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "PORT2NUMBER:80"
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: !!postgres!!
+      POSTGRES_PASSWORD: !!PSWRD!!
+      POSTGRES_DB: oaknglass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/db_postgres.sql:/docker-entrypoint-initdb.d/db_postgres.sql:ro
+volumes:
+  pgdata:

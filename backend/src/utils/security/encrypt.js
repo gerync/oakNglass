@@ -15,8 +15,8 @@ function encryptData(data) {
 }
 
 function decryptData(encryptedData) {
-    if (!encryptedData) {
-        throw new Error('Cannot decrypt null or undefined data');
+    if (encryptedData === null || encryptedData === undefined) {
+        return null;
     }
     
     // BYTEA columns come back from node-postgres as Buffers containing the
@@ -25,6 +25,11 @@ function decryptData(encryptedData) {
     const encryptedHex = Buffer.isBuffer(encryptedData)
         ? encryptedData.toString('utf8')
         : String(encryptedData);
+
+    // Empty string => nothing to decrypt
+    if (encryptedHex.length === 0) {
+        return '';
+    }
 
     // Validate hex string length
     if (encryptedHex.length % 2 !== 0) {

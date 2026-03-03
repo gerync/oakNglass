@@ -1,0 +1,51 @@
+{
+    "backend": {
+        "host": "domain.com",
+        "port": !!PORT!!
+        
+    },
+    "isProduction": false,
+    "frontend": {
+        "host": "https://domain.com",
+        "port": !!PORT1!!
+    },
+    "database": {
+        "host": "db",
+        "port": !!PORT2!!,
+        "username": "!!postgres!!",
+        "password": "!!PSSWRD!!",
+        "dbname": "oaknglass",
+        "maxConnections": 20,
+        "ssl": false
+    },
+    "email": {
+        "smtpHost": "smtp.domain.com",
+        "smtpPort": 587,
+        "auth": {
+            "user": "noreply@domain.com",
+            "pass": "!!EMAILPSSWRD!!"
+        },
+        "alias": {
+            "name": "no-reply",
+            "address": "no-reply@domain.com"
+        },
+        "codesExpiry": "15m"
+    },
+    "security": {
+        "tokenExpiry": {
+            "access": "30m",
+            "refresh": "30d",
+            "resetPassword": "30m"
+        },
+        "secrets": {
+            "jwt": "!!JWTSECRET!!,
+            "cookies": "!!COOKIESECRET!!",
+            "encryption": "!!ENC!!",
+            "salt": "!!STATIC SLAT!!"
+        }
+    },
+    "CDN": {
+        "url": "https://cdn.domain.com",
+        "apiKey": "CUSTOMAPIKEY"
+    }
+}
