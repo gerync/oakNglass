@@ -38,6 +38,7 @@ function LoginForm({ setShow, toggleShowPasswordReset }) {
 
       } else {
         if (res.status == 401) toast.error('Helytelen bejelentkezési adatok.');
+        if (res.status == 403) toast.error('Az email cím nincs hitelesítve, ellenőrizze a leveleit!');
       }
     } catch {
       toast.error('Hiba történt a bejelentkezés során!');

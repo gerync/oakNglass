@@ -12,7 +12,7 @@ function Profil() {
           credentials: 'include',
         }
       )
-      const data = res.json();
+      const data = await res.json();
       setUser(data.user);
     }
     fetchUserData();
@@ -25,6 +25,7 @@ function Profil() {
         </Card.Header>
         <Card.Body>
           <Row>
+            {console.log(user)}
             <Col md={6}>Teljes név: {user.fullname}</Col>
             <Col md={6}>Email cím: {user.email}</Col>
             <Col md={6}>Telefonszám: {user.mobile}</Col>
