@@ -95,21 +95,25 @@ function Checkout() {
   const [user, setUser] = useState({});
 
   useEffect(() => {
+    let ignore = false;
     async function fetchUserData() {
       const res = await fetch(`${ENDPOINTS.BASE_URL}${ENDPOINTS.USER.PROFILE}`,
         {
           credentials: 'include',
-        }
+        },
       )
-      const user = (await res.json()).user;
-      setUser(user);
-      handleBilling({ target: { name: 'name', value: user.fullname || null } });
-      handleBilling({ target: { name: 'email', value: user.email || null } });
-      handleBilling({ target: { name: 'phone', value: user.mobile || null } });
-      handleBilling({ target: { name: 'address', value: user.address || null } });
+      if (res.ok && !ignore) {
+        const user = (await res.json()).user;
+        setUser(user);
+        handleBilling({ target: { name: 'name', value: user.fullname || null } });
+        handleBilling({ target: { name: 'email', value: user.email || null } });
+        handleBilling({ target: { name: 'phone', value: user.mobile || null } });
+        handleBilling({ target: { name: 'address', value: user.address || null } });
+      }
     }
     fetchUserData();
-  }, [setUser, handleBilling]);
+    return () => { ignore = true; }
+  });
 
   return (
     <Container className="my-5">
