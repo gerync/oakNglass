@@ -108,7 +108,7 @@ function Products() {
     });
   };
 
-  if (searchParams.size === 0) {
+  if (!searchParams.get('page')) {
     searchParams.set('page', 1)
   }
 
@@ -131,8 +131,6 @@ function Products() {
           nextParams.delete(key);
         }
       });
-
-      if (!newParamsObject.page) nextParams.set('page', 1);
       return nextParams;
     });
   }, [setSearchParams]);
@@ -160,7 +158,11 @@ function Products() {
   }, [searchParams, limit]);
 
   const handlePageChange = (pageNumber) => {
-    setSearchParams(prev => { const next = new URLSearchParams(prev); next.set('page', pageNumber); return next; });
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('page', pageNumber);
+      return next;
+    });
     window.scrollTo(0, 0);
   };
 
