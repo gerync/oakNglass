@@ -41,7 +41,7 @@ function BlogSection() {
 
 
   return (
-    <Container fluid className='background '>
+    <Container fluid className='background'>
       {
         loading
           ? (<Spinner animation='border' />)
@@ -49,8 +49,8 @@ function BlogSection() {
             ? (
               <Row  >
                 {blogs.map((item, id) => (
-                  <Col key={id} md={4} className='mt-0 mt-3'  >
-                    <Card style={{maxHeight: '170px', overflow: 'clip'}}>
+                  <Col key={id} md={4} className='mt-0'  >
+                    <Card style={{maxHeight:'170px', overflow: 'clip'}}>
                       <Card.Body>
                         <Card.Title>
                           {item.title}
@@ -58,7 +58,7 @@ function BlogSection() {
                         <Card.Subtitle>{item.journalistname}</Card.Subtitle>
                         <hr />
                         <Card.Text >
-                          <p style={{textAlign: 'justify'}}>{item.content.substring(0, 80)}...</p>
+                          <p style={{textAlign:'justify'}}>{item.content.substring(0, 80)}...</p>
                         </Card.Text>
                       </Card.Body>
                     </Card>
