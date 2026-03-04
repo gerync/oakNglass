@@ -49,7 +49,7 @@ function BlogSection() {
             ? (
               <Row  >
                 {blogs.map((item, id) => (
-                  <Col key={id} md={4} className='mt-0'  >
+                  <Col key={id} md={4} className='mt-3'>
                     <Card style={{maxHeight:'170px', overflow: 'clip'}}>
                       <Card.Body>
                         <Card.Title>
